@@ -23,8 +23,8 @@ var Home = require('../Pages/Home');
 var Orientation = require('react-native-orientation');
 
 class VentureAppBase extends React.Component {
-    constructor(props: any) {
-        super(props);
+    constructor() {
+        super();
         this.state = {
 
         };
