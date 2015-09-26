@@ -1,7 +1,14 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
+ * Copyright (c) 2015-present, Venture Applications, LLC.
+ * All rights reserved.
+ *
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and confidential
+ * Written by Harrison Miller <hmaxmiller@gmail.com>, September 2015
+ *
+ * @flow
  */
+
 'use strict';
 
 var React = require('react-native');
@@ -11,6 +18,9 @@ var {
   Text,
   View,
 } = React;
+
+var { TestModule } = React.addons;
+var VentureAppBase = require('./Base/VentureAppBase');
 
 var VentureApp = React.createClass({
   render: function() {
