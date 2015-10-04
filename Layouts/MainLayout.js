@@ -41,7 +41,7 @@ var AndroidLayout = React.createClass({
 var IOSLayout = React.createClass({
     statics: {
         title: '<TabBarIOS>',
-        description: 'Tab-based navigation.',
+        description: 'Tab-based navigation.'
     },
 
     getInitialState() {
@@ -149,8 +149,8 @@ var MainLayout = React.createClass({
     render() {
         var selected = this.props.passProps.selected;
 
-        if (Platform.OS === 'android') return <AndroidLayout selected={selected} />;
-        return <IOSLayout selected={selected} />;
+        if (Platform.OS === 'android') return <AndroidLayout navigator={this.props.navigator} selected={selected} />;
+        return <IOSLayout navigator={this.props.navigator} selected={selected} />;
     }
 });
 

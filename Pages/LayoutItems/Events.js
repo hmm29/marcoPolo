@@ -19,12 +19,15 @@ var {
     View,
     } = React;
 
+var HomeIcon = require('../../Partials/Icons/HomeIcon');
+
 var Events = React.createClass({
 
     render: function() {
         return (
             <View style={[styles.tabContent, {backgroundColor: '#444'}]}>
                 <Text style={styles.tabText}>Events</Text>
+                <HomeIcon onPress={() => this.props.navigator.pop()} />
             </View>);
     }
 });
