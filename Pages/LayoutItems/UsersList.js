@@ -18,7 +18,7 @@
  * Proprietary and confidential
  * Written by Harrison Miller <hmaxmiller@gmail.com>, September 2015
  *
- * @providesModule Users
+ * @providesModule UsersList
  * @flow
  */
 
@@ -31,12 +31,12 @@ var {
     View,
     } = React;
 
-var Users = React.createClass({
+var UsersList = React.createClass({
 
     render: function() {
         return (
             <View style={[styles.tabContent, {backgroundColor: '#999'}]}>
-                <Text style={styles.tabText}>Users</Text>
+                <Text style={styles.tabText}>Users List</Text>
             </View>);
     }
 });
@@ -53,4 +53,4 @@ var styles = StyleSheet.create({
 });
 
 
-module.exports = Users;
+module.exports = UsersList;

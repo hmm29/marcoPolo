@@ -25,7 +25,7 @@ var VentureApp = React.createClass({
    componentDidMount() {
   },
 
-  renderScene(route:{title:string, component: Object, passProps?: Object}, navigator:Object) {
+  renderScene(route:{title: string, component: ReactClass<any,any,any>, passProps?: Object}, navigator:Object) {
       var Component = route.component;
       var passProps = route.passProps;
 

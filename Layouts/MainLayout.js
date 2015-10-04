@@ -16,34 +16,35 @@ var Platform = require('Platform');
 var React = require('react-native');
 
 var {
+    View
     } = React;
 
-var Chats = require('../Pages/LayoutItems/Chats');
-var Events = require('../Pages/LayoutItems/Events');
+var ChatsList = require('../Pages/LayoutItems/ChatsList');
+var EventsList = require('../Pages/LayoutItems/EventsList');
 var Hot = require('../Pages/LayoutItems/Hot');
 var Profile = require('../Pages/LayoutItems/Profile');
-var Users = require('../Pages/LayoutItems/Users');
+var UsersList = require('../Pages/LayoutItems/UsersList');
 
 var TAB_BAR_ICON_SIZE = 22;
 
-var AndroidLayout = React.createClass({
-    getInitialState() {
-        return {
-            selectedTab: this.props.selected
-        }
+var MainLayout = React.createClass({
+    propTypes: {
+        passProps: React.PropTypes.object
     },
 
     render() {
+        var navigator = this.props.navigator,
+            selected = this.props.passProps.selected;
 
+        if (Platform.OS === 'android') {
+            return <AndroidLayout navigator={navigator} selected={selected} />;
+        }
+
+        return <IOSLayout navigator={navigator} selected={selected} />;
     }
 });
 
 var IOSLayout = React.createClass({
-    statics: {
-        title: '<TabBarIOS>',
-        description: 'Tab-based navigation.'
-    },
-
     getInitialState() {
         return {
             selectedTab: this.props.selected
@@ -55,11 +56,11 @@ var IOSLayout = React.createClass({
             case 'hot':
                 return <Hot navigator={this.props.navigator} />;
             case 'events':
-                return <Events navigator={this.props.navigator} />;
+                return <EventsList navigator={this.props.navigator} />;
             case 'users':
-                return <Users navigator={this.props.navigator} />;
+                return <UsersList navigator={this.props.navigator} />;
             case 'chats':
-                return <Chats navigator={this.props.navigator} />;
+                return <ChatsList navigator={this.props.navigator} />;
             case 'profile':
                 return <Profile navigator={this.props.navigator} />;
         }
@@ -67,8 +68,8 @@ var IOSLayout = React.createClass({
     },
 
     render() {
-        var { TabBarIOS, } = require('react-native-icons');
-        var TabBarItemIOS = TabBarIOS.Item;
+        var { TabBarIOS, } = require('react-native-icons'),
+            TabBarItemIOS = TabBarIOS.Item;
 
         return (
             <TabBarIOS
@@ -141,18 +142,15 @@ var IOSLayout = React.createClass({
     }
 });
 
-var MainLayout = React.createClass({
-    propTypes: {
-        selected: React.PropTypes.string
+var AndroidLayout = React.createClass({
+    getInitialState() {
+        return {
+            selectedTab: this.props.selected
+        }
     },
-
     render() {
-        var selected = this.props.passProps.selected;
 
-        if (Platform.OS === 'android') return <AndroidLayout navigator={this.props.navigator} selected={selected} />;
-        return <IOSLayout navigator={this.props.navigator} selected={selected} />;
     }
 });
-
 
 module.exports = MainLayout;

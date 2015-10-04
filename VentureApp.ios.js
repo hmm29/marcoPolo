@@ -23,11 +23,12 @@ var {
 var Home = require('./Pages/Home');
 
 var VentureApp = React.createClass({
+
     componentDidMount() {
         StatusBarIOS.setStyle('light-content', true);
     },
 
-  renderScene(route:{title: string, component: React.Component, passProps?:Object}, navigator:Object) {
+  renderScene(route:{title: string, component: ReactClass<any,any,any>, passProps?:Object}, navigator:Object) {
       var Component = route.component;
       var passProps = route.passProps;
 
@@ -61,7 +62,7 @@ var VentureApp = React.createClass({
 
 var styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
   navigator: {
     backgroundColor: '#F5FCFF'

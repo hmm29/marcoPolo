@@ -6,7 +6,7 @@
  * Proprietary and confidential
  * Written by Harrison Miller <hmaxmiller@gmail.com>, September 2015
  *
- * @providesModule Chats
+ * @providesModule EventsList
  * @flow
  */
 
@@ -19,26 +19,29 @@ var {
     View,
     } = React;
 
-var Chats = React.createClass({
+var HomeIcon = require('../../Partials/Icons/HomeIcon');
 
-render: function() {
-    return (
-        <View style={[styles.tabContent, {backgroundColor: '#555'}]}>
-            <Text style={styles.tabText}>Chats</Text>
-        </View>);
+var EventsList = React.createClass({
+
+    render: function() {
+        return (
+            <View style={[styles.tabContent, {backgroundColor: '#444'}]}>
+                <Text style={styles.tabText}>Events List</Text>
+                <HomeIcon onPress={() => this.props.navigator.pop()} />
+            </View>);
     }
 });
 
 var styles = StyleSheet.create({
     tabContent: {
         flex: 1,
-        alignItems: 'center',
+        alignItems: 'center'
     },
     tabText: {
         color: 'white',
-        margin: 50,
-    },
+        margin: 50
+    }
 });
 
 
-module.exports = Chats;
+module.exports = EventsList;
