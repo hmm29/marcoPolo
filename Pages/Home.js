@@ -10,11 +10,11 @@
  * @flow
  */
 
- 'use strict';
+'use strict';
 
- var React = require('react-native');
+var React = require('react-native');
 
- var {
+var {
     AsyncStorage,
     DatePickerIOS,
     Image,
@@ -24,22 +24,43 @@
     TextInput,
     TouchableOpacity,
     ScrollView,
-    StatusBarIOS,
     StyleSheet,
     SwitchIOS,
     View
- } = React;
+    } = React;
 
 var _ = require('lodash');
 var DDPClient = require('ddp-client');
+var MainLayout = require('../Layouts/MainLayout');
+
+var NEXT_BUTTON_SIZE = 32;
+
+class NextButton extends React.Component {
+    render() {
+        return (
+            <TouchableOpacity
+                style={styles.nextButton}
+                activeOpacity={0.4}
+                onPress={this.props.onPress}>
+                <Text>Next</Text>
+            </TouchableOpacity>
+        );
+    }
+}
+
 
 var Home = React.createClass({
-     getDefaultProps: function () {
+    statics: {
+        title: '<Home>',
+        description: 'Venture Home Page - activity selection.'
+    },
+
+    getDefaultProps: function () {
         return {
-          date: new Date(),
-          timeZoneOffsetInHours: (-1) * (new Date()).getTimezoneOffset() / 60,
+            date: new Date(),
+            timeZoneOffsetInHours: (-1) * (new Date()).getTimezoneOffset() / 60
         };
-  },
+    },
 
     getInitialState() {
 
@@ -60,10 +81,6 @@ var Home = React.createClass({
         }
     },
 
-    componentWillMount() {
-        StatusBarIOS.setStyle('light-content', true);
-    },
-
     componentDidMount() {
         var _this = this;
 
@@ -71,7 +88,7 @@ var Home = React.createClass({
             port: 443,
             ssl: true,
             url: 'wss://lb1.ventureappofficial.me/websocket'
-         });
+        });
 
         ddpClient.connect((err, wasReconnect) => {
             _this.setState({ddpClient});
@@ -83,28 +100,37 @@ var Home = React.createClass({
         });
     },
 
-    onDateChange: function(date) {
+    onDateChange: function (date) {
         this.setState({date: date});
-      },
+    },
 
-  onTimezoneChange: function(event) {
-    var offset = parseInt(event.nativeEvent.text, 10);
-    if (isNaN(offset)) {
-      return;
+    onSubmitActivity() {
+        this.props.navigator.push({
+            title: 'Users',
+            component: MainLayout,
+            passProps: {selected: 'users'}
+        });
+    },
+
+    onTimezoneChange: function (event) {
+        var offset = parseInt(event.nativeEvent.text, 10);
+        if (isNaN(offset)) {
+            return;
+        }
+        this.setState({timeZoneOffsetInHours: offset});
+    },
+
+
+    render() {
+
+        return (
+            <View style={styles.container}>
+                <NextButton onPress={this.onSubmitActivity} />
+            </View>
+
+        );
+
     }
-    this.setState({timeZoneOffsetInHours: offset});
-  },
-
-  render() {
-
-    return (
-        <View style={styles.container}>
-            <Text>Hello</Text>
-        </View>
-
-    );
-
-  }     
 });
 
 var styles = StyleSheet.create({
@@ -117,6 +143,9 @@ var styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    nextButton: {
+
     }
 });
 

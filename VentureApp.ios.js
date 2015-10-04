@@ -15,6 +15,7 @@ var React = require('react-native');
 var {
   AppRegistry,
   Navigator,
+  StatusBarIOS,
   StyleSheet,
   View
 } = React;
@@ -22,11 +23,11 @@ var {
 var Home = require('./Pages/Home');
 
 var VentureApp = React.createClass({
-   componentDidMount() {
+    componentDidMount() {
+        StatusBarIOS.setStyle('light-content', true);
+    },
 
-  },
-
-  renderScene(route:{title:string, component: Object, passProps?: Object}, navigator:Object) {
+  renderScene(route:{title: string, component: React.Component, passProps?:Object}, navigator:Object) {
       var Component = route.component;
       var passProps = route.passProps;
 
