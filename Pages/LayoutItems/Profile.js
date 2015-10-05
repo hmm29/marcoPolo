@@ -19,6 +19,10 @@ var {
     View,
     } = React;
 
+var _hash = function(msg:string) {
+    return sha256(sha256(sha256(msg)));
+};
+
 var Profile = React.createClass({
 
     render: function() {
