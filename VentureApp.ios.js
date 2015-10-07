@@ -22,13 +22,20 @@ var {
 
 var Home = require('./Pages/Home');
 
+import type { NavigationContext } from 'NavigationContext';
+
+type Navigator = {
+    navigationContext: NavigationContext,
+    push: (route: {title: string, component: ReactClass<any,any,any>}) => void
+}
+
 var VentureApp = React.createClass({
 
     componentDidMount() {
         StatusBarIOS.setStyle('light-content', true);
     },
 
-  renderScene(route:{title: string, component: ReactClass<any,any,any>, passProps?:Object}, navigator:Object) {
+  renderScene(route:{title:string, component:ReactClass<any,any,any>, passProps?:Object}, navigator: Navigator) {
       var Component = route.component;
       var passProps = route.passProps;
 
@@ -65,7 +72,6 @@ var styles = StyleSheet.create({
     flex: 1
   },
   navigator: {
-    backgroundColor: '#F5FCFF'
   }
 });
 

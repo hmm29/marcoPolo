@@ -27,7 +27,6 @@ var EventsList = React.createClass({
         return (
             <View style={[styles.tabContent, {backgroundColor: '#444'}]}>
                 <Text style={styles.tabText}>Events List</Text>
-                <HomeIcon onPress={() => this.props.navigator.pop()} />
             </View>);
     }
 });

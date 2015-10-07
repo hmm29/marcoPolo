@@ -6,7 +6,7 @@
  * Proprietary and confidential
  * Written by Harrison Miller <hmaxmiller@gmail.com>, September 2015
  *
- * @providesModule ChevronIcon
+ * @providesModule ChatsListPageIcon
  * @flow
  */
 
@@ -23,13 +23,12 @@ var {
 
 var { Icon, } = require('react-native-icons');
 
-var SIZE = 18;
+var SIZE = 22;
 
-var ChevronIcon = React.createClass({
+var ChatsListPageIcon = React.createClass({
     propTypes: {
         caption: React.PropTypes.string,
         color: React.PropTypes.string,
-        direction: React.PropTypes.oneOf(['up','down','right','left']).isRequired,
         onPress: React.PropTypes.func.isRequired,
         captionStyle: View.propTypes.style,
         style: View.propTypes.style
@@ -43,9 +42,9 @@ var ChevronIcon = React.createClass({
                     style={this.props.style}>
                     <Icon
                         color={this.props.color || "#fff"}
-                        name={'ion|chevron-' + this.props.direction}
+                        name={'ion|ios-chatboxes'}
                         size={SIZE}
-                        style={styles.chevronIcon}
+                        style={styles.chatsListPageIcon}
                         />
                 </TouchableOpacity>
                 <Text style={[styles.caption, this.props.captionStyle]}>{this.props.caption}</Text>
@@ -65,10 +64,10 @@ var styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '500'
     },
-    chevronIcon: {
-        width: SIZE + 10,
-        height: SIZE + 10
+    chatsListPageIcon: {
+        width: SIZE,
+        height: SIZE
     }
 });
 
-module.exports = ChevronIcon;
+module.exports = ChatsListPageIcon;

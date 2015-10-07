@@ -16,6 +16,7 @@ var React = require('react-native');
 
 var {
     Image,
+    PixelRatio,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -35,10 +36,10 @@ var Logo = React.createClass({
         return (
             <View style={[styles.container, this.props.logoContainerStyle]}>
                 <TouchableOpacity
-                    activeOpacity={0.9}
+                    activeOpacity={0.8}
                     onPress={this.props.onPress}
                     style={this.props.style}>
-                    <Image source={{uri: 'https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_75,w_138/v1440366805/Venture-logo-white_oywnx3.png'}}
+                    <Image source={{uri: `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_95,w_${PixelRatio.getPixelSizeForLayoutSize(200)}/v1440366805/Venture-logo-white_oywnx3.png`}}
                            style={[styles.logo, this.props.logoStyle]}/>
                 </TouchableOpacity>
             </View>
@@ -47,11 +48,9 @@ var Logo = React.createClass({
 });
 
 var styles = StyleSheet.create({
-    container: {
-    },
     logo: {
-        width: 138,
-        height: 108,
+        width: 200,
+        height: 120,
         backgroundColor: 'transparent'
     }
 });

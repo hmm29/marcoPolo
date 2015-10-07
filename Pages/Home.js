@@ -31,14 +31,17 @@ var {
     } = React;
 
 var _ = require('lodash');
+var ChatsListPageIcon = require('../Partials/Icons/ChatsListPageIcon');
 var CheckboxIcon = require('../Partials/Icons/CheckboxIcon');
 var ChevronIcon = require('../Partials/Icons/ChevronIcon');
 var ClockIcon = require('../Partials/Icons/ClockIcon');
 var Display = require('react-native-device-display');
 var DDPClient = require('ddp-client');
+var Header = require('../Partials/Header');
 var { Icon, } = require('react-native-icons');
 var Logo = require('../Partials/Logo');
 var MainLayout = require('../Layouts/MainLayout');
+var ProfilePageIcon = require('../Partials/Icons/ProfilePageIcon');
 
 var ADD_INFO_BUTTON_SIZE = 24;
 var LOGO_WIDTH = 200;
@@ -53,19 +56,13 @@ var Home = React.createClass({
         description: 'Venture Home Page - activity selection.'
     },
 
-    getDefaultProps() {
+    getInitialState() {
         return {
             ddpClient: new DDPClient({
                 port: 443,
                 ssl: true,
                 url: 'wss://lb1.ventureappofficial.me/websocket'
-            })
-        }
-    },
-
-    getInitialState() {
-        return {
-            ddpClient: this.props.ddpClient,
+                }),
             showAddInfoBox: false,
             showNextButton: false,
             showTrendingItems: true,
@@ -99,11 +96,22 @@ var Home = React.createClass({
     render() {
         return (
             <Image
-                source={{uri: `https://res.cloudinary.com/dwnyawluh/image/upload/w_${PixelRatio.getPixelSizeForLayoutSize(SCREEN_WIDTH)},h_${PixelRatio.getPixelSizeForLayoutSize(SCREEN_HEIGHT)}/v1442117785/Venture_-_Vandy_-_Homepage_rqwyuy.png`}}
                 style={styles.container}>
+                <Header>
+                    <ProfilePageIcon onPress={() =>  this.props.navigator.push({
+                        title: 'Users',
+                        component: MainLayout,
+                        passProps: {selected: 'profile'}
+                    })} />
+                    <ChatsListPageIcon onPress={() =>  this.props.navigator.push({
+                    title: 'Users',
+                    component: MainLayout,
+                    passProps: {selected: 'chats'}
+                })} />
+                </Header>
                 <Logo
-                    logoContainerStyle={{position: 'absolute', top: SCREEN_HEIGHT/8, width: LOGO_WIDTH, height: LOGO_HEIGHT, marginHorizontal: (SCREEN_WIDTH - LOGO_WIDTH) / 2}}
-                    logoStyle={{width: LOGO_WIDTH, height: LOGO_HEIGHT}}/>
+                    logoContainerStyle={styles.logoContainerStyle}
+                    logoStyle={styles.logoStyle}/>
                 <ActivityTextInput onSubmit={this.onSubmitActivity}/>
                 <AddInfoButton onPress={() => {
                     this.setState({showAddInfoBox: !this.state.showAddInfoBox})
@@ -188,7 +196,7 @@ var AddInfoBox = React.createClass({
                         timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
                         onDateChange={this.onDateChange}
                         minuteInterval={10}
-                        style={styles.datePicker}/>
+                        style={styles.timeSpecificationDatePicker}/>
                     <View style={styles.timeSpecificationButtons}>
                         <ClockIcon
                             active={false}
@@ -287,7 +295,9 @@ class NextButton extends React.Component {
             <View style={styles.nextButtonContainer}>
                 <TouchableOpacity
                     activeOpacity={0.4}
-                    onPress={this.props.onPress}>
+                    onPress={() =>  InteractionManager.runAfterInteractions(() => {
+                        this.props.onPress();
+                    })}>
                     <Icon
                         name='ion|arrow-right-b'
                         size={NEXT_BUTTON_SIZE}
@@ -349,8 +359,8 @@ var Tag = React.createClass({
 });
 
 
-var YALIES = ['http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_56,w_64/v1442206258/Harrison%20Miller.png', 'https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_52,w_64/v1442206076/Noah%20Cho.png', 'https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_64/v1442205943/Sophie%20Dillon.png'];
-var EVENTS = ['http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_64,q_78,w_200/v1442898929/Event%20-%20Frozen%20Four%20(Center%20-%20Big%20Text).png', 'https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_64,q_48,w_200/v1442894669/Event%20-%20Freshman%20Screw%20(Center%20-%20Big%20Text).png'];
+var YALIES = [`http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_56,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206258/Harrison%20Miller.png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_52,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206076/Noah%20Cho.png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Sophie%20Dillon.png`];
+var EVENTS = [`http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Frozen%20Four%20(Center%20-%20Big%20Text).png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_48,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442894669/Event%20-%20Freshman%20Screw%20(Center%20-%20Big%20Text).png`];
 
 var createTrendingUser = (uri, i) => <TrendingItem type='user' key={i} uri={uri}/>;
 var createTrendingEvent = (uri, i) => <TrendingItem type='event' key={i} uri={uri}/>;
@@ -368,9 +378,8 @@ var TrendingItemsCarousel = React.createClass({
                 <Title>TRENDING <Text style={{color: '#ee964b'}}>{this.state.trendingContent}</Text></Title>
                 <ScrollView
                     horizontal={true}
-                    centerContent={true}
-                    directionalLockEnabled={true}
                     pagingEnabled={true}
+                    directionalLockEnabled={true}
                     snapToAlignment='center'
                     snapToInterval={64}
                     style={[styles.scrollView, styles.horizontalScrollView]}>
@@ -383,18 +392,18 @@ var TrendingItemsCarousel = React.createClass({
 });
 
 class TrendingItem extends React.Component {
-    render():ReactElement {
+    render() {
         if (this.props.type === 'user') {
             return (
-                <View style={styles.trendingItem}>
+                <TouchableOpacity style={styles.trendingItem}>
                     <Image style={styles.trendingUserImg} source={{uri:this.props.uri}}/>
-                </View>
+                </TouchableOpacity>
             );
         } else {
             return (
-                <View style={styles.trendingItem}>
+                <TouchableOpacity style={styles.trendingItem}>
                     <Image style={styles.trendingEventImg} source={{uri:this.props.uri}}/>
-                </View>
+                </TouchableOpacity>
             );
         }
     }
@@ -421,15 +430,15 @@ var styles = StyleSheet.create({
         borderColor: '#0f0f0f',
         backgroundColor: 'rgba(0,0,0,0.8)',
         flex: 1,
-        fontSize: SCREEN_HEIGHT / 30,
+        fontSize: SCREEN_HEIGHT / 25,
         padding: ACTIVITY_TEXT_INPUT_PADDING,
         color: '#fff',
         textAlign: 'center',
-        fontFamily: 'AvenirNextCondensed-Regular'
+        fontFamily: 'AvenirNextCondensed-UltraLight'
     },
     addInfoBox: {
         position: 'absolute',
-        bottom: SCREEN_HEIGHT / 18,
+        bottom: SCREEN_HEIGHT / 30,
         width: SCREEN_WIDTH / 1.2,
         alignSelf: 'center',
         backgroundColor: 'rgba(0,0,0,0.8)',
@@ -458,19 +467,27 @@ var styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
+    logoContainerStyle: {
+        position: 'absolute',
+        top: SCREEN_HEIGHT/6,
+        marginHorizontal: (SCREEN_WIDTH - LOGO_WIDTH) / 2
+    },
+    logoStyle: {
+        width: LOGO_WIDTH,
+        height: LOGO_HEIGHT
+    },
     nextButtonContainer: {
         flex: 1,
         flexDirection: 'row',
-        justifyContent: 'flex-end',
-        width: SCREEN_WIDTH,
         position: 'absolute',
+        right: 10,
         bottom: ACTIVITY_TEXT_INPUT_PADDING * 2
     },
     scrollView: {
-        backgroundColor: 'rgba(0,0,0,0.08)'
+        backgroundColor: 'rgba(0,0,0,0.008)'
     },
     horizontalScrollView: {
-        height: 80,
+        height: 85
     },
     timeSpecificationOptions: {
         flex: 1,
@@ -485,7 +502,7 @@ var styles = StyleSheet.create({
         fontFamily: 'AvenirNextCondensed-Regular',
         fontSize: 20,
         textAlign: 'center',
-        paddingVertical: 5
+        paddingTop: 5
     },
     tagsInputText: {
         borderWidth: 0.5,
@@ -501,14 +518,11 @@ var styles = StyleSheet.create({
     tagSelection: {
         marginVertical: 10
     },
-    datePicker: {
-        width: SCREEN_WIDTH / 1.2,
+    timeSpecificationDatePicker: {
         height: 40,
         justifyContent: 'center',
         alignSelf: 'center',
         backgroundColor: 'rgba(255,255,255,0.8)',
-        margin: 10,
-        paddingLeft: 18
     },
     scrollbarArrow: {
         position: 'absolute',
@@ -528,21 +542,21 @@ var styles = StyleSheet.create({
         bottom: SCREEN_HEIGHT / 35,
         width: SCREEN_WIDTH / 1.2,
         alignSelf: 'center',
+        justifyContent: 'center',
         marginHorizontal: (SCREEN_WIDTH - (SCREEN_WIDTH / 1.2)) / 2,
         backgroundColor: 'rgba(0,0,0,0.8)',
         padding: 10
     },
     trendingUserImg: {
-        width: SCREEN_WIDTH / 5,
+        width: SCREEN_WIDTH / 5.2,
         height: 64,
         resizeMode: 'contain'
     },
     trendingEventImg: {
-        width: SCREEN_WIDTH / 1.4,
+        width: SCREEN_WIDTH / 1.39,
         height: 64,
         resizeMode: 'contain'
     }
-
 });
 
 
