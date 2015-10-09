@@ -63,10 +63,12 @@ var Home = React.createClass({
                 ssl: true,
                 url: 'wss://lb1.ventureappofficial.me/websocket'
                 }),
+            hasKeyboardSpace: false,
+            input: '',
             showAddInfoBox: false,
             showNextButton: false,
             showTrendingItems: true,
-            hasKeyboardSpace: false,
+            tagsArr: [],
             viewStyle: {
                 marginHorizontal: null
             }
@@ -85,17 +87,69 @@ var Home = React.createClass({
         });
     },
 
+    _handleTagChange(tagsArr:Array) {
+        this.setState({tagsArr});
+    },
+
     onSubmitActivity() {
+        var activityInput = (this.state.input).replace(/[^\w\s]|_/g, '').replace(/\s+/g, ' '),
+            activityPreferenceChange = {
+                title: activityInput,
+                tags: this.state.tagsArr
+            }, _this = this;
+
+        //AsyncStorage.getItem('@AsyncStorage:Venture:account')
+        //    .then((account:string) => {
+        //        account = JSON.parse(account);
+        //
+        //        this.state.ddpClient.call('Accounts.updateUser', [{ventureId: account.ventureId}, activityPreferenceChange, account.ventureId, account.name, account.email],
+        //            function (err, resp) {
+        //                if (resp) {
+        //                    AsyncStorage.setItem('@AsyncStorage:Venture:account', JSON.stringify(_.assign(account, activityPreferenceChange)))
+        //                        .catch((error) => console.log(error.message))
+        //                        .done();
+        //                }
+        //                if (err) {
+        //                    alert(err.message);
+        //                }
+        //
+        //            });
+        //    })
+        //    .catch((error) => console.log(error.message))
+        //    .done();
+
+
         this.props.navigator.push({
             title: 'Users',
             component: MainLayout,
             passProps: {selected: 'users'}
         });
+
     },
 
     render() {
+        let activityTextInput = (
+            <View style={styles.activitySelection}>
+                <TextInput
+                    autoCapitalize='none'
+                    autoCorrect={false}
+                    maxLength={15}
+                    onChangeText={(text) => {
+                        this.setState({input: text.toUpperCase(), showNextButton: !!text.length});
+                    }}
+                    placeholder={'What do you want to do?'}
+                    placeholderTextColor={'rgba(255,255,255,1.0)'}
+                    returnKeyType='done'
+                    style={styles.activityTextInput}
+                    value={this.state.input}/>
+                {this.state.showNextButton ? <NextButton onPress={this.onSubmitActivity}/> : <View />}
+            </View>
+        );
+
+
         return (
             <Image
+                source={require('image!HomeBackground')}
                 style={styles.container}>
                 <Header>
                     <ProfilePageIcon onPress={() =>  this.props.navigator.push({
@@ -112,46 +166,13 @@ var Home = React.createClass({
                 <Logo
                     logoContainerStyle={styles.logoContainerStyle}
                     logoStyle={styles.logoStyle}/>
-                <ActivityTextInput onSubmit={this.onSubmitActivity}/>
+                {activityTextInput}
                 <AddInfoButton onPress={() => {
                     this.setState({showAddInfoBox: !this.state.showAddInfoBox})
                 }} showAddInfoBox={this.state.showAddInfoBox}/>
-                {this.state.showAddInfoBox ? <AddInfoBox /> : <View/>}
+                {this.state.showAddInfoBox ? <AddInfoBox handleTagChange={this._handleTagChange} /> : <View/>}
                 {this.state.showTrendingItems && !this.state.showAddInfoBox ? <TrendingItemsCarousel /> : <View/>}
             </Image>
-        );
-    }
-});
-
-var ActivityTextInput = React.createClass({
-    propTypes: {
-        onSubmit: React.PropTypes.func.isRequired
-    },
-
-    getInitialState() {
-        return {
-            input: '',
-            showNextButton: false
-        }
-    },
-
-    render() {
-        return (
-            <View style={styles.activitySelection}>
-                <TextInput
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                    maxLength={15}
-                    onChangeText={(text) => {
-                        this.setState({input: text.toUpperCase(), showNextButton: !!text.length});
-                    }}
-                    placeholder={'What do you want to do?'}
-                    placeholderTextColor={'rgba(255,255,255,1.0)'}
-                    returnKeyType='done'
-                    style={styles.activityTextInput}
-                    value={this.state.input}/>
-                {this.state.showNextButton ? <NextButton onPress={this.props.onSubmit}/> : <View />}
-            </View>
         );
     }
 });
@@ -260,7 +281,7 @@ var AddInfoBox = React.createClass({
             <View style={styles.addInfoBox}>
                 <Title>WHEN?</Title>
                 {content}
-                <TagSelection />
+                <TagSelection handleTagChange={this.props.handleTagChange} />
             </View>
         );
     }
@@ -332,6 +353,14 @@ var TagSelection = React.createClass({
                     maxLength={15}
                     onChangeText={(text) => {
                         this.setState({input: text});
+                        if(text[text.length-1] === ',') {
+                        var tagsArr = this.state.tags;
+
+                        tagsArr.push(text.substr(0, text.length-1));
+
+                        this.setState({tagsArr, input: ''});
+                        this.props.handleTagChange(tagsArr);
+                    }
                     }}
                     placeholder={'Add tags here'}
                     placeholderTextColor={'rgba(255,255,255,0.9)'}
@@ -345,19 +374,23 @@ var TagSelection = React.createClass({
                     directionalLockEnabled={true}
                     showsHorizontalScrollIndicator={true}
                     style={[styles.scrollView, {height: 20}]}>
-                    {this.state.tags.map(this._createTag)}
+                    {this.state.tags.map((tag) => {
+                        return (
+                            <TouchableOpacity onPress={() => {
+                            this.setState({tags: _.remove(this.state.tags,
+                                (tagVal) => {
+                                return tagVal !== tag;
+                                }
+                            )});
+                        }} style={styles.tag}><Text
+                                style={styles.tagText}>{tag}</Text></TouchableOpacity>
+                        )
+                    })}
                 </ScrollView>
             </View>
         );
     }
 });
-
-var Tag = React.createClass({
-    render() {
-
-    }
-});
-
 
 var YALIES = [`http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_56,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206258/Harrison%20Miller.png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_52,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206076/Noah%20Cho.png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Sophie%20Dillon.png`];
 var EVENTS = [`http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Frozen%20Four%20(Center%20-%20Big%20Text).png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_48,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442894669/Event%20-%20Freshman%20Screw%20(Center%20-%20Big%20Text).png`];
@@ -443,7 +476,7 @@ var styles = StyleSheet.create({
         alignSelf: 'center',
         backgroundColor: 'rgba(0,0,0,0.8)',
         marginHorizontal: (SCREEN_WIDTH - (SCREEN_WIDTH / 1.2)) / 2,
-        padding: 8
+        paddingTop: 8
     },
     addInfoButton: {},
     addInfoButtonContainer: {
@@ -494,6 +527,7 @@ var styles = StyleSheet.create({
         flexDirection: 'column'
     },
     timeSpecificationButtons: {
+        top: 20,
         flexDirection: 'row',
         justifyContent: 'space-around'
     },
@@ -516,9 +550,13 @@ var styles = StyleSheet.create({
         fontFamily: 'AvenirNextCondensed-Regular'
     },
     tagSelection: {
-        marginVertical: 10
-    },
+        marginTop: 10,
+        bottom: 20,
+        height: SCREEN_HEIGHT / 6.5
+
+},
     timeSpecificationDatePicker: {
+        top: 10,
         height: 40,
         justifyContent: 'center',
         alignSelf: 'center',
@@ -527,6 +565,20 @@ var styles = StyleSheet.create({
     scrollbarArrow: {
         position: 'absolute',
         bottom: 15
+    },
+    tag: {
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        borderRadius: 12,
+        paddingHorizontal: SCREEN_WIDTH / 80,
+        marginHorizontal: SCREEN_WIDTH / 70,
+        paddingVertical: SCREEN_WIDTH / 170,
+        borderWidth: 0.5,
+        borderColor: 'rgba(255,255,255,0.4)',
+        top: 4
+    },
+    tagText: {
+        color: 'rgba(255,255,255,0.5)',
+        fontFamily: 'AvenirNextCondensed-Medium'
     },
     trendingItems: {
         flex: 1,

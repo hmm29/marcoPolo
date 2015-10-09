@@ -25,6 +25,8 @@ var { Icon, } = require('react-native-icons');
 
 var SIZE = 32;
 
+// @hmm no InteractionManager here because it slows the popToTop transition
+
 var HomeIcon = React.createClass({
     propTypes: {
         caption: React.PropTypes.string,

@@ -32,6 +32,9 @@ type Navigator = {
 var VentureApp = React.createClass({
 
     componentDidMount() {
+        var Orientation = require('react-native-orientation');
+        Orientation.lockToPortrait();
+
         StatusBarIOS.setStyle('light-content', true);
     },
 

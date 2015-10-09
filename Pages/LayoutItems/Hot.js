@@ -32,11 +32,11 @@ var Hot = React.createClass({
 var styles = StyleSheet.create({
     tabContent: {
         flex: 1,
-        alignItems: 'center',
+        alignItems: 'center'
     },
     tabText: {
         color: 'white',
-        margin: 50,
+        margin: 50
     },
 });
 

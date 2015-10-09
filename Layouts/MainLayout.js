@@ -110,6 +110,7 @@ var IOSLayout = React.createClass({
                     });
                   }}>
                     {this._renderComponent('users')}
+
                 </TabBarItemIOS>
                 <TabBarItemIOS
                     iconName={'ion|ios-chatboxes-outline'}

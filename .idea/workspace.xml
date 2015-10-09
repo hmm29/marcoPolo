@@ -2,18 +2,69 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2376615d-cff6-4ff3-89a0-7e7afb473618" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Partials/Icons/ChatsListPageIcon.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Partials/Icons/ProfilePageIcon.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/LaunchImage.launchimage/Home Page - Launch Screen copy_640x1136.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/LaunchImage.launchimage/Home Page - Launch Screen copy_640x960.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/LaunchScreen.imageset/Home Page - Launch Screen.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/LaunchScreen.imageset/Home Page - Launch Screen@2x.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/LaunchScreen.imageset/Home Page - Launch Screen@3x.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/HomeBackground.imageset/HomeBackground.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/VentureLogoWhite.imageset/VentureLogoWhite-2.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/VentureLogoWhite.imageset/VentureLogoWhite-3.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/VentureLogoWhite.imageset/VentureLogoWhite.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/about.imageset/about@3x.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/app_icon_120x120.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/app_icon_152x152.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/app_icon_180x180.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/app_icon_29x29.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/app_icon_40x40.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/app_icon_58x58-1.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/app_icon_58x58.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/app_icon_76x76.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/app_icon_80x80-1.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/app_icon_80x80.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Partials/Icons/AwaitingResponseIcon.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Pages/Chat.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Partials/Icons/CloseIcon.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/HomeBackground.imageset/Contents.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/LaunchImage.launchimage/Contents.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/LaunchScreen.imageset/Contents.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/VentureLogoWhite.imageset/Contents.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/about.imageset/Contents.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Partials/Icons/EditProfilePageIcon.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Partials/Icons/FilterModalIcon.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Partials/Icons/MatchedIcon.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Partials/Icons/ReceivedResponseIcon.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/__tests__/about-test.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/__tests__/chat-test.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/__tests__/edit-profile-test.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/jestSupport/env.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/__tests__/home-test.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/__tests__/profile-test.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/jestSupport/scriptPreprocess.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/__tests__/settings-test.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/jestSupport/setupEnvPolyfills.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/__tests__/sign-in-test.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/__tests__/venture-app-test.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ios/VentureApp/AppDelegate.m" afterPath="$PROJECT_DIR$/ios/VentureApp/AppDelegate.m" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Partials/Icons/BackIcon.js" afterPath="$PROJECT_DIR$/Partials/Icons/BackIcon.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js" afterPath="$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Partials/Icons/ChatsListPageIcon.js" afterPath="$PROJECT_DIR$/Partials/Icons/ChatsListPageIcon.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Partials/Icons/ChevronIcon.js" afterPath="$PROJECT_DIR$/Partials/Icons/ChevronIcon.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/LayoutItems/EventsList.js" afterPath="$PROJECT_DIR$/Pages/LayoutItems/EventsList.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Partials/Icons/ClockIcon.js" afterPath="$PROJECT_DIR$/Partials/Icons/ClockIcon.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/EditProfile.js" afterPath="$PROJECT_DIR$/Pages/EditProfile.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/Filters.js" afterPath="$PROJECT_DIR$/Pages/Filters.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Partials/Header.js" afterPath="$PROJECT_DIR$/Partials/Header.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/Home.js" afterPath="$PROJECT_DIR$/Pages/Home.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Partials/Icons/HomeIcon.js" afterPath="$PROJECT_DIR$/Partials/Icons/HomeIcon.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Partials/Logo.js" afterPath="$PROJECT_DIR$/Partials/Logo.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/LayoutItems/Hot.js" afterPath="$PROJECT_DIR$/Pages/LayoutItems/Hot.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ios/VentureApp/Info.plist" afterPath="$PROJECT_DIR$/ios/VentureApp/Info.plist" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/Login.js" afterPath="$PROJECT_DIR$/Pages/Login.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Layouts/MainLayout.js" afterPath="$PROJECT_DIR$/Layouts/MainLayout.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/LayoutItems/Profile.js" afterPath="$PROJECT_DIR$/Pages/LayoutItems/Profile.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Partials/Icons/ProfilePageIcon.js" afterPath="$PROJECT_DIR$/Partials/Icons/ProfilePageIcon.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" afterPath="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/VentureApp.ios.js" afterPath="$PROJECT_DIR$/VentureApp.ios.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ios/VentureAppTests/VentureAppTests.m" afterPath="$PROJECT_DIR$/ios/VentureAppTests/VentureAppTests.m" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ios/VentureApp.xcodeproj/project.pbxproj" afterPath="$PROJECT_DIR$/ios/VentureApp.xcodeproj/project.pbxproj" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
@@ -37,31 +88,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="VentureApp.ios.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/VentureApp.ios.js">
+      <file leaf-file-name="CheckboxIcon.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Partials/Icons/CheckboxIcon.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="50" column="22" selection-start-line="50" selection-start-column="22" selection-end-line="50" selection-end-column="22" />
+              <caret line="24" column="14" selection-start-line="24" selection-start-column="14" selection-end-line="24" selection-end-column="14" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MainLayout.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Layouts/MainLayout.js">
+      <file leaf-file-name="ChevronIcon.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Partials/Icons/ChevronIcon.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="60" column="33" selection-start-line="60" selection-start-column="33" selection-end-line="60" selection-end-column="33" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="UsersList.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/UsersList.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.79133856">
-              <caret line="510" column="11" selection-start-line="510" selection-start-column="11" selection-end-line="510" selection-end-column="11" />
+              <caret line="44" column="22" selection-start-line="44" selection-start-column="22" selection-end-line="44" selection-end-column="22" />
               <folding />
             </state>
           </provider>
@@ -71,63 +112,77 @@
         <entry file="file://$PROJECT_DIR$/Partials/Icons/ClockIcon.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="57" column="16" selection-start-line="57" selection-start-column="16" selection-end-line="57" selection-end-column="16" />
-              <folding>
-                <marker date="1443994539000" expanded="true" signature="872:1477" placeholder="&lt;xml/&gt;" />
-                <marker date="1443994539000" expanded="true" signature="920:1357" placeholder="&lt;xml/&gt;" />
-                <marker date="1443994539000" expanded="true" signature="1053:1321" placeholder="&lt;xml/&gt;" />
-              </folding>
+              <caret line="47" column="41" selection-start-line="47" selection-start-column="41" selection-end-line="47" selection-end-column="41" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="EventsList.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/EventsList.js">
+      <file leaf-file-name="CloseIcon.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Partials/Icons/CloseIcon.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="29" column="0" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
-              <folding>
-                <marker date="1444168411000" expanded="true" signature="573:718" placeholder="&lt;xml/&gt;" />
-              </folding>
+              <caret line="24" column="14" selection-start-line="24" selection-start-column="14" selection-end-line="24" selection-end-column="14" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HomeIcon.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="EditProfilePageIcon.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Partials/Icons/EditProfilePageIcon.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="17" column="23" selection-start-line="17" selection-start-column="23" selection-end-line="17" selection-end-column="23" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FilterModalIcon.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Partials/Icons/FilterModalIcon.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="31" column="40" selection-start-line="31" selection-start-column="40" selection-end-line="31" selection-end-column="40" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HomeIcon.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Partials/Icons/HomeIcon.js">
           <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.62291664">
+              <caret line="36" column="6" selection-start-line="36" selection-start-column="6" selection-end-line="36" selection-end-column="6" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MatchedIcon.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Partials/Icons/MatchedIcon.js">
+          <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="40" column="38" selection-start-line="40" selection-start-column="38" selection-end-line="40" selection-end-column="38" />
+              <caret line="17" column="23" selection-start-line="17" selection-start-column="23" selection-end-line="17" selection-end-column="23" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Home.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Pages/Home.js">
+      <file leaf-file-name="ProfilePageIcon.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Partials/Icons/ProfilePageIcon.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.851852">
-              <caret line="97" column="18" selection-start-line="97" selection-start-column="18" selection-end-line="97" selection-end-column="18" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="44" column="22" selection-start-line="44" selection-start-column="22" selection-end-line="44" selection-end-column="22" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AppDelegate.m" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ios/VentureApp/AppDelegate.m">
+      <file leaf-file-name="ReceivedResponseIcon.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Partials/Icons/ReceivedResponseIcon.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="5.3703704">
-              <caret line="33" column="88" selection-start-line="33" selection-start-column="88" selection-end-line="33" selection-end-column="88" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="package.json" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/package.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-10.045455">
-              <caret line="17" column="50" selection-start-line="17" selection-start-column="50" selection-end-line="17" selection-end-column="50" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="29" column="16" selection-start-line="29" selection-start-column="16" selection-end-line="29" selection-end-column="16" />
               <folding />
             </state>
           </provider>
@@ -155,35 +210,44 @@
         <option value="$PROJECT_DIR$/Layout/IOSLayout.js" />
         <option value="$PROJECT_DIR$/Layout/Layout.ios.js" />
         <option value="$PROJECT_DIR$/Layout/MainLayout.js" />
-        <option value="$PROJECT_DIR$/Partials/Icons/BackIcon.js" />
-        <option value="$PROJECT_DIR$/Pages/LayoutItems/Hot.js" />
         <option value="$PROJECT_DIR$/Pages/LayoutItems/Chats.js" />
-        <option value="$PROJECT_DIR$/Pages/EditProfile.js" />
-        <option value="$PROJECT_DIR$/Pages/Filters.js" />
-        <option value="$PROJECT_DIR$/Pages/Login.js" />
         <option value="$PROJECT_DIR$/Pages/LayoutItems/Events.js" />
         <option value="$PROJECT_DIR$/VentureApp.android.js" />
         <option value="$PROJECT_DIR$/Pages/LayoutItems/Users.js" />
-        <option value="$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js" />
-        <option value="$PROJECT_DIR$/Pages/LayoutItems/Profile.js" />
         <option value="$PROJECT_DIR$/Partials/Icons/CheckBoxIcon.js" />
-        <option value="$PROJECT_DIR$/Partials/Icons/ClockIcon.js" />
-        <option value="$PROJECT_DIR$/Partials/Icons/CheckboxIcon.js" />
         <option value="$PROJECT_DIR$/Partials/Logo/Logo.js" />
         <option value="$PROJECT_DIR$/ios/VentureAppTests/VentureAppTests.m" />
-        <option value="$PROJECT_DIR$/Partials/Icons/ProfilePageIcon.js" />
-        <option value="$PROJECT_DIR$/Partials/Icons/ChevronIcon.js" />
         <option value="$PROJECT_DIR$/VentureApp.ios.js" />
         <option value="$PROJECT_DIR$/package.json" />
         <option value="$PROJECT_DIR$/Partials/Logo.js" />
-        <option value="$PROJECT_DIR$/Partials/Header.js" />
-        <option value="$PROJECT_DIR$/Partials/Icons/ChatsListPageIcon.js" />
         <option value="$PROJECT_DIR$/Pages/LayoutItems/EventsList.js" />
-        <option value="$PROJECT_DIR$/Pages/Home.js" />
-        <option value="$PROJECT_DIR$/Partials/Icons/HomeIcon.js" />
+        <option value="$PROJECT_DIR$/Pages/LayoutItems/Hot.js" />
+        <option value="$PROJECT_DIR$/Pages/Chat.js" />
+        <option value="$PROJECT_DIR$/Pages/Login.js" />
+        <option value="$PROJECT_DIR$/Pages/Filters.js" />
+        <option value="$PROJECT_DIR$/Partials/Header.js" />
+        <option value="$PROJECT_DIR$/ios/VentureApp/Info.plist" />
+        <option value="$PROJECT_DIR$/ios/VentureApp/AppDelegate.h" />
         <option value="$PROJECT_DIR$/ios/VentureApp/AppDelegate.m" />
+        <option value="$PROJECT_DIR$/Pages/EditProfile.js" />
         <option value="$PROJECT_DIR$/Layouts/MainLayout.js" />
+        <option value="$PROJECT_DIR$/Pages/LayoutItems/Profile.js" />
+        <option value="$PROJECT_DIR$/Pages/Home.js" />
+        <option value="$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js" />
+        <option value="$PROJECT_DIR$/Partials/Icons/FilterModalIcon.js" />
+        <option value="$PROJECT_DIR$/Partials/Icons/CheckboxIcon.js" />
+        <option value="$PROJECT_DIR$/Partials/Icons/CloseIcon.js" />
+        <option value="$PROJECT_DIR$/Partials/Icons/EditProfilePageIcon.js" />
         <option value="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" />
+        <option value="$PROJECT_DIR$/Partials/Icons/AwaitingResponseIcon.js" />
+        <option value="$PROJECT_DIR$/Partials/Icons/BackIcon.js" />
+        <option value="$PROJECT_DIR$/Partials/Icons/ChatsListPageIcon.js" />
+        <option value="$PROJECT_DIR$/Partials/Icons/ChevronIcon.js" />
+        <option value="$PROJECT_DIR$/Partials/Icons/ClockIcon.js" />
+        <option value="$PROJECT_DIR$/Partials/Icons/MatchedIcon.js" />
+        <option value="$PROJECT_DIR$/Partials/Icons/ProfilePageIcon.js" />
+        <option value="$PROJECT_DIR$/Partials/Icons/ReceivedResponseIcon.js" />
+        <option value="$PROJECT_DIR$/Partials/Icons/HomeIcon.js" />
       </list>
     </option>
   </component>
@@ -195,10 +259,29 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-30" />
-    <option name="y" value="86" />
+    <option name="x" value="45" />
+    <option name="y" value="23" />
     <option name="width" value="1280" />
-    <option name="height" value="530" />
+    <option name="height" value="696" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+          <State>
+            <id>JavaScript</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>JavaScript</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -223,8 +306,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -459,7 +540,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="VentureAppTests" />
+              <option name="myItemId" value="VentureApp" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -473,26 +554,29 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="ios" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="VentureApp" />
+              <option name="myItemId" value="__tests__" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="Errors" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Font" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="HbShouldOpenHtmlAsHb" value="" />
     <property name="JavaScriptLanguageLevel" value="JSX" />
+    <property name="FullScreen" value="false" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/ios/VentureApp/Images.xcassets" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/Partials" />
       <recent name="$PROJECT_DIR$/Pages/LayoutItems" />
@@ -554,18 +638,17 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-30" y="86" width="1280" height="530" extended-state="0" />
+    <frame x="45" y="23" width="1280" height="696" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2494043" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3293718" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28863636" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16171618" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -573,6 +656,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3293718" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
@@ -585,7 +669,7 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4620462" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2494043" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3293718" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -611,6 +695,52 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/Pages/EditProfile.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="161" column="52" selection-start-line="161" selection-start-column="52" selection-end-line="161" selection-end-column="52" />
+          <folding>
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="37" column="26" selection-start-line="37" selection-start-column="26" selection-end-line="37" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Icons/BackIcon.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="53" column="5" selection-start-line="53" selection-start-column="5" selection-end-line="53" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/VentureApp.ios.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -623,7 +753,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -655,7 +784,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -695,7 +823,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -703,7 +830,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.58932716">
           <caret line="45" column="19" selection-start-line="45" selection-start-column="19" selection-end-line="45" selection-end-column="19" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -719,31 +845,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/EditProfile.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.23963134">
-          <caret line="8" column="30" selection-start-line="8" selection-start-column="30" selection-end-line="8" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/Filters.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.23963134">
-          <caret line="8" column="26" selection-start-line="8" selection-start-column="26" selection-end-line="8" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.38940093">
-          <caret line="17" column="9" selection-start-line="17" selection-start-column="9" selection-end-line="17" selection-end-column="9" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -751,39 +852,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-5.0555553">
           <caret line="35" column="1" selection-start-line="35" selection-start-column="1" selection-end-line="35" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/Login.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Partials/Icons/ChevronIcon.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.0">
-          <caret line="57" column="16" selection-start-line="57" selection-start-column="16" selection-end-line="57" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/Hot.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.125">
-          <caret line="10" column="3" selection-start-line="10" selection-start-column="3" selection-end-line="10" selection-end-column="3" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/Profile.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.13541667">
-          <caret line="17" column="9" selection-start-line="17" selection-start-column="9" selection-end-line="17" selection-end-column="9" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -791,55 +859,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="45" column="10" selection-start-line="45" selection-start-column="10" selection-end-line="45" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Partials/Icons/BackIcon.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.027083334">
-          <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Partials/Icons/CheckboxIcon.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.59583336">
-          <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Partials/Icons/ChatsListPageIcon.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.18958333">
-          <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Partials/Icons/ProfilePageIcon.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.43333334">
-          <caret line="16" column="5" selection-start-line="16" selection-start-column="5" selection-end-line="16" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Partials/Header.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.079166666">
-          <caret line="28" column="16" selection-start-line="28" selection-start-column="16" selection-end-line="28" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.045455">
-          <caret line="17" column="50" selection-start-line="17" selection-start-column="50" selection-end-line="17" selection-end-column="50" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -847,21 +866,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="29" column="0" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
-          <folding>
-            <marker date="1444168411000" expanded="true" signature="573:718" placeholder="&lt;xml/&gt;" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Partials/Icons/ClockIcon.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="57" column="16" selection-start-line="57" selection-start-column="16" selection-end-line="57" selection-end-column="16" />
-          <folding>
-            <marker date="1443994539000" expanded="true" signature="872:1477" placeholder="&lt;xml/&gt;" />
-            <marker date="1443994539000" expanded="true" signature="920:1357" placeholder="&lt;xml/&gt;" />
-            <marker date="1443994539000" expanded="true" signature="1053:1321" placeholder="&lt;xml/&gt;" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -869,23 +873,20 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/Home.js">
+    <entry file="file://$PROJECT_DIR$/package.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.851852">
-          <caret line="97" column="18" selection-start-line="97" selection-start-column="18" selection-end-line="97" selection-end-column="18" />
-          <folding />
+        <state vertical-scroll-proportion="-11.227273">
+          <caret line="20" column="4" selection-start-line="20" selection-start-column="4" selection-end-line="20" selection-end-column="4" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Partials/Icons/HomeIcon.js">
+    <entry file="file://$PROJECT_DIR$/__tests__/chat-test.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="40" column="38" selection-start-line="40" selection-start-column="38" selection-end-line="40" selection-end-column="38" />
-          <folding />
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -897,26 +898,237 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/Login.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/Hot.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="43" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Header.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="76" column="48" selection-start-line="76" selection-start-column="48" selection-end-line="76" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/Filters.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33333334">
+          <caret line="325" column="26" selection-start-line="325" selection-start-column="26" selection-end-line="325" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ios/VentureAppTests/Info.plist">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ios/VentureApp/Info.plist">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="20" column="30" selection-start-line="20" selection-start-column="30" selection-end-line="20" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ios/VentureApp/AppDelegate.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/EditProfile.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="161" column="52" selection-start-line="161" selection-start-column="52" selection-end-line="161" selection-end-column="52" />
+          <folding>
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+            <marker date="1444404234000" expanded="true" signature="-1:-1" placeholder="&lt;xml/&gt;" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Layouts/MainLayout.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="60" column="33" selection-start-line="60" selection-start-column="33" selection-end-line="60" selection-end-column="33" />
+          <caret line="66" column="0" selection-start-line="66" selection-start-column="0" selection-end-line="66" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/Profile.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-60.185184">
+          <caret line="282" column="38" selection-start-line="282" selection-start-column="38" selection-end-line="282" selection-end-column="38" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ios/VentureApp/AppDelegate.m">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="5.3703704">
-          <caret line="33" column="88" selection-start-line="33" selection-start-column="88" selection-end-line="33" selection-end-column="88" />
+        <state vertical-scroll-proportion="-13.407408">
+          <caret line="39" column="13" selection-start-line="39" selection-start-column="13" selection-end-line="39" selection-end-column="13" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-71.25926">
+          <caret line="277" column="50" selection-start-line="277" selection-start-column="50" selection-end-line="277" selection-end-column="50" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/Home.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-9.444445">
+          <caret line="321" column="25" selection-start-line="321" selection-start-column="25" selection-end-line="321" selection-end-column="25" />
+          <folding>
+            <marker date="1444414152000" expanded="true" signature="-1:-1" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/UsersList.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.79133856">
-          <caret line="510" column="11" selection-start-line="510" selection-start-column="11" selection-end-line="510" selection-end-column="11" />
+        <state vertical-scroll-proportion="-36.592594">
+          <caret line="571" column="21" selection-start-line="571" selection-start-column="21" selection-end-line="571" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Icons/AwaitingResponseIcon.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="17" column="23" selection-start-line="17" selection-start-column="23" selection-end-line="17" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Icons/BackIcon.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="45" column="35" selection-start-line="45" selection-start-column="35" selection-end-line="45" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Icons/ChatsListPageIcon.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="17" column="23" selection-start-line="17" selection-start-column="23" selection-end-line="17" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Icons/CheckboxIcon.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="24" column="14" selection-start-line="24" selection-start-column="14" selection-end-line="24" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Icons/ChevronIcon.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="44" column="22" selection-start-line="44" selection-start-column="22" selection-end-line="44" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Icons/ClockIcon.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="47" column="41" selection-start-line="47" selection-start-column="41" selection-end-line="47" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Icons/CloseIcon.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="24" column="14" selection-start-line="24" selection-start-column="14" selection-end-line="24" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Icons/EditProfilePageIcon.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="17" column="23" selection-start-line="17" selection-start-column="23" selection-end-line="17" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Icons/FilterModalIcon.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="31" column="40" selection-start-line="31" selection-start-column="40" selection-end-line="31" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Icons/MatchedIcon.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="17" column="23" selection-start-line="17" selection-start-column="23" selection-end-line="17" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Icons/ProfilePageIcon.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="44" column="22" selection-start-line="44" selection-start-column="22" selection-end-line="44" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Icons/ReceivedResponseIcon.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="29" column="16" selection-start-line="29" selection-start-column="16" selection-end-line="29" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Icons/HomeIcon.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.62291664">
+          <caret line="36" column="6" selection-start-line="36" selection-start-column="6" selection-end-line="36" selection-end-column="6" />
           <folding />
         </state>
       </provider>

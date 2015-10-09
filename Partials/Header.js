@@ -33,13 +33,24 @@ var Header = React.createClass({
     render() {
         let length = this.props.children.length;
 
-        if(length === 3) {
+        if(length === 4) {
             return (
                 <View style={[styles.headerContainer, this.props.containerStyle]}>
                     <View style={styles.header}>
-                        <View style={{position: 'absolute', left: 20}}>{this.props.children[0]}</View>
+                        <View style={{position: 'absolute', left: 10}}>{this.props.children[0]}</View>
+                        {this.props.children[1]}
+                        <View style={{position: 'absolute', right: 10}}>{this.props.children[2]}</View>
+                        {this.props.children[3]}
+                    </View>
+                </View>
+            )
+        } else if(length === 3) {
+            return (
+                <View style={[styles.headerContainer, this.props.containerStyle]}>
+                    <View style={styles.header}>
+                        <View style={{position: 'absolute', left: 10}}>{this.props.children[0]}</View>
                         <Text style={styles.headerText}>{this.props.children[1]}</Text>
-                        <View style={{position: 'absolute', right: 20}}>{this.props.children[2]}</View>
+                        <View style={{position: 'absolute', right: 10}}>{this.props.children[2]}</View>
                     </View>
                 </View>
             )
@@ -47,8 +58,8 @@ var Header = React.createClass({
             return (
                 <View style={[styles.headerContainer, this.props.containerStyle]}>
                     <View style={styles.header}>
-                        <View style={{position: 'absolute', left: 20}}>{this.props.children[0]}</View>
-                        <View style={{position: 'absolute', right: 20}}>{this.props.children[1]}</View>
+                        <View style={{position: 'absolute', left: 10}}>{this.props.children[0]}</View>
+                        <View style={{position: 'absolute', right: 10}}>{this.props.children[1]}</View>
                     </View>
                 </View>
             )
@@ -74,7 +85,7 @@ var Header = React.createClass({
 var styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'center',
         alignItems: 'center'
     },
     headerContainer: {

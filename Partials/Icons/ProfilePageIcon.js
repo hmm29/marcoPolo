@@ -15,6 +15,7 @@
 var React = require('react-native');
 
 var {
+    InteractionManager,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -39,7 +40,9 @@ var ProfilePageIcon = React.createClass({
         return (
             <View style={styles.container}>
                 <TouchableOpacity
-                    onPress={this.props.onPress}
+                    onPress={() =>  InteractionManager.runAfterInteractions(() => {
+                        this.props.onPress();
+                    })}
                     style={this.props.style}>
                     <Icon
                         color={this.props.color || "#fff"}

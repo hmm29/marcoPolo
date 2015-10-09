@@ -15,6 +15,7 @@
 var React = require('react-native');
 
 var {
+    InteractionManager,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -39,7 +40,9 @@ var ChevronIcon = React.createClass({
         return (
             <View style={styles.container}>
                 <TouchableOpacity
-                    onPress={this.props.onPress}
+                    onPress={() =>  InteractionManager.runAfterInteractions(() => {
+                        this.props.onPress();
+                    })}
                     style={this.props.style}>
                     <Icon
                         color={this.props.color || "#fff"}
@@ -66,8 +69,8 @@ var styles = StyleSheet.create({
         fontWeight: '500'
     },
     chevronIcon: {
-        width: SIZE + 10,
-        height: SIZE + 10
+        width: SIZE * 1.14,
+        height: SIZE * 1.14
     }
 });
 

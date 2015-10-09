@@ -31,17 +31,22 @@ var {
     } = React;
 
 var _ = require('lodash');
-var ChatsList = require('./ChatsList');
+var AwaitingResponseIcon = require('../../Partials/Icons/AwaitingResponseIcon');
+var Chat = require('../Chat');
 var ChevronIcon = require('../../Partials/Icons/ChevronIcon');
 var Display = require('react-native-device-display');
 var DDPClient = require('ddp-client');
+var FilterModalIcon = require('../../Partials/Icons/FilterModalIcon');
+var Filters = require('../Filters');
 var Firebase = require('firebase');
 var Header = require('../../Partials/Header');
 var Home = require('../Home');
 var HomeIcon = require('../../Partials/Icons/HomeIcon');
 var LinearGradient = require('react-native-linear-gradient');
 var Logo = require('../../Partials/Logo');
+var MatchedIcon = require('../../Partials/Icons/MatchedIcon');
 var Modal = require('react-native-swipeable-modal');
+var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
 var RefreshableListView = require('react-native-refreshable-listview');
 var Swipeout = require('react-native-swipeout');
 var TimerMixin = require('react-timer-mixin');
@@ -49,7 +54,7 @@ var TimerMixin = require('react-timer-mixin');
 var INITIAL_LIST_SIZE = 8;
 var LOGO_WIDTH = 200;
 var LOGO_HEIGHT = 120;
-var PAGE_SIZE = 8;
+var PAGE_SIZE = 10;
 var SCREEN_WIDTH = Display.width;
 var SCREEN_HEIGHT = Display.height;
 var YELLOW_HEX_CODE = '#ffe770';
@@ -95,205 +100,6 @@ var layoutAnimationConfigs = [
     animations.layout.spring,
     animations.layout.easeInEaseOut
 ];
-
-var UsersList = React.createClass({
-    mixins: [TimerMixin],
-
-    subscriptionID: null,
-
-    watchID: null,
-
-    getInitialState() {
-        return {
-            animating: true,
-            currentPosition: null,
-            dataSource: new ListView.DataSource({
-                rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
-            }),
-            ddpClient: new DDPClient({
-                ssl: true,
-                url: 'wss://lb1.ventureappofficial.me/websocket'
-            }),
-            firebaseRef: null,
-            isModalShow: true,
-            loaded: false,
-            matchInteractions: {},
-            searchText: this.props.searchText,
-            showCurrentUser: false
-        };
-    },
-
-    componentWillMount() {
-        this.setTimeout(() => {
-            this.setState({animating: false, isModalShow: false, showCurrentUser: true});
-        }, 2200);
-    },
-
-    componentDidMount() {
-        var ddpClient = this.state.ddpClient,
-            firebaseRef = new Firebase('https://ventureappinitial.firebaseio.com/'),
-            _this = this;
-
-            this.setTimeout(() => {
-                ddpClient.connect((err, wasReconnect) => {
-                    _this.setState({firebaseRef, loaded: true});
-                    _this.subscriptionID = ddpClient.subscribe('accounts');
-
-                    var accountsCollectionObserver = ddpClient.observe('accounts');
-                    accountsCollectionObserver.added = () => _this.updateRows(_.cloneDeep(_.values(ddpClient.collections.accounts)));
-                    accountsCollectionObserver.changed = () => _this.updateRows(_.cloneDeep(_.values(ddpClient.collections.accounts)));
-                    accountsCollectionObserver.removed = () => _this.updateRows(_.cloneDeep(_.values(ddpClient.collections.accounts)));
-                });
-
-                navigator.geolocation.getCurrentPosition(
-                    (currentPosition) => {
-                        this.setState({currentPosition});
-                    },
-                    (error) => {
-                        console.error(error);
-                    },
-                    {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
-                );
-
-                this.watchID = navigator.geolocation.watchPosition((currentPosition) => {
-                    this.setState({currentPosition});
-                })
-
-                AsyncStorage.getItem('@AsyncStorage:Venture:account')
-                    .then((account) => {
-                        account = JSON.parse(account);
-                        if (account)
-                            _this.setState({
-                                currentUserIDHashed: account.ventureId,
-                                currentUserActivityPreference: account.activityPreference,
-                                currentUserFirstName: account.name.split(' ')[0],
-                                currentUserAccountID: account._id,
-                                currentUserProfilePic: account.picture
-                            });
-                    })
-                    .catch((error) => console.log(error.message))
-                    .done();
-            }, 800);
-    },
-
-    handleMatchInteractionsStateChange(matchInteractions:Object) {
-        this.setState({matchInteractions});
-    },
-
-    shuffleUsers() {
-        this.updateRows(_.cloneDeep(_.values(_.shuffle(this.state.ddpClient.collections.accounts))));
-    },
-
-    updateRows(rows) {
-        this.setState({dataSource: this.state.dataSource.cloneWithRows(rows)});
-    },
-
-    componentDidUnMount() {
-    },
-
-    _renderCurrentUser() {
-        return (
-            <User backgroundColor='rgba(255,245,226, 0.5)'
-                  editable={true}
-                  isNotCurrentUser={false}
-                  user={{activityPreference: this.state.currentUserActivityPreference, picture: this.state.currentUserProfilePic}}/>
-        )
-    },
-
-    _renderHeader() {
-        return (
-            <Header containerStyle={{position: 'relative'}}>
-                <HomeIcon onPress={() => this.props.navigator.pop()}/>
-                <TextInput
-                    autoCapitalize='none'
-                    autoCorrect={true}
-                    clearButtonMode='always'
-                    onChangeText={(text) => this.search(text)}
-                    placeholder='Search name or tag'
-                    placeholderTextColor='rgba(0,0,0,0.4)'
-                    returnKeyType='done'
-                    style={styles.searchTextInput}/>
-            </Header>
-        )
-    },
-
-
-    _renderUser(user:Object, sectionID:number, rowID:number) {
-        if (user.firstName === this.state.currentUserFirstName) return <View />;
-
-        return <User
-            currentUserActivityPreference={this.state.currentUserActivityPreference}
-            currentUserBio={this.state.currentUserBio}
-            currentUserFirstName={this.state.currentUserFirstName}
-            currentUserIDHashed={this.state.currentUserIDHashed}
-            currentUserProfilePic={this.state.currentUserProfilePic}
-            firebaseRef={this.state.firebaseRef}
-            handleMatchInteractionsStateChange={this.handleMatchInteractionsStateChange}
-            isNotCurrentUser={true}
-            matchInteractions={this.state.matchInteractions}
-            navigator={this.props.navigator}
-            position={this.state.currentPosition}
-            rowID={rowID}
-            sectionID={sectionID}
-            user={user}/>;
-    },
-
-    componentWillUnmount: function () {
-        if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
-    },
-
-    render() {
-        return (
-            <View style={styles.usersListBaseContainer}>
-                <View>
-                    {this._renderHeader()}
-                    {this.state.showCurrentUser ? this._renderCurrentUser() : <View/>}
-                </View>
-                <RefreshableListView
-                    dataSource={this.state.dataSource}
-                    renderRow={this._renderUser}
-                    initialListSize={INITIAL_LIST_SIZE}
-                    pageSize={PAGE_SIZE}
-                    automaticallyAdjustContentInsets={false}
-                    loadData={this.shuffleUsers}
-                    refreshDescription="Everyday I'm shufflin..."
-                    scrollRenderAheadDistance={2000}
-                    refreshingIndictatorComponent={CustomRefreshingIndicator}/>
-                <View style={{height: 48}}></View>
-                <Modal
-                    height={SCREEN_HEIGHT}
-                    modalStyle={styles.loadingModalStyle}
-                    isVisible={this.state.isModalShow}
-                    swipeableAreaStyle={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0
-                        }}
-                    swipeHideLength={0}>
-                    <View style={styles.modalView}>
-                        <Logo
-                            logoContainerStyle={styles.logoContainerStyle}
-                            logoStyle={styles.logoStyle}/>
-                        <ActivityIndicatorIOS
-                            color='#fff'
-                            animating={this.state.animating}
-                            style={styles.loadingModalActivityIndicatorIOS}
-                            size='small'/>
-                        <TouchableOpacity activeOpacity={0.8}>
-                            <Text
-                                style={styles.loadingModalFunFactText}>
-                                <Text style={styles.loadingModalFunFactTextTitle}>Did You Know ?</Text>
-                                {'\n\n'} The average Yalie eats 5 chicken {'\n'} tenders in a week.</Text>
-                        </TouchableOpacity>
-                    </View>
-                </Modal>
-            </View>
-        )
-    }
-});
-
 
 var User = React.createClass({
     getInitialState() {
@@ -460,7 +266,7 @@ var User = React.createClass({
 
             if (_this.state.status === 'matched') {
                 var ChatsList = require('./ChatsList'),
-                    distance = _this.calculateDistance(_this.props.currentPosition.coords, _this.props.user.location.coordinates) + ' mi';
+                    distance = _this.calculateDistance(_this.props.position.coords, _this.props.user.location.coordinates) + ' mi';
 
                 var chatRoomRefStr = firebaseRef.child('chat_rooms/' + currentUserIDHashed + '_TO_' + targetUserIDHashed),
                     chatRoomTimerRefStr = chatRoomRefStr.child('timer').set({value: 300000});
@@ -468,8 +274,8 @@ var User = React.createClass({
                 currentUserRef && currentUserRef.child(targetUserIDHashed).off();
 
                 this.props.navigator.push({
-                    title: 'ChatsListPage',
-                    component: ChatsList,
+                    title: 'Chat',
+                    component: Chat,
                     passProps: {
                         recipient: _this.props.user,
                         currentUserIDHashed,
@@ -501,10 +307,9 @@ var User = React.createClass({
     },
 
     _onPressItem() {
-        var config = layoutAnimationConfigs[0];
-        LayoutAnimation.configureNext(config);
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
 
-        var _this = this;
+        let _this = this;
 
         InteractionManager.runAfterInteractions(() => {
             _this.setState({dir: this.state.dir === 'row' ? 'column' : 'row'});
@@ -573,7 +378,7 @@ var User = React.createClass({
                                     {user.activityPreference && (user.activityPreference).toUpperCase() + '?'}
                                 </Text>
                                 <View>
-                                    {this.props.isNotCurrentUser ? this._renderStatusIcon() : <View />}
+                                    {this.props.isNotCurrentUser ? <View style={{top: 10}}>{this._renderStatusIcon()}</View> : <View />}
                                 </View>
                             </View>
                         </LinearGradient>
@@ -651,6 +456,234 @@ var CustomRefreshingIndicator = React.createClass({
     }
 });
 
+var UsersList = React.createClass({
+    mixins: [TimerMixin],
+
+    subscriptionID: null,
+
+    watchID: null,
+
+    getInitialState() {
+        return {
+            animating: true,
+            currentPosition: null,
+            dataSource: new ListView.DataSource({
+                rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
+            }),
+            ddpClient: new DDPClient({
+                ssl: true,
+                url: 'wss://lb1.ventureappofficial.me/websocket'
+            }),
+            firebaseRef: null,
+            isModalShow: true,
+            loaded: false,
+            matchInteractions: {},
+            searchText: this.props.searchText,
+            showCurrentUser: false
+        };
+    },
+
+    componentWillMount() {
+        this.setTimeout(() => {
+            this.setState({showCurrentUser: true});
+        }, 2200);
+    },
+
+    componentDidMount() {
+        var ddpClient = this.state.ddpClient,
+            firebaseRef = new Firebase('https://ventureappinitial.firebaseio.com/'),
+            _this = this;
+
+        this.setTimeout(() => {
+            ddpClient.connect((err, wasReconnect) => {
+                _this.setState({firebaseRef, loaded: true});
+                _this.subscriptionID = ddpClient.subscribe('accounts');
+
+                var accountsCollectionObserver = ddpClient.observe('accounts');
+                accountsCollectionObserver.added = () => _this.updateRows(_.cloneDeep(_.values(ddpClient.collections.accounts)));
+                accountsCollectionObserver.changed = () => _this.updateRows(_.cloneDeep(_.values(ddpClient.collections.accounts)));
+                accountsCollectionObserver.removed = () => _this.updateRows(_.cloneDeep(_.values(ddpClient.collections.accounts)));
+            });
+
+            navigator.geolocation.getCurrentPosition(
+                (currentPosition) => {
+                    this.setState({currentPosition});
+                },
+                (error) => {
+                    console.error(error);
+                },
+                {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
+            );
+
+            this.watchID = navigator.geolocation.watchPosition((currentPosition) => {
+                this.setState({currentPosition});
+            })
+
+            AsyncStorage.getItem('@AsyncStorage:Venture:account')
+                .then((account) => {
+                    account = JSON.parse(account);
+                    if (account)
+                        _this.setState({
+                            currentUserIDHashed: account.ventureId,
+                            currentUserActivityPreference: account.activityPreference,
+                            currentUserFirstName: account.name.split(' ')[0],
+                            currentUserAccountID: account._id,
+                            currentUserProfilePic: account.picture
+                        });
+                })
+                .catch((error) => console.log(error.message))
+                .done();
+        }, 500);
+    },
+
+    handleMatchInteractionsStateChange(matchInteractions:Object) {
+        this.setState({matchInteractions});
+    },
+
+    search(text:string) {
+        var checkFilter = function (user:Object) {
+            var activity = (user.activityPreference).toLowerCase(),
+                lowText = text.toLowerCase(),
+                name = (user.firstName).toLowerCase();
+
+            if(text === 'food') {
+                return (activity.indexOf('insomnia') > -1 || activity.indexOf('wenzel') > -1 || activity.indexOf('pizza') > -1 || activity.indexOf('froyo') > -1 || activity.indexOf('buttery') > -1 || activity.indexOf('dinner') > -1 || activity.indexOf('sushi') > -1)
+            }
+
+            return (activity.indexOf(lowText) > -1 || name.indexOf(lowText) > -1)
+        };
+        this.state.searchTextEntered = (text !== '');
+        this.updateRows(_.cloneDeep(_.values(_.filter(this.state.ddpClient.collections.accounts, checkFilter))));
+    },
+
+    shuffleUsers() {
+        this.updateRows(_.cloneDeep(_.values(_.shuffle(this.state.ddpClient.collections.accounts))));
+    },
+
+    updateRows(rows) {
+        this.setState({dataSource: this.state.dataSource.cloneWithRows(rows)});
+
+        let _this = this;
+
+        if(rows.length > 1.5 * INITIAL_LIST_SIZE) {
+            InteractionManager.runAfterInteractions(() => {
+                this.setTimeout(() => {
+                    _this.setState({animating: false, isModalShow: false})
+                }, 1200);
+
+            })
+        }
+    },
+
+    componentDidUnMount() {
+    },
+
+    _renderCurrentUser() {
+        return (
+            <User backgroundColor='rgba(255,245,226, 0.5)'
+                  editable={true}
+                  isNotCurrentUser={false}
+                  user={{activityPreference: this.state.currentUserActivityPreference, picture: this.state.currentUserProfilePic}}/>
+        )
+    },
+
+    _renderHeader() {
+        return (
+            <Header containerStyle={{position: 'relative'}}>
+                <HomeIcon onPress={() => this.props.navigator.pop()}/>
+                <TextInput
+                    autoCapitalize='none'
+                    autoCorrect={true}
+                    clearButtonMode='always'
+                    onChangeText={(text) => this.search(text)}
+                    placeholder='Search name or tag'
+                    placeholderTextColor='rgba(0,0,0,0.4)'
+                    returnKeyType='done'
+                    style={styles.searchTextInput}/>
+                <FilterModalIcon onPress={() => this.props.navigator.push({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom})} />
+                <Text />
+            </Header>
+        )
+    },
+
+
+    _renderUser(user:Object, sectionID:number, rowID:number) {
+        if (user.firstName === this.state.currentUserFirstName) return <View />;
+
+        return <User
+            currentUserActivityPreference={this.state.currentUserActivityPreference}
+            currentUserBio={this.state.currentUserBio}
+            currentUserFirstName={this.state.currentUserFirstName}
+            currentUserIDHashed={this.state.currentUserIDHashed}
+            currentUserProfilePic={this.state.currentUserProfilePic}
+            firebaseRef={this.state.firebaseRef}
+            handleMatchInteractionsStateChange={this.handleMatchInteractionsStateChange}
+            isNotCurrentUser={true}
+            matchInteractions={this.state.matchInteractions}
+            navigator={this.props.navigator}
+            position={this.state.currentPosition}
+            rowID={rowID}
+            sectionID={sectionID}
+            user={user}/>;
+    },
+
+    componentWillUnmount: function () {
+        if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
+    },
+
+    render() {
+        return (
+            <View style={styles.usersListBaseContainer}>
+                <View>
+                    {this._renderHeader()}
+                    {this.state.showCurrentUser ? this._renderCurrentUser() : <View/>}
+                </View>
+                <RefreshableListView
+                    dataSource={this.state.dataSource}
+                    renderRow={this._renderUser}
+                    initialListSize={INITIAL_LIST_SIZE}
+                    pageSize={PAGE_SIZE}
+                    minPulldownDistance={5}
+                    automaticallyAdjustContentInsets={false}
+                    loadData={this.shuffleUsers}
+                    refreshDescription="Everyday I'm shufflin'..."
+                    scrollRenderAheadDistance={2000}
+                    refreshingIndictatorComponent={CustomRefreshingIndicator}/>
+                <View style={{height: 48}}></View>
+                <Modal
+                    height={SCREEN_HEIGHT}
+                    modalStyle={styles.loadingModalStyle}
+                    isVisible={this.state.isModalShow}
+                    swipeableAreaStyle={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0
+                        }}
+                    swipeHideLength={0}>
+                    <View style={styles.modalView}>
+                        <Logo
+                            logoContainerStyle={styles.logoContainerStyle}
+                            logoStyle={styles.logoStyle}/>
+                        <ActivityIndicatorIOS
+                            color='#fff'
+                            animating={this.state.animating}
+                            style={styles.loadingModalActivityIndicatorIOS}
+                            size='small'/>
+                        <TouchableOpacity activeOpacity={0.8}>
+                            <Text
+                                style={styles.loadingModalFunFactText}>
+                                <Text style={styles.loadingModalFunFactTextTitle}>Did You Know ?</Text>
+                                {'\n\n'} The average Yalie eats 5 chicken {'\n'} tenders in a week.</Text>
+                        </TouchableOpacity>
+                    </View>
+                </Modal>
+            </View>
+        )
+    }
+});
+
 var styles = StyleSheet.create({
     customRefreshingActivityIndicatorIOS: {
         height: 20,
@@ -663,7 +696,8 @@ var styles = StyleSheet.create({
         paddingVertical: 10
     },
     customRefreshingIndicatorText: {
-        color: '#fff'
+        color: '#fff',
+        fontFamily: 'AvenirNextCondensed-Regular'
     },
     loadingModalActivityIndicatorIOS: {
         height: 80
@@ -737,7 +771,6 @@ var styles = StyleSheet.create({
         marginBottom: SCREEN_WIDTH / 22
     },
     rightContainer: {
-        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start'

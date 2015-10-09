@@ -11,6 +11,9 @@
 
 #import "RCTRootView.h"
 
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
+#import <FBSDKLoginKit/FBSDKLoginKit.h>
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -31,7 +34,7 @@
    * on the same Wi-Fi network.
    */
 
-  jsCodeLocation = [NSURL URLWithString:@"http://192.168.1.50:8081/VentureApp.ios.bundle"];
+  jsCodeLocation = [NSURL URLWithString:@"http://172.27.153.216:8081/VentureApp.ios.bundle\?dev\=0"];
 
   /**
    * OPTION 2
@@ -55,7 +58,30 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
-  return YES;
+  // return YES;
+  return [[FBSDKApplicationDelegate sharedInstance] application:application
+                                      didFinishLaunchingWithOptions:launchOptions];
+}
+
+ // Facebook SDK
+ - (void)applicationDidBecomeActive:(UIApplication *)application {
+   [FBSDKAppEvents activateApp];
+ }
+
+ - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+   return [[FBSDKApplicationDelegate sharedInstance] application:application
+                                                         openURL:url
+                                               sourceApplication:sourceApplication
+                                                      annotation:annotation];
+ }
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED < 90000
+- (NSUInteger)supportedInterfaceOrientations
+#else
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+#endif
+{
+  return UIInterfaceOrientationMaskPortrait;
 }
 
 @end
