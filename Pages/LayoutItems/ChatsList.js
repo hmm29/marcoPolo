@@ -73,8 +73,7 @@ var User = React.createClass({
     getInitialState() {
         return {
             dir: 'row',
-            status: '',
-            statusColor: WHITE_HEX_CODE
+            status: ''
         }
     },
 
@@ -85,21 +84,25 @@ var User = React.createClass({
         data: React.PropTypes.object
     },
 
-    componentDidMount() {
+    componentWillMount() {
         let _this = this;
 
         var targetUserIDHashed = _this.props.data && _this.props.data.ventureId,
             currentUserIDHashed = _this.props.currentUserIDHashed,
             firebaseRef = _this.props.firebaseRef,
-            currentUserRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
+            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
 
-        currentUserRef && currentUserRef.child(targetUserIDHashed).on('value', function (snapshot) {
+        currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).on('value', snapshot => {
             _this.setState({status: snapshot.val() && snapshot.val().status});
-
-            if (snapshot.val() && snapshot.val().status === 'sent') _this.setState({statusColor: YELLOW_HEX_CODE});
-            if (snapshot.val() && snapshot.val().status === 'received') _this.setState({statusColor: BLUE_HEX_CODE});
-            if (snapshot.val() && snapshot.val().status === 'matched') _this.setState({statusColor: GREEN_HEX_CODE});
         });
+    },
+
+    componentWillUnmount() {
+        let currentUserIDHashed = this.props.currentUserIDHashed,
+            firebaseRef = this.props.firebaseRef,
+            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
+
+        currentUserMatchRequestsRef && currentUserMatchRequestsRef.off();
     },
 
     componentWillReceiveProps(nextProps) {
@@ -114,15 +117,10 @@ var User = React.createClass({
 
             // make sure to reset state
 
-            _this.setState({status: '', statusColor: WHITE_HEX_CODE});
+            _this.setState({status: ''});
 
-            currentUserRef && currentUserRef.child(targetUserIDHashed).once('value', function (snapshot) {
+            currentUserRef && currentUserRef.child(targetUserIDHashed).once('value', snapshot => {
                 _this.setState({status: snapshot.val() && snapshot.val().status});
-
-                if (snapshot.val() && snapshot.val().status === null) _this.setState({statusColor: WHITE_HEX_CODE});
-                if (snapshot.val() && snapshot.val().status === 'sent') _this.setState({statusColor: YELLOW_HEX_CODE});
-                if (snapshot.val() && snapshot.val().status === 'received') _this.setState({statusColor: BLUE_HEX_CODE});
-                if (snapshot.val() && snapshot.val().status === 'matched') _this.setState({statusColor: GREEN_HEX_CODE});
             });
         }
     },
@@ -144,15 +142,30 @@ var User = React.createClass({
     //},
 
     _getSecondaryStatusColor() {
-        switch (this.state.statusColor) {
-            case WHITE_HEX_CODE:
-                return '#FBFBF1';
-            case YELLOW_HEX_CODE:
+        if(this.props.isCurrentUser) return '#FBFBF1';
+
+        switch (this.state.status) {
+            case 'sent':
                 return '#FFF9B9';
-            case BLUE_HEX_CODE:
+            case 'received':
                 return '#D1F8FF';
-            case GREEN_HEX_CODE:
+            case 'matched':
                 return '#AAFFA9';
+            default:
+                return '#FBFBF1';
+        }
+    },
+
+    getStatusColor() {
+        switch (this.state.status) {
+            case 'sent':
+                return YELLOW_HEX_CODE;
+            case 'received':
+                return BLUE_HEX_CODE;
+            case 'matched':
+                return GREEN_HEX_CODE;
+            default:
+                return WHITE_HEX_CODE;
         }
     },
 
@@ -168,8 +181,6 @@ var User = React.createClass({
 
         if (this.state.status === 'sent') {
 
-            this.setState({statusColor: WHITE_HEX_CODE});
-
             // @hmm: delete the request
 
             targetUserMatchRequestsRef.child(currentUserIDHashed).set(null);
@@ -177,8 +188,6 @@ var User = React.createClass({
         }
 
         else if (this.state.status === 'received') {
-
-            _this.setState({statusColor: GREEN_HEX_CODE})
 
             // @hmm: accept the request
             // chatroom reference uses id of the user who accepts the received matchInteraction
@@ -222,8 +231,6 @@ var User = React.createClass({
             currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
                 status: 'sent'
             }, 1000);
-
-            _this.setState({statusColor: YELLOW_HEX_CODE})
         }
     },
 
@@ -237,34 +244,34 @@ var User = React.createClass({
     },
 
     _renderStatusIcon() {
-        switch (this.state.statusColor) {
-            case WHITE_HEX_CODE:
+        switch (this.state.status) {
+            case 'sent':
+                return <AwaitingResponseIcon
+                    color='rgba(0,0,0,0.2)'
+                    onPress={() => this.handleMatchInteraction()}/>
+            case 'received':
+                return <ReceivedResponseIcon
+                    color='rgba(0,0,0,0.2)'
+                    onPress={() => this.handleMatchInteraction()}/>
+            case 'matched':
+                return <MatchedIcon
+                    color='rgba(0,0,0,0.2)'
+                    onPress={() => this.handleMatchInteraction()}/>
+            default:
                 return <ChevronIcon
                     color='rgba(0,0,0,0.2)'
                     direction='right'
                     onPress={() => this.handleMatchInteraction()}
                     size={22} />
-            case YELLOW_HEX_CODE:
-                return <AwaitingResponseIcon
-                    color='rgba(0,0,0,0.2)'
-                    onPress={() => this.handleMatchInteraction()}/>
-            case BLUE_HEX_CODE:
-                return <ReceivedResponseIcon
-                    color='rgba(0,0,0,0.2)'
-                    onPress={() => this.handleMatchInteraction()}/>
-            case GREEN_HEX_CODE:
-                return <MatchedIcon
-                    color='rgba(0,0,0,0.2)'
-                    onPress={() => this.handleMatchInteraction()}/>
         }
     },
 
     render() {
+        if(this.state.status === null) return <View />;
+
         let distance, profileModal, swipeoutBtns;
 
         distance = 0.7 + ' mi';
-
-        if(this.state.statusColor === WHITE_HEX_CODE) return <View />;
 
         if (!this.props.isCurrentUser)
             swipeoutBtns = [
@@ -316,7 +323,7 @@ var User = React.createClass({
                     <View
                         style={[styles.userContentWrapper, {flexDirection: this.state.dir}]}>
                         <LinearGradient
-                            colors={(this.props.backgroundColor && [this.props.backgroundColor, this.props.backgroundColor]) || [this.state.statusColor, this._getSecondaryStatusColor(), WHITE_HEX_CODE, 'transparent']}
+                            colors={(this.props.backgroundColor && [this.props.backgroundColor, this.props.backgroundColor]) || [this.getStatusColor(), this._getSecondaryStatusColor(), WHITE_HEX_CODE, 'transparent']}
                             start={[0,1]}
                             end={[1,1]}
                             locations={[0.3,0.99,1.0]}
@@ -383,10 +390,15 @@ var ChatsList = React.createClass({
             let chatsListRef = this.state.firebaseRef.child('/users'), _this = this;
 
             chatsListRef.once('value', snapshot => {
-                _this.setState({userRows: _.cloneDeep(_.values(snapshot.val())), chatsListRef, showLoadingModal: false});
+                _this.setState({userRows: _.cloneDeep(_.values(snapshot.val())), chatsListRef});
 
                 this.setTimeout(() => {
                     _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
+
+                    //@hmm cover up the glitch haha
+                    this.setTimeout(() => {
+                        _this.setState({showLoadingModal: false})
+                    }, 300)
                 }, 200);
             });
 
@@ -434,6 +446,8 @@ var ChatsList = React.createClass({
 
 
     _renderUser(user:Object, sectionID:number, rowID:number) {
+        // @hmm: only users with extant interactions
+
         return <User currentUserData={this.state.currentUserData}
                      currentUserIDHashed={this.state.currentUserVentureId}
                      data={user}
@@ -442,18 +456,21 @@ var ChatsList = React.createClass({
     },
 
     render() {
+        let funFactBg = (
+            <View style={{position: 'absolute', top: 105, left: 0, right: 0}}>
+                <TouchableOpacity>
+                    <Text
+                        style={{color: '#fff', fontFamily: 'AvenirNextCondensed-Medium', textAlign: 'center', fontSize: 18, alignSelf: 'center', width: Display.width/1.4, top: Display.height/4, padding: Display.width/18, borderRadius: Display.width/10}}>
+                        <Text style={{fontSize: Display.height/30, top: 15}}>Did You Know ?</Text> {'\n\n'} 1 in every 16 Yale students {'\n'}
+                        is a section asshole.</Text>
+                </TouchableOpacity>
+            </View>
+        );
+
         return (
             <View style={styles.usersListBaseContainer}>
                 <View>
                     {this._renderHeader()}
-                </View>
-                <View style={{position: 'absolute', top: 105, left: 0, right: 0}}>
-                    <TouchableOpacity>
-                        <Text
-                            style={{color: '#fff', fontFamily: 'AvenirNextCondensed-Medium', textAlign: 'center', fontSize: 18, alignSelf: 'center', width: Display.width/1.4, top: Display.height/4, backgroundColor: 'transparent', padding: Display.width/18, borderRadius: Display.width/10}}>
-                            <Text style={{fontSize: Display.height/30, top: 15}}>Did You Know ?</Text> {'\n\n'} 1 in every 16 Yale students {'\n'}
-                            is a section asshole.</Text>
-                    </TouchableOpacity>
                 </View>
                 <ListView
                     dataSource={this.state.dataSource}

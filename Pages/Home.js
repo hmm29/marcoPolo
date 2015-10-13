@@ -111,7 +111,7 @@ var Home = React.createClass({
                 tags: this.state.tagsArr,
                 status: this.state.activeTimeOption.toUpperCase(),
                 start: {
-                    time: this._getTimeString(this.state.date),
+                    time: (this.state.status === 'specify' ? this._getTimeString(this.state.date) : ''),
                     dateTime: this.state.date,
                     timeZoneOffsetInHours: this.state.timeZoneOffsetInHours
                 },
@@ -162,7 +162,8 @@ var Home = React.createClass({
     },
 
     handleScroll: function(event: Object) {
-        if(event.nativeEvent.contentOffset.x > 200 && event.nativeEvent.contentOffset.x < 300) this.setState({trendingContent: 'YALIES'})
+        if(event.nativeEvent.contentOffset.x < 0) {}
+        else if(event.nativeEvent.contentOffset.x > 200 && event.nativeEvent.contentOffset.x < 300) this.setState({trendingContent: 'YALIES'})
         else this.setState({trendingContent: 'EVENTS'});
     },
 
@@ -247,8 +248,7 @@ var Home = React.createClass({
                     pagingEnabled={true}
                     directionalLockEnabled={true}
                     onScroll={this.handleScroll}
-                    onMomentumScrollEnd={() => this.setState({trendingContent: 'EVENTS'})}
-                    snapToAlignment='center'
+                    snapToAlignment='end'
                     snapToInterval={64}
                     showsHorizontalScrollIndicator={true}
                     style={[styles.scrollView, styles.horizontalScrollView, {marginTop: 10}]}>

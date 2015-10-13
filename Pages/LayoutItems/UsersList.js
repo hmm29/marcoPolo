@@ -73,8 +73,7 @@ var User = React.createClass({
     getInitialState() {
         return {
             dir: 'row',
-            status: '',
-            statusColor: WHITE_HEX_CODE
+            status: ''
         }
     },
 
@@ -91,16 +90,19 @@ var User = React.createClass({
         var targetUserIDHashed = _this.props.data && _this.props.data.ventureId,
             currentUserIDHashed = _this.props.currentUserIDHashed,
             firebaseRef = _this.props.firebaseRef,
-            currentUserRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
+            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
 
-        currentUserRef && currentUserRef.child(targetUserIDHashed).on('value', snapshot => {
+        currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).on('value', snapshot => {
             _this.setState({status: snapshot.val() && snapshot.val().status});
-
-            if (snapshot.val() && snapshot.val().status === 'sent') _this.setState({statusColor: YELLOW_HEX_CODE});
-            if (snapshot.val() && snapshot.val().status === 'received') _this.setState({statusColor: BLUE_HEX_CODE});
-            if (snapshot.val() && snapshot.val().status === 'matched') _this.setState({statusColor: GREEN_HEX_CODE});
-
         });
+    },
+
+    componentWillUnmount() {
+        let currentUserIDHashed = this.props.currentUserIDHashed,
+            firebaseRef = this.props.firebaseRef,
+            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
+
+        currentUserMatchRequestsRef && currentUserMatchRequestsRef.off();
     },
 
     componentWillReceiveProps(nextProps) {
@@ -115,15 +117,10 @@ var User = React.createClass({
 
             // make sure to reset state
 
-            _this.setState({status: '', statusColor: WHITE_HEX_CODE});
+            _this.setState({status: ''});
 
             currentUserRef && currentUserRef.child(targetUserIDHashed).once('value', snapshot => {
                 _this.setState({status: snapshot.val() && snapshot.val().status});
-
-                if (snapshot.val() && snapshot.val().status === null) _this.setState({statusColor: WHITE_HEX_CODE});
-                if (snapshot.val() && snapshot.val().status === 'sent') _this.setState({statusColor: YELLOW_HEX_CODE});
-                if (snapshot.val() && snapshot.val().status === 'received') _this.setState({statusColor: BLUE_HEX_CODE});
-                if (snapshot.val() && snapshot.val().status === 'matched') _this.setState({statusColor: GREEN_HEX_CODE});
             });
         }
     },
@@ -147,15 +144,28 @@ var User = React.createClass({
     _getSecondaryStatusColor() {
         if(this.props.isCurrentUser) return '#FBFBF1';
 
-        switch (this.state.statusColor) {
-            case WHITE_HEX_CODE:
-                return '#FBFBF1';
-            case YELLOW_HEX_CODE:
+        switch (this.state.status) {
+            case 'sent':
                 return '#FFF9B9';
-            case BLUE_HEX_CODE:
+            case 'received':
                 return '#D1F8FF';
-            case GREEN_HEX_CODE:
+            case 'matched':
                 return '#AAFFA9';
+            default:
+                return '#FBFBF1';
+        }
+    },
+
+    getStatusColor() {
+        switch (this.state.status) {
+            case 'sent':
+                return YELLOW_HEX_CODE;
+            case 'received':
+                return BLUE_HEX_CODE;
+            case 'matched':
+                return GREEN_HEX_CODE;
+            default:
+                return WHITE_HEX_CODE;
         }
     },
 
@@ -171,8 +181,6 @@ var User = React.createClass({
 
             if (this.state.status === 'sent') {
 
-                this.setState({statusColor: WHITE_HEX_CODE});
-
                 // @hmm: delete the request
 
                 targetUserMatchRequestsRef.child(currentUserIDHashed).set(null);
@@ -180,8 +188,6 @@ var User = React.createClass({
             }
 
             else if (this.state.status === 'received') {
-
-                _this.setState({statusColor: GREEN_HEX_CODE})
 
                 // @hmm: accept the request
                 // chatroom reference uses id of the user who accepts the received matchInteraction
@@ -225,9 +231,7 @@ var User = React.createClass({
             currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
                 status: 'sent'
             }, 1000);
-
-            _this.setState({statusColor: YELLOW_HEX_CODE})
-        }
+            }
     },
 
     numberToRadius(number:number) {
@@ -240,25 +244,25 @@ var User = React.createClass({
     },
 
     _renderStatusIcon() {
-        switch (this.state.statusColor) {
-            case WHITE_HEX_CODE:
+        switch (this.state.status) {
+            case 'sent':
+                return <AwaitingResponseIcon
+                    color='rgba(0,0,0,0.2)'
+                    onPress={() => this.handleMatchInteraction()}/>
+            case 'received':
+                return <ReceivedResponseIcon
+                    color='rgba(0,0,0,0.2)'
+                    onPress={() => this.handleMatchInteraction()}/>
+            case 'matched':
+                return <MatchedIcon
+                    color='rgba(0,0,0,0.2)'
+                    onPress={() => this.handleMatchInteraction()}/>
+            default:
                 return <ChevronIcon
                     color='rgba(0,0,0,0.2)'
                     direction='right'
                     onPress={() => this.handleMatchInteraction()}
                     size={22} />
-            case YELLOW_HEX_CODE:
-                return <AwaitingResponseIcon
-                    color='rgba(0,0,0,0.2)'
-                    onPress={() => this.handleMatchInteraction()}/>
-            case BLUE_HEX_CODE:
-                return <ReceivedResponseIcon
-                    color='rgba(0,0,0,0.2)'
-                    onPress={() => this.handleMatchInteraction()}/>
-            case GREEN_HEX_CODE:
-                return <MatchedIcon
-                    color='rgba(0,0,0,0.2)'
-                    onPress={() => this.handleMatchInteraction()}/>
         }
     },
 
@@ -317,7 +321,7 @@ var User = React.createClass({
                     <View
                         style={[styles.userContentWrapper, {flexDirection: this.state.dir}]}>
                         <LinearGradient
-                            colors={(this.props.backgroundColor && [this.props.backgroundColor, this.props.backgroundColor]) || [this.state.statusColor, this._getSecondaryStatusColor(), WHITE_HEX_CODE, 'transparent']}
+                            colors={(this.props.backgroundColor && [this.props.backgroundColor, this.props.backgroundColor]) || [this.getStatusColor(), this._getSecondaryStatusColor(), WHITE_HEX_CODE, 'transparent']}
                             start={[0,1]}
                             end={[1,1]}
                             locations={[0.3,0.99,1.0]}
@@ -418,12 +422,6 @@ var UsersList = React.createClass({
         });
     },
 
-    componentDidMount() {
-        InteractionManager.runAfterInteractions(() => {
-            this.setState({showLoadingModal: false});
-        })
-    },
-
     search(text:string) {
         let checkFilter = user => {
             let activity = (user.activityPreference.title).toLowerCase(),
@@ -443,6 +441,9 @@ var UsersList = React.createClass({
 
     updateRows(rows) {
         this.setState({dataSource: this.state.dataSource.cloneWithRows(rows)});
+        InteractionManager.runAfterInteractions(() => {
+            this.setState({showLoadingModal: false});
+        })
     },
 
     _renderCurrentUser() {
