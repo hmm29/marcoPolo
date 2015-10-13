@@ -15,6 +15,7 @@ var React = require('react-native');
 var {
     AsyncStorage,
     Image,
+    InteractionManager,
     LayoutAnimation,
     StyleSheet,
     Text,
@@ -27,106 +28,132 @@ var _ = require('lodash');
 var AutoComplete = require('react-native-autocomplete');
 var BackIcon = require('../Partials/Icons/BackIcon');
 var Display = require('react-native-device-display');
+var Firebase = require('firebase');
 var GenderList = require('../data/genders.json').genders;
+var Header = require('../Partials/Header');
 var { Icon, } = require('react-native-icons');
 
 var SCREEN_WIDTH = Display.width;
 var SCREEN_HEIGHT = Display.height;
 
-String.prototype.capitalize = function () {
-    return this.replace(/(?:^|\s)\S/g, function (a) {
-        return a.toUpperCase();
-    });
-};
+String.prototype.capitalize = () => this.replace(/(?:^|\s)\S/g, a => a.toUpperCase());
 
 var EditProfile = React.createClass({
     statics: {
         title: '<EditProfile>',
-        description: 'Edit current user data.'
+        description: 'Edit current user info.'
     },
 
     getInitialState() {
         return {
-            autocompleteActive: false,
-            bio: '',
-            bioVisible: true,
-            genderMatches: [],
+            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             hasKeyboardSpace: false,
-            isEditingGender: false,
-            selectedGender: 'male'
+            showAutocomplete: false,
+            showBioField: true,
+            isEditingGenderField: false,
+            genderMatches: []
         }
     },
 
     componentWillMount() {
-        var _this = this;
+        InteractionManager.runAfterInteractions(() => {
+            let ventureId = this.props.passProps.ventureId;
 
-        AsyncStorage.getItem('@AsyncStorage:Venture:account')
-            .then((account) => {
-                account = JSON.parse(account);
-                if (account)
-                    _this.setState({
-                        bio: account.bio,
-                        currentUserActivityPreference: account.activityPreference,
-                        currentUserAge: account.ageRange.min,
-                        currentUserBio: account.bio,
-                        currentUserID: account._id,
-                        currentUserName: account.name,
-                        currentUserThumbnailURL: account.picture,
-                        gender: account.gender
-                    });
-            })
-            .catch((error) => console.log(error.message))
-            .done();
+            this.state.firebaseRef.child(`users/${ventureId}`).once('value', snapshot => {
+
+                this.setState({
+                    currentAge: snapshot.val() && snapshot.val().ageRange && snapshot.val().ageRange.exactVal,
+                    currentBio: snapshot.val() && snapshot.val().bio,
+                    currentGender: snapshot.val() && snapshot.val().gender,
+                    currentName: snapshot.val() && snapshot.val().name,
+                    currentPic: snapshot.val() && snapshot.val().picture,
+                    originalBio: snapshot.val() && snapshot.val().bio,
+                    originalGender: snapshot.val() && snapshot.val().gender,
+                    originalPic: snapshot.val() && snapshot.val().picture,
+                    selectedGender: snapshot.val() && snapshot.val().gender,
+                    ventureId
+                });
+
+            });
+        });
+
     },
 
+    _onBlurBio() {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+        this.setState({hasKeyboardSpace: false});
+    },
+
+    _onFocusBio() {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+        this.setState({hasKeyboardSpace: true})
+    },
+
+    _onBlurGender() {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+        this.setState({showAutocomplete: false, isEditingGenderField: false, hasKeyboardSpace: false, showBioField: true});
+    },
+
+    _onFocusGender() {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+        this.setState({showAutocomplete: true, isEditingGenderField: true, hasKeyboardSpace: true, showBioField: false})
+    },
+
+
     _onTyping(text:string) {
-        var genderMatches =
-            _.filter(GenderList, function (n) {
-                return _.startsWith(n.toLowerCase(), text.toLowerCase());
-            });
+        let genderMatches =
+            _.filter(GenderList, n => _.startsWith(n.toLowerCase(), text.toLowerCase()));
 
         this.setState({genderMatches});
     },
 
     _setGender(selectedGender:string) {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-        this.setState({selectedGender: selectedGender.toLowerCase(), isEditingGender: false}); // schema accepts only lower-case values
+        this.setState({selectedGender: selectedGender});
+        this._onBlurGender()
     },
 
-    render() {
+    saveData() {
 
-        var bio = (
-            <View style={{flexDirection: 'row', alignItems: 'center', margin: 10, justifyContent: 'space-between', bottom: 30}}>
+        let ventureId = this.props.passProps.ventureId;
+
+        this.state.firebaseRef.child(`users/${ventureId}/bio`).set(this.state.currentBio);
+
+        if (this.state.selectedGender !== this.state.originalGender)
+            this.state.firebaseRef.child(`users/${ventureId}/gender`).set(this.state.selectedGender);
+
+        if (this.state.currentPic !== this.state.originalPic)
+            this.state.firebaseRef.child(`users/${ventureId}/picture`).set(this.state.currentPic);
+
+        this.props.navigator.pop();
+    },
+
+
+    render() {
+        let editBio = (
+            <View
+                style={{flexDirection: 'row', alignItems: 'center', margin: 10, justifyContent: 'space-between', bottom: 30}}>
                 <Text
-                    style={styles.tabText}>Bio</Text>
+                    style={styles.label}>Bio</Text>
                 <TextInput
-                    onBlur={() => {
-                        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-                        this.setState({hasKeyboardSpace: false})
-                        }}
-                    onFocus={() => {
-                        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-                        this.setState({hasKeyboardSpace: true})
-                        }}
+                    onBlur={this._onBlurBio}
+                    onFocus={this._onFocusBio}
                     autoCapitalize='none'
                     autoCorrect={false}
-                    onChangeText={(text) => {
-                            this.setState({bio: text});
-                        }}
+                    onChangeText={(text) => this.setState({currentBio: text})}
                     maxLength={15}
                     returnKeyType='done'
                     style={styles.bio}
-                    value={this.state.bio}/>
+                    value={this.state.currentBio}/>
             </View>
         );
 
-        var currentGenderAndEditGenderToggle = (
+        let genderField = (
             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', margin: 10}}>
-                <Text
-                    style={styles.tabText}>{this.state.selectedGender && this.state.selectedGender.capitalize()}</Text>
+                <Text style={styles.label}>{this.state.selectedGender && this.state.selectedGender.capitalize()}</Text>
                 <TouchableOpacity onPress={() => {
-                LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-                this.setState({isEditingGender: true})
+                    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+                    this.setState({isEditingGenderField: true})
                 }}>
                     <Icon
                         color="rgba(255,255,255,0.7)"
@@ -138,17 +165,11 @@ var EditProfile = React.createClass({
             </View>
         );
 
-        var editGenderAutocomplete = (
+        let genderAutocomplete = (
             <View style={{margin: 10}}>
                 <AutoComplete
-                    onBlur={() => {
-                        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-                        this.setState({autocompleteActive: false, isEditingGender: false, hasKeyboardSpace: false, bioVisible: true})
-                        }}
-                    onFocus={() => {
-                        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-                        this.setState({autocompleteActive: true, isEditingGender: true, hasKeyboardSpace: true, bioVisible: false})
-                        }}
+                    onBlur={this._onBlurGender}
+                    onFocus={this._onFocusGender}
                     clearTextOnFocus={true}
                     placeholder='Edit gender'
                     autoCompleteFontSize={15}
@@ -163,32 +184,32 @@ var EditProfile = React.createClass({
                     autoCompleteTableViewHidden={false}
                     showTextFieldDropShadowWhenAutoCompleteTableIsOpen={false}
                     autoCompleteRowHeight={34}
-                    style={[styles.autocomplete, {height: (this.state.isEditingGender ? SCREEN_WIDTH / 9 : 40), marginRight: (this.state.bioVisible ? 0 : 90), paddingBottom: (this.state.bioVisible ? 0 : 60) }]}
+                    style={[styles.autocomplete, {height: (this.state.isEditingGenderField ? SCREEN_WIDTH / 9 : 40), marginRight: (this.state.showBioField ? 0 : 90), paddingBottom: (this.state.showBioField ? 0 : 60) }]}
                     />
             </View>
         );
 
+
         return (
-            <View style={{flex: 1}}>
+            <View style={styles.container}>
                 <View>
-                    {this.renderHeader()}
+                    {this._renderHeader()}
                 </View>
-                <View style={[styles.tabContent, {bottom: this.state.hasKeyboardSpace ? SCREEN_HEIGHT/ 3 : 0}]}>
-                    <Image source={require('image!about')} style={[styles.editProfileContainer]}>
-                        <Image source={{uri: this.state.currentUserThumbnailURL}} style={styles.thumbnail}/>
+                <View style={{bottom: this.state.hasKeyboardSpace ? SCREEN_HEIGHT/ 3 : 0}}>
+                    <Image source={require('image!about')} style={styles.backdrop}>
+                        <Image source={{uri: this.state.currentPic}} style={styles.currentPic}/>
                         <Text
-                            style={[styles.tabText, {fontSize: 22}]}>{this.state.currentUserName}{this.state.currentUserName ? ',' : ''}  {this.state.currentUserAge}</Text>
+                            style={[styles.label, {fontSize: 22}]}>{this.state.currentName} {this.state.currentName ? ',' : ''} {this.state.currentAge}</Text>
 
-                        <View style={{flexDirection: 'column', alignItems: 'flex-start', right: 10, bottom: 15}}>
-                            {this.state.isEditingGender ? editGenderAutocomplete : currentGenderAndEditGenderToggle}
+                        <View style={styles.editableTextFields}>
+                            {this.state.isEditingGenderField ? genderAutocomplete : genderField}
 
-                            {this.state.bioVisible ? bio : <View />}
+                            {this.state.showBioField ? editBio : <View />}
 
                         </View>
-                        <TouchableOpacity onPress={() => this.props.navigator.pop()}
-                                          style={{top: (this.state.bioVisible ? 10 : 60), backgroundColor: '#040A19', alignSelf: 'center', borderRadius: 4, paddingHorizontal: 30, paddingVertical: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                            <Text
-                                style={{color: '#fff', fontSize: 15, fontFamily: 'AvenirNextCondensed-Medium'}}>S A V E</Text>
+                        <TouchableOpacity onPress={this.saveData}
+                                          style={[styles.saveButton, {top: (this.state.showBioField ? 10 : 60)}]}>
+                            <Text style={styles.saveButtonText}>S A V E</Text>
                         </TouchableOpacity>
                     </Image>
                 </View>
@@ -196,7 +217,7 @@ var EditProfile = React.createClass({
         )
     },
 
-    renderHeader() {
+    _renderHeader() {
         return (
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => this.props.navigator.pop()} style={{right: 30}}>
@@ -227,6 +248,15 @@ var styles = StyleSheet.create({
         left: 60,
         alignSelf: 'stretch'
     },
+    backdrop: {
+        width: SCREEN_WIDTH,
+        height: SCREEN_HEIGHT,
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        paddingTop: SCREEN_HEIGHT / 14
+    },
     bio: {
         backgroundColor: 'rgba(9, 24, 58,0.2)',
         width: SCREEN_WIDTH / 2,
@@ -238,14 +268,20 @@ var styles = StyleSheet.create({
         fontFamily: 'AvenirNextCondensed-Regular',
         color: 'white'
     },
-    editProfileContainer: {
-        width: SCREEN_WIDTH,
-        height: SCREEN_HEIGHT,
-        flex: 1,
+    container: {
+        flex: 1
+    },
+    currentPic: {
+        width: SCREEN_WIDTH / 1.8,
+        height: SCREEN_WIDTH / 1.8,
+        borderRadius: SCREEN_WIDTH / 3.6,
+        bottom: 10
+    },
+    editableTextFields: {
         flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        paddingTop: SCREEN_HEIGHT / 14
+        alignItems: 'flex-start',
+        right: 10,
+        bottom: 15
     },
     header: {
         flex: 1,
@@ -256,17 +292,26 @@ var styles = StyleSheet.create({
         paddingTop: 20,
         paddingBottom: 5
     },
-    tabText: {
+    label: {
         color: 'white',
         fontSize: SCREEN_HEIGHT / 44,
         margin: SCREEN_HEIGHT / 30,
         fontFamily: 'AvenirNextCondensed-Regular'
     },
-    thumbnail: {
-        width: SCREEN_WIDTH / 1.8,
-        height: SCREEN_WIDTH / 1.8,
-        borderRadius: SCREEN_WIDTH / 3.6,
-        bottom: 10
+    saveButton: {
+        backgroundColor: '#040A19',
+        alignSelf: 'center',
+        borderRadius: 4,
+        paddingHorizontal: 30,
+        paddingVertical: 5,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    saveButtonText: {
+        color: '#fff',
+        fontSize: 15,
+        fontFamily: 'AvenirNextCondensed-Medium'
     }
 });
 

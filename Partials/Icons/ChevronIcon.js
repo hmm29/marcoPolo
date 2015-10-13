@@ -33,6 +33,7 @@ var ChevronIcon = React.createClass({
         direction: React.PropTypes.oneOf(['up','down','right','left']).isRequired,
         onPress: React.PropTypes.func.isRequired,
         captionStyle: View.propTypes.style,
+        size: React.PropTypes.number,
         style: View.propTypes.style
     },
 
@@ -40,14 +41,12 @@ var ChevronIcon = React.createClass({
         return (
             <View style={styles.container}>
                 <TouchableOpacity
-                    onPress={() =>  InteractionManager.runAfterInteractions(() => {
-                        this.props.onPress();
-                    })}
+                    onPress={this.props.onPress}
                     style={this.props.style}>
                     <Icon
                         color={this.props.color || "#fff"}
                         name={'ion|chevron-' + this.props.direction}
-                        size={SIZE}
+                        size={this.props.size || SIZE}
                         style={styles.chevronIcon}
                         />
                 </TouchableOpacity>

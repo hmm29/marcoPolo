@@ -24,7 +24,7 @@ var {
 
 var { Icon, } = require('react-native-icons');
 
-var SIZE = 22;
+var SIZE = 32;
 
 var ProfilePageIcon = React.createClass({
     propTypes: {
@@ -42,13 +42,12 @@ var ProfilePageIcon = React.createClass({
                 <TouchableOpacity
                     onPress={() =>  InteractionManager.runAfterInteractions(() => {
                         this.props.onPress();
-                    })}
-                    style={this.props.style}>
+                    })}>
                     <Icon
                         color={this.props.color || "#fff"}
                         name={'ion|person'}
                         size={SIZE}
-                        style={styles.profilePageIcon}
+                        style={[styles.profilePageIcon, this.props.style]}
                         />
                 </TouchableOpacity>
                 <Text style={[styles.caption, this.props.captionStyle]}>{this.props.caption}</Text>

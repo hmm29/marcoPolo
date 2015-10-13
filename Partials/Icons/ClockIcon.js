@@ -69,8 +69,8 @@ var styles = StyleSheet.create({
         fontWeight: '500'
     },
     clockIcon: {
-        width: SIZE,
-        height: SIZE
+        width: SIZE * 1.14,
+        height: SIZE * 1.14
     }
 });
 

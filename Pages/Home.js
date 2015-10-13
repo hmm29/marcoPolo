@@ -26,7 +26,6 @@ var {
     TouchableOpacity,
     ScrollView,
     StyleSheet,
-    SwitchIOS,
     View
     } = React;
 
@@ -43,151 +42,112 @@ var Logo = require('../Partials/Logo');
 var MainLayout = require('../Layouts/MainLayout');
 var ProfilePageIcon = require('../Partials/Icons/ProfilePageIcon');
 
-var ADD_INFO_BUTTON_SIZE = 24;
+var ADD_INFO_BUTTON_SIZE = 32;
+var ACTIVITY_TEXT_INPUT_PADDING = 5;
+var ACTIVITY_TITLE_INPUT_REF = 'activityTitleInput'
 var LOGO_WIDTH = 200;
 var LOGO_HEIGHT = 120;
 var NEXT_BUTTON_SIZE = 28;
 var SCREEN_HEIGHT = Display.height;
 var SCREEN_WIDTH = Display.width;
+var TAG_TEXT_INPUT_PADDING = 3;
+
+var YALIES = [`http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_56,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206258/Harrison%20Miller.png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_52,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206076/Noah%20Cho.png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Sophie%20Dillon.png`];
+var EVENTS = [`http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Frozen%20Four%20(Center%20-%20Big%20Text).png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_48,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442894669/Event%20-%20Freshman%20Screw%20(Center%20-%20Big%20Text).png`,`http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Frozen%20Four%20(Center%20-%20Big%20Text).png`];
 
 var Home = React.createClass({
     statics: {
         title: '<Home>',
-        description: 'Venture Home Page - activity selection.'
+        description: 'Main screen - activity selection.'
     },
 
     getInitialState() {
         return {
-            ddpClient: new DDPClient({
-                port: 443,
-                ssl: true,
-                url: 'wss://lb1.ventureappofficial.me/websocket'
-                }),
+            activityTitleInput: '',
             hasKeyboardSpace: false,
-            input: '',
             showAddInfoBox: false,
+            showAddInfoButton: true,
             showNextButton: false,
+            showTextInput: true,
             showTrendingItems: true,
             tagsArr: [],
+            trendingContent: 'YALIES',
             viewStyle: {
-                marginHorizontal: null
-            }
-        }
-    },
-
-    componentWillMount() {
-        this.state.ddpClient.connect((err, wasReconnect) => {
-
-            if (err) {
-                console.log('DDP connection error!');
-                return;
-            }
-
-            if (wasReconnect) console.log('Reestablishment of a connection.');
-        });
-    },
-
-    _handleTagChange(tagsArr:Array) {
-        this.setState({tagsArr});
-    },
-
-    onSubmitActivity() {
-        var activityInput = (this.state.input).replace(/[^\w\s]|_/g, '').replace(/\s+/g, ' '),
-            activityPreferenceChange = {
-                title: activityInput,
-                tags: this.state.tagsArr
-            }, _this = this;
-
-        //AsyncStorage.getItem('@AsyncStorage:Venture:account')
-        //    .then((account:string) => {
-        //        account = JSON.parse(account);
-        //
-        //        this.state.ddpClient.call('Accounts.updateUser', [{ventureId: account.ventureId}, activityPreferenceChange, account.ventureId, account.name, account.email],
-        //            function (err, resp) {
-        //                if (resp) {
-        //                    AsyncStorage.setItem('@AsyncStorage:Venture:account', JSON.stringify(_.assign(account, activityPreferenceChange)))
-        //                        .catch((error) => console.log(error.message))
-        //                        .done();
-        //                }
-        //                if (err) {
-        //                    alert(err.message);
-        //                }
-        //
-        //            });
-        //    })
-        //    .catch((error) => console.log(error.message))
-        //    .done();
-
-
-        this.props.navigator.push({
-            title: 'Users',
-            component: MainLayout,
-            passProps: {selected: 'users'}
-        });
-
-    },
-
-    render() {
-        let activityTextInput = (
-            <View style={styles.activitySelection}>
-                <TextInput
-                    autoCapitalize='none'
-                    autoCorrect={false}
-                    maxLength={15}
-                    onChangeText={(text) => {
-                        this.setState({input: text.toUpperCase(), showNextButton: !!text.length});
-                    }}
-                    placeholder={'What do you want to do?'}
-                    placeholderTextColor={'rgba(255,255,255,1.0)'}
-                    returnKeyType='done'
-                    style={styles.activityTextInput}
-                    value={this.state.input}/>
-                {this.state.showNextButton ? <NextButton onPress={this.onSubmitActivity}/> : <View />}
-            </View>
-        );
-
-
-        return (
-            <Image
-                source={require('image!HomeBackground')}
-                style={styles.container}>
-                <Header>
-                    <ProfilePageIcon onPress={() =>  this.props.navigator.push({
-                        title: 'Users',
-                        component: MainLayout,
-                        passProps: {selected: 'profile'}
-                    })} />
-                    <ChatsListPageIcon onPress={() =>  this.props.navigator.push({
-                    title: 'Users',
-                    component: MainLayout,
-                    passProps: {selected: 'chats'}
-                })} />
-                </Header>
-                <Logo
-                    logoContainerStyle={styles.logoContainerStyle}
-                    logoStyle={styles.logoStyle}/>
-                {activityTextInput}
-                <AddInfoButton onPress={() => {
-                    this.setState({showAddInfoBox: !this.state.showAddInfoBox})
-                }} showAddInfoBox={this.state.showAddInfoBox}/>
-                {this.state.showAddInfoBox ? <AddInfoBox handleTagChange={this._handleTagChange} /> : <View/>}
-                {this.state.showTrendingItems && !this.state.showAddInfoBox ? <TrendingItemsCarousel /> : <View/>}
-            </Image>
-        );
-    }
-});
-
-var AddInfoBox = React.createClass({
-    getInitialState() {
-        return {
+                marginHorizontal: 0,
+                borderRadius: 0
+            },
             activeTimeOption: 'now',
             contentOffsetXVal: 0,
             date: new Date(),
             hasIshSelected: false,
             hasSpecifiedTime: false,
             showTimeSpecificationOptions: false,
+            tagInput: '',
             timeZoneOffsetInHours: (-1) * (new Date()).getTimezoneOffset() / 60
-        };
+        }
+    },
+
+    animateViewLayout(text:string) {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+        this.setState({
+            viewStyle: {
+                marginHorizontal: text.length ? SCREEN_WIDTH / 12 : null,
+                borderRadius: text.length ? 10 : 0
+            }
+        });
+    },
+
+    _createTrendingItem(type, uri, i) {
+        return (
+            <TrendingItem type={type} key={i} uri={uri}/>
+        )
+
+    },
+
+    onSubmitActivity() {
+        let activityTitleInputWithoutPunctuation = (this.state.activityTitleInput).replace(/[^\w\s]|_/g, '').replace(/\s+/g, ' '),
+            activityPreferenceChange = {
+                title: activityTitleInputWithoutPunctuation,
+                tags: this.state.tagsArr,
+                status: this.state.activeTimeOption,
+                start: {
+                    time: this._getTimeString(this.state.date),
+                    dateTime: this.state.date,
+                    timeZoneOffsetInHours: this.state.timeZoneOffsetInHours
+                },
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            firebaseRef = new Firebase('https://ventureappinitial.firebaseio.com/'),
+            _this = this;
+
+        AsyncStorage.getItem('@AsyncStorage:Venture:account')
+            .then((account: string) => {
+                account = JSON.parse(account);
+                firebaseRef.child(`users/${account.ventureId}/activityPreference`).set(activityPreferenceChange)
+            })
+            .then(() => _this.props.navigator.push({
+                title: 'Users',
+                component: MainLayout,
+                passProps: {selected: 'users'}
+            }))
+            .catch((error) => console.log(error.message))
+            .done();
+
+    },
+
+    _createTag(tag:string) {
+        return (
+            <TouchableOpacity onPress={() => {
+                            this.setState({tagsArr: _.remove(this.state.tagsArr,
+                                (tagVal) => {
+                                return tagVal !== tag;
+                                }
+                            )});
+                        }} style={styles.tag}><Text
+                style={styles.tagText}>{tag}</Text>
+            </TouchableOpacity>
+        )
     },
 
     _getTimeString(date) {
@@ -201,14 +161,101 @@ var AddInfoBox = React.createClass({
         return t;
     },
 
-    onDateChange(date):void {
+    handleScroll: function(event: Object) {
+        console.log(event.nativeEvent.contentOffset.y);
+    },
+
+    _onBlur() {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+        this.setState({hasKeyboardSpace: false, showAddInfoButton: true, showNextButton: !!this.state.activityTitleInput, showTextInput: true});
+    },
+
+    onDateChange(date): void {
         this.setState({date: date});
     },
 
-    render() {
-        var content;
+    _onFocus() {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring)
+        this.setState({hasKeyboardSpace: true, showAddInfoButton: false, showNextButton: false, showTextInput: false});
+    },
 
-        if (this.state.showTimeSpecificationOptions) {
+    render() {
+        let content,
+            isAtScrollViewStart = this.state.contentOffsetXVal === 0,
+            tagSelection;
+
+        let activityTitleInput = (
+            <TextInput
+                ref={ACTIVITY_TITLE_INPUT_REF}
+                autoCapitalize='none'
+                autoCorrect={false}
+                maxLength={15}
+                onChangeText={(text) => {
+                        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+                        this.setState({activityTitleInput: text.toUpperCase(), showNextButton: !!text});
+                        this.animateViewLayout(text);
+                    }}
+                placeholder={'What do you want to do?'}
+                placeholderTextColor={'rgba(255,255,255,1.0)'}
+                returnKeyType='done'
+                style={[styles.activityTitleInput, this.state.viewStyle, {marginTop: SCREEN_HEIGHT/2.5}]}
+                value={this.state.activityTitleInput}/>
+        );
+
+        let addInfoButton = (
+            <View style={[styles.addInfoButtonContainer, {bottom: (this.state.showNextButton ? 30 : 0)}]}>
+                <TouchableOpacity
+                    activeOpacity={0.4}
+                    onPress={() => {
+                            this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
+                            LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+                            this.setState({activeTimeOption: 'now', date: new Date(), showAddInfoBox: !this.state.showAddInfoBox, tagInput: '', tags: []})
+                        }}>
+                    <Icon
+                        name={this.state.showAddInfoBox ? 'ion|chevron-up' : 'ion|ios-plus'}
+                        size={ADD_INFO_BUTTON_SIZE}
+                        color='#fff'
+                        style={{width: ADD_INFO_BUTTON_SIZE, height: ADD_INFO_BUTTON_SIZE}}
+                        />
+                </TouchableOpacity>
+            </View>
+        );
+
+        let nextButton = (
+            <View style={styles.nextButtonContainer}>
+                <TouchableOpacity
+                    activeOpacity={0.4}
+                    onPress={this.onSubmitActivity}>
+                    <Icon
+                        name='ion|arrow-right-b'
+                        size={NEXT_BUTTON_SIZE}
+                        color='#fff'
+                        style={{width: NEXT_BUTTON_SIZE, height: NEXT_BUTTON_SIZE}}
+                        />
+                </TouchableOpacity>
+            </View>
+        );
+
+        let trendingItemsCarousel = (
+            <View style={styles.trendingItemsCarousel}>
+                <Title>TRENDING <Text style={{color: '#ee964b'}}>{this.state.trendingContent}</Text></Title>
+                <ScrollView
+                    automaticallyAdjustContentInsets={false}
+                    centerContent={true}
+                    horizontal={true}
+                    pagingEnabled={true}
+                    directionalLockEnabled={true}
+                    onScroll={this.handleScroll}
+                    snapToAlignment='center'
+                    snapToInterval={64}
+                    style={[styles.scrollView, styles.horizontalScrollView, {marginTop: 20}]}>
+                    {YALIES.map(this._createTrendingItem.bind(null, 'user'))}
+                    {EVENTS.map(this._createTrendingItem.bind(null, 'event'))}
+                </ScrollView>
+            </View>
+        );
+
+        if (this.state.showTimeSpecificationOptions)
             content = (
                 <View style={styles.timeSpecificationOptions}>
                     <DatePickerIOS
@@ -233,19 +280,19 @@ var AddInfoBox = React.createClass({
 
                 </View>
             );
-        } else {
-            let isAtScrollViewStart = this.state.contentOffsetXVal === 0;
 
+        else
             content = (
                 <View style={styles.addTimeInfoContainer}>
                     <ScrollView
                         automaticallyAdjustContentInsets={false}
                         canCancelContentTouches={false}
                         centerContent={true}
-                        contentContainerStyle={{flex: 1, flexDirection: 'row', width: SCREEN_WIDTH * 1.18}}
+                        contentContainerStyle={{flex: 1, flexDirection: 'row', width: SCREEN_WIDTH * 1.18, alignItems: 'center'}}
                         contentOffset={{x: this.state.contentOffsetXVal, y: 0}}
                         horizontal={true}
                         directionalLockEnabled={true}
+                        showsHorizontalScrollIndicator={true}
                         style={[styles.scrollView, styles.horizontalScrollView, {paddingTop: 10}]}>
                         <CheckboxIcon
                             active={this.state.activeTimeOption === 'now'}
@@ -264,6 +311,7 @@ var AddInfoBox = React.createClass({
                             caption={this.state.hasSpecifiedTime ? this._getTimeString(this.state.date) : 'specify'}
                             captionStyle={styles.captionStyle}
                             onPress={() => {
+                            LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
                             if(this.state.activeTimeOption === 'specify') this.setState({hasSpecifiedTime: true, showTimeSpecificationOptions: true});
                             else this.setState({activeTimeOption: 'specify'})
                         }}/>
@@ -271,102 +319,39 @@ var AddInfoBox = React.createClass({
                     <View style={[styles.scrollbarArrow, (isAtScrollViewStart ? {right: 10} : {left: 10})]}>
                         <ChevronIcon
                             direction={isAtScrollViewStart ? 'right' : 'left'}
-                            onPress={() => this.setState({contentOffsetXVal: (isAtScrollViewStart ? SCREEN_WIDTH/2.5 : 0)})}/>
+                            onPress={() => {
+                            LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+                            this.setState({contentOffsetXVal: (isAtScrollViewStart ? SCREEN_WIDTH/2.5 : 0)})
+                            }}/>
                     </View>
                 </View>
-            )
-        }
+            );
 
-        return (
-            <View style={styles.addInfoBox}>
-                <Title>WHEN?</Title>
-                {content}
-                <TagSelection handleTagChange={this.props.handleTagChange} />
-            </View>
-        );
-    }
-});
-
-var AddInfoButton = React.createClass({
-    propTypes: {
-        onPress: React.PropTypes.func.isRequired,
-        showAddInfoBox: React.PropTypes.bool.isRequired
-    },
-    render() {
-        return (
-            <View style={styles.addInfoButtonContainer}>
-                <TouchableOpacity
-                    activeOpacity={0.4}
-                    onPress={this.props.onPress}>
-                    <Icon
-                        name={this.props.showAddInfoBox ? 'ion|chevron-up' : 'ion|ios-plus'}
-                        size={ADD_INFO_BUTTON_SIZE}
-                        color='#fff'
-                        style={{width: ADD_INFO_BUTTON_SIZE, height: ADD_INFO_BUTTON_SIZE}}
-                        />
-                </TouchableOpacity>
-            </View>
-        );
-    }
-});
-
-class NextButton extends React.Component {
-    render() {
-        return (
-            <View style={styles.nextButtonContainer}>
-                <TouchableOpacity
-                    activeOpacity={0.4}
-                    onPress={() =>  InteractionManager.runAfterInteractions(() => {
-                        this.props.onPress();
-                    })}>
-                    <Icon
-                        name='ion|arrow-right-b'
-                        size={NEXT_BUTTON_SIZE}
-                        color='#fff'
-                        style={{width: NEXT_BUTTON_SIZE, height: NEXT_BUTTON_SIZE}}
-                        />
-                </TouchableOpacity>
-            </View>
-        );
-    }
-}
-
-var TagSelection = React.createClass({
-    getInitialState() {
-        return {
-            input: '',
-            tags: []
-        }
-    },
-
-    _createTag(tagVal:string, i) {
-        return <Tag key={i} value={tagVal}/>;
-    },
-
-    render() {
-        return (
-            <View style={styles.tagSelection}>
+        tagSelection = (
+            <View style={[styles.tagSelection]}>
                 <Title fontSize={16}>TAGS</Title>
                 <TextInput
+                    onFocus={this._onFocus}
+                    onBlur={this._onBlur}
                     autoCapitalize='none'
                     autoCorrect={false}
                     maxLength={15}
                     onChangeText={(text) => {
-                        this.setState({input: text});
+                        this.setState({tagInput: text});
                         if(text[text.length-1] === ',') {
-                        var tagsArr = this.state.tags;
+                        let tagsArr = this.state.tagsArr;
 
+                        if(tagsArr.indexOf(text.slice(0, -1)) < 0 && tagsArr.length < 5)
                         tagsArr.push(text.substr(0, text.length-1));
 
-                        this.setState({tagsArr, input: ''});
-                        this.props.handleTagChange(tagsArr);
+                        this.setState({tagsArr, tagInput: ''});
                     }
                     }}
-                    placeholder={'Add tags here'}
+                    placeholder={'Type tag, then a comma'}
                     placeholderTextColor={'rgba(255,255,255,0.9)'}
                     returnKeyType='done'
                     style={styles.tagsInputText}
-                    value={this.state.input}/>
+                    value={this.state.tagInput}/>
                 <ScrollView
                     automaticallyAdjustContentInsets={false}
                     centerContent={true}
@@ -374,51 +359,46 @@ var TagSelection = React.createClass({
                     directionalLockEnabled={true}
                     showsHorizontalScrollIndicator={true}
                     style={[styles.scrollView, {height: 20}]}>
-                    {this.state.tags.map((tag) => {
-                        return (
-                            <TouchableOpacity onPress={() => {
-                            this.setState({tags: _.remove(this.state.tags,
-                                (tagVal) => {
-                                return tagVal !== tag;
-                                }
-                            )});
-                        }} style={styles.tag}><Text
-                                style={styles.tagText}>{tag}</Text></TouchableOpacity>
-                        )
-                    })}
+                    {this.state.tagsArr.map(this._createTag)}
                 </ScrollView>
             </View>
         );
-    }
-});
 
-var YALIES = [`http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_56,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206258/Harrison%20Miller.png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_52,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206076/Noah%20Cho.png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Sophie%20Dillon.png`];
-var EVENTS = [`http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Frozen%20Four%20(Center%20-%20Big%20Text).png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_48,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442894669/Event%20-%20Freshman%20Screw%20(Center%20-%20Big%20Text).png`];
+        let addInfoBox = (
+            <View
+                style={[styles.addInfoBox, {bottom: (this.state.hasKeyboardSpace ? SCREEN_HEIGHT/3 : SCREEN_HEIGHT / 35)}]}>
+                <Title>WHEN?</Title>
+                {content}
+                {tagSelection}
+            </View>
+        );
 
-var createTrendingUser = (uri, i) => <TrendingItem type='user' key={i} uri={uri}/>;
-var createTrendingEvent = (uri, i) => <TrendingItem type='event' key={i} uri={uri}/>;
-
-var TrendingItemsCarousel = React.createClass({
-    getInitialState() {
-        return {
-            trendingContent: 'YALIES'
-        }
-    },
-
-    render():ReactElement {
         return (
-            <View style={styles.trendingItemsCarousel}>
-                <Title>TRENDING <Text style={{color: '#ee964b'}}>{this.state.trendingContent}</Text></Title>
-                <ScrollView
-                    horizontal={true}
-                    pagingEnabled={true}
-                    directionalLockEnabled={true}
-                    snapToAlignment='center'
-                    snapToInterval={64}
-                    style={[styles.scrollView, styles.horizontalScrollView]}>
-                    {YALIES.map(createTrendingUser)}
-                    {EVENTS.map(createTrendingEvent)}
-                </ScrollView>
+            <View style={styles.container}>
+                <Image
+                    source={require('image!HomeBackground')}
+                    style={styles.backdrop}>
+                    <Header>
+                        <ProfilePageIcon style={{opacity: 0.4}} onPress={() =>  this.props.navigator.push({
+                        title: 'Users',
+                        component: MainLayout,
+                        passProps: {selected: 'profile'}
+                    })}/>
+                        <ChatsListPageIcon style={{opacity: 0.4}} onPress={() =>  this.props.navigator.push({
+                    title: 'Users',
+                    component: MainLayout,
+                    passProps: {selected: 'chats'}
+                })}/>
+                    </Header>
+                    <Logo
+                        logoContainerStyle={styles.logoContainerStyle}
+                        logoStyle={styles.logoStyle}/>
+                    {this.state.showTextInput ? activityTitleInput : <View />}
+                    {this.state.showNextButton ? nextButton : <View />}
+                    {this.state.showAddInfoButton && !this.state.showTimeSpecificationOptions ? addInfoButton : <View />}
+                    {this.state.showAddInfoBox ? addInfoBox : <View/>}
+                    {this.state.showTrendingItems && !this.state.showAddInfoBox ? trendingItemsCarousel : <View/>}
+                </Image>
             </View>
         );
     }
@@ -426,83 +406,82 @@ var TrendingItemsCarousel = React.createClass({
 
 class TrendingItem extends React.Component {
     render() {
-        if (this.props.type === 'user') {
+
+        if (this.props.type === 'user')
             return (
                 <TouchableOpacity style={styles.trendingItem}>
                     <Image style={styles.trendingUserImg} source={{uri:this.props.uri}}/>
                 </TouchableOpacity>
             );
-        } else {
+
+        else
             return (
                 <TouchableOpacity style={styles.trendingItem}>
                     <Image style={styles.trendingEventImg} source={{uri:this.props.uri}}/>
                 </TouchableOpacity>
             );
-        }
     }
 }
 
-var Title = React.createClass({
+class Title extends React.Component {
     render() {
         return (
             <Text
                 style={[styles.title, {fontSize: this.props.fontSize}, this.props.titleStyle]}>{this.props.children}</Text>
         );
     }
-});
-
-var ACTIVITY_TEXT_INPUT_PADDING = 5;
+}
 
 var styles = StyleSheet.create({
     activitySelection: {
         height: SCREEN_HEIGHT / 15
     },
-    activityTextInput: {
-        width: SCREEN_WIDTH,
-        borderWidth: 0.5,
-        borderColor: '#0f0f0f',
-        backgroundColor: 'rgba(0,0,0,0.8)',
-        flex: 1,
-        fontSize: SCREEN_HEIGHT / 25,
-        padding: ACTIVITY_TEXT_INPUT_PADDING,
-        color: '#fff',
+    activityTitleInput: {
+        height: 52,
         textAlign: 'center',
+        fontSize: SCREEN_HEIGHT / 22,
+        color: 'white',
+        backgroundColor: 'rgba(0,0,0,0.7)',
         fontFamily: 'AvenirNextCondensed-UltraLight'
     },
     addInfoBox: {
         position: 'absolute',
-        bottom: SCREEN_HEIGHT / 30,
         width: SCREEN_WIDTH / 1.2,
         alignSelf: 'center',
-        backgroundColor: 'rgba(0,0,0,0.8)',
+        backgroundColor: 'rgba(0,0,0,0.85)',
         marginHorizontal: (SCREEN_WIDTH - (SCREEN_WIDTH / 1.2)) / 2,
-        paddingTop: 8
+        padding: 2
     },
     addInfoButton: {},
     addInfoButtonContainer: {
-        flex: 1,
         flexDirection: 'row',
         justifyContent: 'center',
         width: SCREEN_WIDTH,
-        position: 'absolute',
         marginTop: SCREEN_HEIGHT / 40
     },
     addTimeInfoContainer: {},
+    backdrop: {
+        paddingTop: 30,
+        flex: 1,
+        alignItems: 'center',
+        width: SCREEN_WIDTH,
+        height: SCREEN_HEIGHT
+    },
     captionStyle: {
         color: '#fff',
         fontFamily: 'AvenirNextCondensed-Regular'
     },
     container: {
-        width: SCREEN_WIDTH,
-        height: SCREEN_HEIGHT,
         flex: 1,
         flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center'
+        justifyContent: 'center'
+    },
+    horizontalScrollView: {
+        height: 85
     },
     logoContainerStyle: {
         position: 'absolute',
-        top: SCREEN_HEIGHT/6,
+        top: SCREEN_HEIGHT / 6,
         marginHorizontal: (SCREEN_WIDTH - LOGO_WIDTH) / 2
     },
     logoStyle: {
@@ -510,17 +489,16 @@ var styles = StyleSheet.create({
         height: LOGO_HEIGHT
     },
     nextButtonContainer: {
-        flex: 1,
-        flexDirection: 'row',
+        bottom: 40,
+        right: 40,
+        alignSelf: 'flex-end'
+    },
+    scrollbarArrow: {
         position: 'absolute',
-        right: 10,
-        bottom: ACTIVITY_TEXT_INPUT_PADDING * 2
+        bottom: 12
     },
     scrollView: {
         backgroundColor: 'rgba(0,0,0,0.008)'
-    },
-    horizontalScrollView: {
-        height: 85
     },
     timeSpecificationOptions: {
         flex: 1,
@@ -538,23 +516,32 @@ var styles = StyleSheet.create({
         textAlign: 'center',
         paddingTop: 5
     },
+    tag: {
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        borderRadius: 12,
+        paddingHorizontal: SCREEN_WIDTH / 80,
+        marginHorizontal: SCREEN_WIDTH / 70,
+        paddingVertical: SCREEN_WIDTH / 200,
+        borderWidth: 0.5,
+        borderColor: 'rgba(255,255,255,0.4)',
+        top: 6
+    },
     tagsInputText: {
+        top: 5,
         borderWidth: 0.5,
         borderColor: '#0f0f0f',
         backgroundColor: 'rgba(0,0,0,0.8)',
         flex: 1,
-        padding: ACTIVITY_TEXT_INPUT_PADDING,
-        height: SCREEN_HEIGHT / 20,
+        padding: TAG_TEXT_INPUT_PADDING,
+        height: SCREEN_HEIGHT / 30,
         color: '#fff',
         textAlign: 'center',
         fontFamily: 'AvenirNextCondensed-Regular'
     },
     tagSelection: {
-        marginTop: 10,
-        bottom: 20,
-        height: SCREEN_HEIGHT / 6.5
-
-},
+        marginVertical: 8,
+        height: SCREEN_HEIGHT / 6.1
+    },
     timeSpecificationDatePicker: {
         top: 10,
         height: 40,
@@ -562,20 +549,7 @@ var styles = StyleSheet.create({
         alignSelf: 'center',
         backgroundColor: 'rgba(255,255,255,0.8)',
     },
-    scrollbarArrow: {
-        position: 'absolute',
-        bottom: 15
-    },
-    tag: {
-        backgroundColor: 'rgba(0,0,0,0.7)',
-        borderRadius: 12,
-        paddingHorizontal: SCREEN_WIDTH / 80,
-        marginHorizontal: SCREEN_WIDTH / 70,
-        paddingVertical: SCREEN_WIDTH / 170,
-        borderWidth: 0.5,
-        borderColor: 'rgba(255,255,255,0.4)',
-        top: 4
-    },
+
     tagText: {
         color: 'rgba(255,255,255,0.5)',
         fontFamily: 'AvenirNextCondensed-Medium'

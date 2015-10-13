@@ -24,7 +24,7 @@ var {
 
 var { Icon, } = require('react-native-icons');
 
-var SIZE = 22;
+var SIZE = 32;
 
 var ChatsListPageIcon = React.createClass({
     propTypes: {
@@ -32,6 +32,7 @@ var ChatsListPageIcon = React.createClass({
         color: React.PropTypes.string,
         onPress: React.PropTypes.func.isRequired,
         captionStyle: View.propTypes.style,
+        size: React.PropTypes.number,
         style: View.propTypes.style
     },
 
@@ -41,13 +42,12 @@ var ChatsListPageIcon = React.createClass({
                 <TouchableOpacity
                     onPress={() =>  InteractionManager.runAfterInteractions(() => {
                         this.props.onPress();
-                    })}
-                    style={this.props.style}>
+                    })}>
                     <Icon
                         color={this.props.color || "#fff"}
                         name={'ion|ios-chatboxes'}
-                        size={SIZE}
-                        style={styles.chatsListPageIcon}
+                        size={this.props.size || SIZE}
+                        style={[styles.chatsListPageIcon, this.props.style]}
                         />
                 </TouchableOpacity>
                 <Text style={[styles.caption, this.props.captionStyle]}>{this.props.caption}</Text>

@@ -95,7 +95,7 @@ var styles = StyleSheet.create({
         top: 0,
         backgroundColor: 'rgba(0,0,0,0.02)',
         paddingHorizontal: 20,
-        paddingVertical: SCREEN_HEIGHT/18
+        paddingVertical: SCREEN_HEIGHT/15
     },
     headerText: {
         color: '#fff',

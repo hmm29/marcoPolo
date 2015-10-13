@@ -17,6 +17,7 @@ var React = require('react-native');
 var {
     AsyncStorage,
     Image,
+    InteractionManager,
     LayoutAnimation,
     ListView,
     Navigator,
@@ -35,68 +36,19 @@ var LinearGradient = require('react-native-linear-gradient');
 var ReactFireMixin = require('reactfire');
 var TimerMixin = require('react-timer-mixin');
 
-var CHAT_MATE_1_NAME = 'Ivonne Gonzalez';
-var CHAT_MATE_2_NAME = 'Harrison Miller';
-var ACTIVITY_PREFERENCE_1 = 'dinner';
-
 var SCREEN_HEIGHT = Display.height;
 var SCREEN_WIDTH = Display.width;
+var MESSAGE_TEXT_INPUT_REF = 'messageTextInput';
 
-var animations = {
-    layout: {
-        spring: {
-            duration: 750,
-            create: {
-                duration: 300,
-                type: LayoutAnimation.Types.easeInEaseOut,
-                property: LayoutAnimation.Properties.opacity
-            },
-            update: {
-                type: LayoutAnimation.Types.spring,
-                springDamping: 0.6
-            }
-        },
-        spring1: {
-            duration: 250,
-            create: {
-                duration: 300,
-                type: LayoutAnimation.Types.easeInEaseOut,
-                property: LayoutAnimation.Properties.opacity
-            },
-            update: {
-                type: LayoutAnimation.Types.spring,
-                springDamping: 0.6
-            }
-        },
-        easeInEaseOut: {
-            duration: 300,
-            create: {
-                type: LayoutAnimation.Types.easeInEaseOut,
-                property: LayoutAnimation.Properties.scaleXY
-            },
-            update: {
-                delay: 100,
-                type: LayoutAnimation.Types.easeInEaseOut
-            }
-        }
-    }
-};
-
-var layoutAnimationConfigs = [
-    animations.layout.spring,
-    animations.layout.easeInEaseOut,
-    animations.layout.spring1
-];
-
-function compoundStyles() {
-    var res = {};
+let compoundStyles = () => {
+    let res = {};
     for (var i = 0; i < arguments.length; ++i) {
         if (arguments[i]) {
             Object.assign(res, arguments[i]);
         }
     }
     return res;
-}
+};
 
 var Chat = React.createClass({
 
@@ -104,7 +56,7 @@ var Chat = React.createClass({
 
     getInitialState() {
         return {
-            chatRoomRefStr: null,
+            chatRoomRef: null,
             contentOffsetYValue: 0,
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
@@ -116,81 +68,31 @@ var Chat = React.createClass({
         };
     },
 
-    componentWillMount() {
-        var chatRoomRefStr = this.props.passProps.chatRoomRefStr.child('messages'), _this = this;
-
-        this.bindAsObject(chatRoomRefStr, 'messageList');
-
-        // @kp: first message in messageList is to initiate the room
-
-        // @kp: first message in messageList is to initiate the room
-
-        chatRoomRefStr.once('value', (snapshot) => {
-            _this.setState({messageList: snapshot && _.cloneDeep(_.values(snapshot.val()))});
-            _this.updateMessages(_.cloneDeep(_.values(snapshot.val())))
-        });
-
-        this.setState({chatRoomRefStr});
-    },
-
     componentDidMount() {
-        var _this = this,
-            chatMate1IDHashed = this.props.passProps.recipient.ventureId,
-            currentUserIDHashed = this.props.passProps.currentUserIDHashed;
+        InteractionManager.runAfterInteractions(() => {
+            let chatRoomRef = this.props.passProps.chatRoomRef.child('messages'), _this = this;
 
-        this.setTimeout(() => {
-            _this._sendFakeMessage(chatMate1IDHashed, 'Hey yo');
-        }, 2000);
+            this.bindAsObject(chatRoomRef, 'messageList');
 
-        this.setTimeout(() => {
-            _this._sendFakeMessage(currentUserIDHashed, 'Hey hey');
-        }, 3500);
+            // @kp: first message in messageList is to initiate the room
 
-        this.setTimeout(() => {
-            _this._sendFakeMessage(chatMate1IDHashed, 'I\'m so hungry. Missed the dhall.');
-        }, 5000);
+            // @kp: first message in messageList is to initiate the room
 
-        this.setTimeout(() => {
-            _this._sendFakeMessage(currentUserIDHashed, 'Me too. Wanna go to Mamoun\'s ?');
-        }, 6500);
-
-        this.setTimeout(() => {
-            _this._sendFakeMessage(chatMate1IDHashed, 'YES! So down. We need to catch \nup.');
-        }, 8000);
-
-        this.setTimeout(() => {
-            _this._sendFakeMessage(currentUserIDHashed, 'I KNOW. See you there in 10?');
-        }, 9500);
-
-        this.setTimeout(() => {
-            _this._sendFakeMessage(chatMate1IDHashed, '😌✌🏾');
-        }, 11000);
-
-        this.state.chatRoomRefStr.once('value', (snapshot) => {
-            LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-            _this.setState({
-                contentOffsetYValue: 0,
-                message: '',
-                messageList: snapshot && _.cloneDeep(_.values(snapshot.val()))
+            chatRoomRef.once('value', (snapshot) => {
+                _this.setState({
+                    contentOffsetYValue: 0,
+                    message: '',
+                    messageList: snapshot && _.cloneDeep(_.values(snapshot.val()))
+                });
+                _this.updateMessages(_.cloneDeep(_.values(snapshot.val())))
             });
-            _this.updateMessages(_.cloneDeep(_.values(snapshot.val())))
-        });
 
-    },
-
-    componentWillUnmount() {
-        var chatRoomRefStr = this.props.passProps.chatRoomRefStr.child('messages'), _this = this;
-
-        this.state.chatRoomRefStr.set(null);
-
-        chatRoomRefStr.once('value', (snapshot) => {
-            _this.setState({messageList: ''});
-            _this.updateMessages([])
+            this.setState({chatRoomRef});
         });
     },
 
     containerTouched(event) {
-        this.refs.textInput.blur();
+        this.refs[MESSAGE_TEXT_INPUT_REF].blur();
         return false;
     },
 
@@ -226,7 +128,7 @@ var Chat = React.createClass({
                         <View
                             style={[styles.textBoxContainer, {marginBottom: this.state.hasKeyboardSpace ? SCREEN_HEIGHT/3.1 : 0}]}>
                             <TextInput
-                                ref='textInput'
+                                ref={MESSAGE_TEXT_INPUT_REF}
                                 onBlur={() => {
                     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
                     this.setState({hasKeyboardSpace: false})
@@ -239,13 +141,14 @@ var Chat = React.createClass({
                                 style={{width: SCREEN_WIDTH/1.2, backgroundColor: 'rgba(255,255,255,0.75)', height: 30, paddingLeft: 10, borderColor: 'gray', borderRadius: 10, fontFamily: 'AvenirNext-Regular', color: '#111', borderWidth: 1, margin: SCREEN_WIDTH/35}}
                                 onChangeText={(text) => this.setState({message: text})}
                                 value={this.state.message}
-                                returnKeyType='send'
+                                returnKeyType='default'
                                 keyboardType='default'
                                 />
-                            <Text onPress={() => {
+                            <TouchableOpacity onPress={() => {
                         if(this.state.message.length) this._sendMessage()
-                    }}
-                                  style={{color: 'white', fontFamily: 'AvenirNextCondensed-Regular', marginHorizontal: 20}}>Send</Text>
+                        else this.refs[MESSAGE_TEXT_INPUT_REF].blur();
+                    }}>
+                                 <Text style={{color: 'white', fontFamily: 'AvenirNextCondensed-Regular', marginHorizontal: 20}}>Send</Text></TouchableOpacity>
                         </View>
                     </View>
                 </View>
@@ -266,7 +169,7 @@ var Chat = React.createClass({
                 </TouchableOpacity>
                 <Text
                     style={{color: '#fff', right: 10, fontSize: 22, fontFamily: 'AvenirNextCondensed-Medium'}}>
-                    {ACTIVITY_PREFERENCE_1 && ACTIVITY_PREFERENCE_1.toUpperCase() + '?'} </Text>
+                    {this.props.passProps.currentUserData.activityPreference.title && this.props.passProps.currentUserData.activityPreference.title.toUpperCase() + '?'} </Text>
                 <Text />
             </View>
         );
@@ -274,7 +177,8 @@ var Chat = React.createClass({
 
     _renderMessage(message:Object) {
         var recipient = this.props.passProps.recipient,
-            currentUserIDHashed = this.props.passProps.currentUserIDHashed,
+            currentUserData = this.props.passProps.currentUserData,
+            currentUserIDHashed = this.props.passProps.currentUserData.ventureId,
             messageRowStyle = styles.receivedMessageRow,
             messageTextStyle = styles.receivedMessageText,
             sent = (currentUserIDHashed === message.senderIDHashed);
@@ -284,7 +188,7 @@ var Chat = React.createClass({
             messageTextStyle = styles.sentMessageText;
         }
 
-        var avatarImage = (!sent) ? `https://res.cloudinary.com/dwnyawluh/image/upload/v1442206129/${CHAT_MATE_1_NAME.split(' ')[0]}%20${CHAT_MATE_1_NAME.split(' ')[1]}.png` : `https://res.cloudinary.com/dwnyawluh/image/upload/v1442206129/${CHAT_MATE_2_NAME.split(' ')[0]}%20${CHAT_MATE_2_NAME.split(' ')[1]}.png`;
+        var avatarImage = (!sent) ? recipient.picture : currentUserData.picture;
 
         var space = (
             <Image
@@ -315,38 +219,18 @@ var Chat = React.createClass({
         var _this = this;
 
         var messageObj = {
-            senderIDHashed: this.props.passProps.currentUserIDHashed,
+            senderIDHashed: this.props.passProps.currentUserData.ventureId,
             body: this.state.message
         };
-        this.state.chatRoomRefStr.push(messageObj);
-        this.state.chatRoomRefStr.once('value', (snapshot) => {
+        this.state.chatRoomRef.push(messageObj);
+        this.state.chatRoomRef.once('value', (snapshot) => {
             LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
             _this.setState({
                 contentOffsetYValue: 0,
-                message: '',
-                messageList: snapshot && _.cloneDeep(_.values(snapshot.val()))
+                message: ''
             });
-            _this.updateMessages(_.cloneDeep(_.values(snapshot.val())))
-        });
-    },
-    _sendFakeMessage(IDHashed, message) {
-        var _this = this;
-
-        var messageObj = {
-            senderIDHashed: IDHashed,
-            body: message
-        };
-        this.state.chatRoomRefStr.push(messageObj);
-        this.state.chatRoomRefStr.once('value', (snapshot) => {
-            var config = layoutAnimationConfigs[2];
-            LayoutAnimation.configureNext(config);
-
-            _this.setState({
-                contentOffsetYValue: 0,
-                message: '',
-                messageList: snapshot && _.cloneDeep(_.values(snapshot.val()))
-            });
-            _this.updateMessages(_.cloneDeep(_.values(snapshot.val())))
+            _this.updateMessages(_.cloneDeep(_.values(snapshot.val())));
+            _this.refs[MESSAGE_TEXT_INPUT_REF].blur();
         });
     }
 });
@@ -358,9 +242,10 @@ var RecipientInfoBar = React.createClass({
 
     getInitialState() {
         return {
-            activity: this.props.recipientData.currentUser.activityPreference,
+            activity: this.props.recipientData.currentUserData.activityPreference.title,
             age: _.random(19, 23),
             dir: 'row',
+            hasKeyboardSpace: false,
             infoContent: 'recipient',
             time: '2'
         }
@@ -383,21 +268,15 @@ var RecipientInfoBar = React.createClass({
 
     render(){
         var recipient = this.props.recipientData.recipient;
-        var currentUser = this.props.recipientData.currentUser;
+        var currentUserData = this.props.recipientData.currentUserData;
 
-        var user = (this.state.infoContent === 'recipient' ? recipient : currentUser);
+        var user = (this.state.infoContent === 'recipient' ? recipient : currentUserData);
 
-        var secondTag;
-
-        if (user.activityPreference === 'insomnia' || user.activityPreference === 'wenzel' || user.activityPreference === 'dinner' || user.activityPreference === 'pizza' || user.activityPreference === 'froyo' || user.activityPreference === 'sushi') {
-            secondTag = 'food';
-        } else {
-            secondTag = 'yaliezz';
-        }
+        var tags = (this.state.infoContent === 'recipient' ? recipient.activityPreference.tags : currentUserData.activityPreference.tags)
 
         var infoContent = (
             <View
-                style={{paddingVertical: (user === recipient ? SCREEN_HEIGHT/40 : SCREEN_HEIGHT/97), backgroundColor: '#eee', flexDirection: 'column', justifyContent: 'center'}}>
+                style={{paddingVertical: (user === recipient ? SCREEN_HEIGHT/40 : SCREEN_HEIGHT/97), bottom: (this.state.hasKeyboardSpace ? SCREEN_HEIGHT/3.5 : 0), backgroundColor: '#eee', flexDirection: 'column', justifyContent: 'center'}}>
                 <Image source={{uri: user.picture}}
                        style={{width: SCREEN_WIDTH/1.8, height: SCREEN_WIDTH/1.8, borderRadius: SCREEN_WIDTH/3.6, alignSelf: 'center', marginVertical: SCREEN_WIDTH/18}}/>
                 <Text
@@ -405,11 +284,11 @@ var RecipientInfoBar = React.createClass({
                     {user.firstName || 'Harrison'}, {this.getUserAge(user.firstName)} {'\t'} |{'\t'}
                     <Text style={{fontFamily: 'AvenirNextCondensed-Medium'}}>
                         <Text
-                            style={{fontSize: 20}}>{user === currentUser ? this.state.activity && this.state.activity.toUpperCase() : user.activityPreference && user.activityPreference.capitalize()}</Text>: {this.state.time}
+                            style={{fontSize: 20}}>{user === currentUserData ? this.state.activity && this.state.activity.toUpperCase() : user.activityPreference && user.activityPreference.title && user.activityPreference.title.capitalize()}</Text>: {this.state.time}
                         PM {'\n'}
                     </Text>
                 </Text>
-                {user === currentUser ? <TextInput
+                {user === currentUserData ? <TextInput
                     onBlur={() => {
                         LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
                         this.setState({hasKeyboardSpace: false})
@@ -429,7 +308,7 @@ var RecipientInfoBar = React.createClass({
                     value={this.state.activity}/> : <TextInput />}
                 <View style={[styles.tagBar, {bottom: 10}]}>
                     <Text style={{color: '#222', fontSize: 16, fontFamily: 'AvenirNextCondensed-Regular'}}>TAGS: </Text>
-                    {[user.activityPreference && user.activityPreference.toLowerCase(), secondTag].map((tag) => (
+                    {tags && tags.map((tag) => (
                         <TouchableOpacity style={styles.tag}><Text
                             style={styles.tagText}>{tag}</Text></TouchableOpacity>
                     ))
@@ -446,17 +325,18 @@ var RecipientInfoBar = React.createClass({
                     <RecipientAvatar onPress={() => {
                     var config = layoutAnimationConfigs[0];
                     LayoutAnimation.configureNext(config);
-                    this.setState({infoContent: 'recipient', dir: (this.state.dir === 'row' ? 'column' : 'row')})
+                    this.setState({infoContent: 'recipient', dir: (this.state.dir === 'column' && this.state.infoContent === 'recipient' ? 'row' : 'column')})
                 }} navigator={this.props.navigator} recipient={recipient}/>
                     <View style={styles.rightContainer}>
                         <Text style={styles.recipientDistance}> {this.props.recipientData.distance} </Text>
                     </View>
+
                     <RecipientAvatar onPress={() => {
                     var config = layoutAnimationConfigs[0];
                     LayoutAnimation.configureNext(config);
-                   this.setState({infoContent: 'currentUser', dir: (this.state.dir === 'row' ? 'column' : 'row')})
+                   this.setState({infoContent: 'currentUser', dir: (this.state.dir === 'column' && this.state.infoContent === 'currentUser' ? 'row' : 'column')})
                 }} navigator={this.props.navigator} currentUserActivityPreference={this.state.activity}
-                                     currentUser={currentUser} style={{marginRight: 20}}/>
+                                     currentUserData={currentUserData} style={{marginRight: 20}}/>
                 </View>
                 <TimerBar/>
                 {this.state.dir === 'column' ?
@@ -474,16 +354,18 @@ var RecipientInfoBar = React.createClass({
 var RecipientAvatar = React.createClass({
     propTypes: {
         onPress: React.PropTypes.func,
-        currentUser: React.PropTypes.object,
+        currentUserData: React.PropTypes.object,
         currentUserActivityPreference: React.PropTypes.string,
         recipient: React.PropTypes.object
     },
 
     render() {
-        var user;
+        let currentUserData = this.props.currentUserData,
+            recipient = this.props.recipient,
+            user;
 
-        if(this.props.recipient) user = {firstName: CHAT_MATE_1_NAME.split(' ')[0], picture: `https://res.cloudinary.com/dwnyawluh/image/upload/v1442206129/${CHAT_MATE_1_NAME.split(' ')[0]}%20${CHAT_MATE_1_NAME.split(' ')[1]}.png`}
-        else user = {firstName: CHAT_MATE_2_NAME.split(' ')[0], picture: `https://res.cloudinary.com/dwnyawluh/image/upload/v1442206129/${CHAT_MATE_2_NAME.split(' ')[0]}%20${CHAT_MATE_2_NAME.split(' ')[1]}.png`}
+        if(this.props.recipient) user = {firstName: recipient.firstName, picture: recipient.picture}
+        else user = {firstName: currentUserData.firstName, picture: currentUserData.picture}
 
         return (
             <TouchableOpacity onPress={this.props.onPress} style={styles.recipientAvatar}>
@@ -689,5 +571,52 @@ var styles = StyleSheet.create({
         margin: 6
     }
 });
+
+var animations = {
+    layout: {
+        spring: {
+            duration: 750,
+            create: {
+                duration: 300,
+                type: LayoutAnimation.Types.easeInEaseOut,
+                property: LayoutAnimation.Properties.opacity
+            },
+            update: {
+                type: LayoutAnimation.Types.spring,
+                springDamping: 0.6
+            }
+        },
+        spring1: {
+            duration: 250,
+            create: {
+                duration: 300,
+                type: LayoutAnimation.Types.easeInEaseOut,
+                property: LayoutAnimation.Properties.opacity
+            },
+            update: {
+                type: LayoutAnimation.Types.spring,
+                springDamping: 0.6
+            }
+        },
+        easeInEaseOut: {
+            duration: 300,
+            create: {
+                type: LayoutAnimation.Types.easeInEaseOut,
+                property: LayoutAnimation.Properties.scaleXY
+            },
+            update: {
+                delay: 100,
+                type: LayoutAnimation.Types.easeInEaseOut
+            }
+        }
+    }
+};
+
+var layoutAnimationConfigs = [
+    animations.layout.spring,
+    animations.layout.easeInEaseOut,
+    animations.layout.spring1
+];
+
 
 module.exports = Chat;

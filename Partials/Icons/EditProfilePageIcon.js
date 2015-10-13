@@ -28,11 +28,11 @@ var SIZE = 32;
 
 var EditProfilePageIcon = React.createClass({
     propTypes: {
-        active: React.PropTypes.bool.isRequired,
         caption: React.PropTypes.string,
         color: React.PropTypes.string,
         onPress: React.PropTypes.func.isRequired,
         captionStyle: View.propTypes.style,
+        size: React.PropTypes.number,
         style: View.propTypes.style
     },
 
@@ -42,13 +42,12 @@ var EditProfilePageIcon = React.createClass({
                 <TouchableOpacity
                     onPress={() =>  InteractionManager.runAfterInteractions(() => {
                         this.props.onPress();
-                    })}
-                    style={this.props.style}>
+                    })} >
                     <Icon
                         color={this.props.color || "#fff"}
                         name={"ion|edit"}
-                        size={SIZE}
-                        style={styles.editProfilePageIcon}
+                        size={this.props.size || SIZE}
+                        style={[styles.editProfilePageIcon, this.props.style]}
                         />
                 </TouchableOpacity>
                 <Text style={[styles.caption, this.props.captionStyle]}>{this.props.caption}</Text>

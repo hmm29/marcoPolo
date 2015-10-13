@@ -26,7 +26,6 @@ var {
 
 var _ = require('lodash');
 var CloseIcon = require('../Partials/Icons/CloseIcon');
-var DDPClient = require('ddp-client');
 var Display = require('react-native-device-display');
 
 var SCREEN_HEIGHT = Display.height;
@@ -56,6 +55,65 @@ var Filters = React.createClass({
                     originalGender: value[2][1] && (value[2][1]).split(','),
                     originalPrivacy: value[3][1] && (value[3][1]).split(',')
                 })
+            })
+            .catch((error) => console.log(error.message))
+            .done();
+    },
+
+    saveFilters() {
+        if (this.state.gender.length === 0) {
+            this.setState({
+                gender: ['male', 'female', 'other']
+            })
+        }
+
+        if (this.state.privacy.length === 0) {
+            this.setState({
+                privacy: ['friends', 'friends+', 'all']
+            })
+        }
+
+
+        var _this = this;
+        var settingsChanges = {
+            matchingPreferences: {
+                ageRangeLower: 22,
+                ageRangeUpper: 28,
+                genderPreferences: _this.state.gender,
+                maxSearchDistance: _this.state.distance
+            }
+        };
+
+        AsyncStorage.getItem('@AsyncStorage:Venture:account')
+            .then((account:string) => {
+                if (!JSON.parse(account)) return;
+
+                account = JSON.parse(account);
+
+                // @HM: Only set if current values different from originals
+                if (!(_.isEqual(_this.state.originalDistance, _this.state.distance)
+                    && _.isEqual(_this.state.originalGender, _this.state.gender)
+                    && _.isEqual(_this.state.originalPrivacy, _this.state.privacy))) {
+
+                    ddpClient.connect(() => {
+                        ddpClient.call('Accounts.updateUser', [{ventureId: account.ventureId}, settingsChanges, account.ventureId, account.name, account.email],
+                            function (err, resp) {
+                                if (resp) {
+                                    AsyncStorage.multiSet([
+                                        ['@AsyncStorage:Venture:settings:distance', (_this.state.distance).toString()],
+                                        ['@AsyncStorage:Venture:settings:gender', _this.state.gender.toString()],
+                                        ['@AsyncStorage:Venture:settings:privacy', _this.state.privacy.toString()]
+                                    ])
+                                        .then(() => console.log('Saved settings to disk.' + 'distance: ' + (_this.state.distance).toString() + 'gender' + _this.state.gender.toString() + 'privacy :' + _this.state.privacy.toString()))
+                                        .catch((error) => console.log(error.message))
+                                        .done();
+                                }
+                                if (err) alert(err.message);
+
+                                ddpClient.close();
+                            });
+                    });
+                }
             })
             .catch((error) => console.log(error.message))
             .done();
@@ -136,76 +194,6 @@ var Filters = React.createClass({
         });
     },
 
-    componentWillUnmount() {
-        if (this.state.gender.length === 0) {
-            this.setState({
-                gender: ['male', 'female', 'other']
-            })
-        }
-
-        if (this.state.privacy.length === 0) {
-            this.setState({
-                privacy: ['friends', 'friends+', 'all']
-            })
-        }
-
-        var ddpClient = new DDPClient({
-            host: 'localhost',
-            port: 8081,
-            ssl: true,
-            autoReconnect: true,
-            autoReconnectTimer: 500,
-            maintainCollections: true,
-            ddpVersion: '1',
-            url: 'wss://lb1.ventureappofficial.me/websocket',
-            socketConstructor: WebSocket
-        });
-        var _this = this;
-        var settingsChanges = {
-            matchingPreferences: {
-                // @hmm: dummy values - ageRangeLower & ageRangeUpper
-                ageRangeLower: 22,
-                ageRangeUpper: 28,
-                genderPreferences: _this.state.gender,
-                maxSearchDistance: _this.state.distance
-            }
-        };
-
-        AsyncStorage.getItem('@AsyncStorage:Venture:account')
-            .then((account:string) => {
-                if (!JSON.parse(account)) return;
-
-                account = JSON.parse(account);
-
-                // @HM: Only set if current values different from originals
-                if (!(_.isEqual(_this.state.originalDistance, _this.state.distance)
-                    && _.isEqual(_this.state.originalGender, _this.state.gender)
-                    && _.isEqual(_this.state.originalPrivacy, _this.state.privacy))) {
-
-                    ddpClient.connect(() => {
-                        ddpClient.call('Accounts.updateUser', [{ventureId: account.ventureId}, settingsChanges, account.ventureId, account.name, account.email],
-                            function (err, resp) {
-                                if (resp) {
-                                    AsyncStorage.multiSet([
-                                        ['@AsyncStorage:Venture:settings:distance', (_this.state.distance).toString()],
-                                        ['@AsyncStorage:Venture:settings:gender', _this.state.gender.toString()],
-                                        ['@AsyncStorage:Venture:settings:privacy', _this.state.privacy.toString()]
-                                    ])
-                                        .then(() => console.log('Saved settings to disk.' + 'distance: ' + (_this.state.distance).toString() + 'gender' + _this.state.gender.toString() + 'privacy :' + _this.state.privacy.toString()))
-                                        .catch((error) => console.log(error.message))
-                                        .done();
-                                }
-                                if (err) alert(err.message);
-
-                                ddpClient.close();
-                            });
-                    });
-                }
-            })
-            .catch((error) => console.log(error.message))
-            .done();
-    },
-
     render() {
         return (
             <View style={{flex: 1}}>
@@ -279,7 +267,7 @@ var Filters = React.createClass({
                             </TouchableHighlight>
                         </View>
                     </View>
-                    <TouchableOpacity onPress={() => this.props.navigator.pop()}
+                    <TouchableOpacity onPress={this.saveFilter}
                                       style={{backgroundColor: '#040A19', alignSelf: 'center', top: 16, borderRadius: 4, paddingHorizontal: 30, paddingVertical: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
                         <Text
                             style={{color: '#fff', fontSize: 15, fontFamily: 'AvenirNextCondensed-Medium'}}>S A V E</Text>
