@@ -287,8 +287,8 @@ var User = React.createClass({
                         style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'} | {'\t'}
                         <Text style={styles.profileModalActivityInfo}>
                             <Text
-                                style={styles.profileModalActivityPreference}>{this.props.data && this.props.data.activityPreference.title}</Text>:
-                            1 PM {'\n'}
+                                style={styles.profileModalActivityPreference}>{this.props.data && this.props.data.activityPreference.title.slice(0,-1)} </Text>:
+                            {'\t'} {this.props.data && this.props.data.activityPreference && (this.props.data.activityPreference.start.time || this.props.data.activityPreference.status)} {'\n'}
                         </Text>
                     </Text>
                     <View style={[styles.tagBar, {bottom: 10}]}>
@@ -378,13 +378,16 @@ var ChatsList = React.createClass({
         };
     },
 
-    componentDidMount() {
+    componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
             let chatsListRef = this.state.firebaseRef.child('/users'), _this = this;
 
             chatsListRef.once('value', snapshot => {
-                _this.setState({userRows: _.cloneDeep(_.values(snapshot.val())), chatsListRef});
-                _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
+                _this.setState({userRows: _.cloneDeep(_.values(snapshot.val())), chatsListRef, showLoadingModal: false});
+
+                this.setTimeout(() => {
+                    _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
+                }, 200);
             });
 
             AsyncStorage.getItem('@AsyncStorage:Venture:account')
@@ -395,11 +398,6 @@ var ChatsList = React.createClass({
                     this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {
                         _this.setState({currentUserData: snapshot.val()});
                     });
-                })
-                .then(() => {
-                    InteractionManager.runAfterInteractions(() => {
-                        _this.setState({showLoadingModal: false});
-                    })
                 })
                 .catch((error) => console.log(error.message))
                 .done();
@@ -421,7 +419,7 @@ var ChatsList = React.createClass({
         });
     },
 
-    updateRows(userRows) {
+    updateRows(userRows:Array) {
         this.setState({dataSource: this.state.dataSource.cloneWithRows(userRows)});
     },
     _renderHeader() {

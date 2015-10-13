@@ -40,9 +40,7 @@ var EditProfilePageIcon = React.createClass({
         return (
             <View style={styles.container}>
                 <TouchableOpacity
-                    onPress={() =>  InteractionManager.runAfterInteractions(() => {
-                        this.props.onPress();
-                    })} >
+                    onPress={this.props.onPress} >
                     <Icon
                         color={this.props.color || "#fff"}
                         name={"ion|edit"}

@@ -85,7 +85,7 @@ var User = React.createClass({
         data: React.PropTypes.object
     },
 
-    componentDidMount() {
+    componentWillMount() {
         let _this = this;
 
         var targetUserIDHashed = _this.props.data && _this.props.data.ventureId,
@@ -93,12 +93,13 @@ var User = React.createClass({
             firebaseRef = _this.props.firebaseRef,
             currentUserRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
 
-        currentUserRef && currentUserRef.child(targetUserIDHashed).on('value', function (snapshot) {
+        currentUserRef && currentUserRef.child(targetUserIDHashed).on('value', snapshot => {
             _this.setState({status: snapshot.val() && snapshot.val().status});
 
             if (snapshot.val() && snapshot.val().status === 'sent') _this.setState({statusColor: YELLOW_HEX_CODE});
             if (snapshot.val() && snapshot.val().status === 'received') _this.setState({statusColor: BLUE_HEX_CODE});
             if (snapshot.val() && snapshot.val().status === 'matched') _this.setState({statusColor: GREEN_HEX_CODE});
+
         });
     },
 
@@ -116,7 +117,7 @@ var User = React.createClass({
 
             _this.setState({status: '', statusColor: WHITE_HEX_CODE});
 
-            currentUserRef && currentUserRef.child(targetUserIDHashed).once('value', function (snapshot) {
+            currentUserRef && currentUserRef.child(targetUserIDHashed).once('value', snapshot => {
                 _this.setState({status: snapshot.val() && snapshot.val().status});
 
                 if (snapshot.val() && snapshot.val().status === null) _this.setState({statusColor: WHITE_HEX_CODE});
@@ -144,6 +145,8 @@ var User = React.createClass({
     //},
 
     _getSecondaryStatusColor() {
+        if(this.props.isCurrentUser) return '#FBFBF1';
+
         switch (this.state.statusColor) {
             case WHITE_HEX_CODE:
                 return '#FBFBF1';
@@ -285,8 +288,8 @@ var User = React.createClass({
                         style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'} | {'\t'}
                         <Text style={styles.profileModalActivityInfo}>
                             <Text
-                                style={styles.profileModalActivityPreference}>{this.props.data && this.props.data.activityPreference.title}</Text>:
-                            1 PM {'\n'}
+                                style={styles.profileModalActivityPreference}>{this.props.data && this.props.data.activityPreference.title.slice(0,-1)} </Text>:
+                            {'\t'} {this.props.data && this.props.data.activityPreference && (this.props.data.activityPreference.start.time || this.props.data.activityPreference.status)} {'\n'}
                         </Text>
                     </Text>
                     <View style={[styles.tagBar, {bottom: 10}]}>
@@ -395,11 +398,6 @@ var UsersList = React.createClass({
                         _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
                     });
                 })
-                .then(() => {
-                    InteractionManager.runAfterInteractions(() => {
-                        _this.setState({showLoadingModal: false});
-                    })
-                })
                 .catch((error) => console.log(error.message))
                 .done();
 
@@ -420,13 +418,20 @@ var UsersList = React.createClass({
         });
     },
 
+    componentDidMount() {
+        InteractionManager.runAfterInteractions(() => {
+            this.setState({showLoadingModal: false});
+        })
+    },
+
     search(text:string) {
         let checkFilter = user => {
             let activity = (user.activityPreference.title).toLowerCase(),
                 lowText = text.toLowerCase(),
-                name = (user.firstName).toLowerCase();
+                name = (user.firstName).toLowerCase(),
+                tags = (user.activityPreference && user.activityPreference.tags)
 
-            return (activity.indexOf(lowText) > -1 || name.indexOf(lowText) > -1)
+            return (activity.indexOf(lowText) > -1 || name.indexOf(lowText) > -1) || tags && tags.indexOf(lowText);
         };
 
         this.updateRows(_.cloneDeep(_.values(_.filter(this.state.rows, checkFilter))));

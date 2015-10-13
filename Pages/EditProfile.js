@@ -32,6 +32,7 @@ var Firebase = require('firebase');
 var GenderList = require('../data/genders.json').genders;
 var Header = require('../Partials/Header');
 var { Icon, } = require('react-native-icons');
+var MainLayout = require('../Layouts/MainLayout');
 
 var SCREEN_WIDTH = Display.width;
 var SCREEN_HEIGHT = Display.height;
@@ -125,9 +126,8 @@ var EditProfile = React.createClass({
         if (this.state.currentPic !== this.state.originalPic)
             this.state.firebaseRef.child(`users/${ventureId}/picture`).set(this.state.currentPic);
 
-        this.props.navigator.pop();
+        this.props.navigator.pop()
     },
-
 
     render() {
         let editBio = (
@@ -153,7 +153,7 @@ var EditProfile = React.createClass({
                 <Text style={styles.label}>{this.state.selectedGender && this.state.selectedGender.capitalize()}</Text>
                 <TouchableOpacity onPress={() => {
                     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-                    this.setState({isEditingGenderField: true})
+                    this.setState({isEditingGenderField: true, showAutocomplete: true})
                 }}>
                     <Icon
                         color="rgba(255,255,255,0.7)"
@@ -202,7 +202,7 @@ var EditProfile = React.createClass({
                             style={[styles.label, {fontSize: 22}]}>{this.state.currentName} {this.state.currentName ? ',' : ''} {this.state.currentAge}</Text>
 
                         <View style={styles.editableTextFields}>
-                            {this.state.isEditingGenderField ? genderAutocomplete : genderField}
+                            {this.state.isEditingGenderField && this.state.showAutocomplete ? genderAutocomplete : genderField}
 
                             {this.state.showBioField ? editBio : <View />}
 

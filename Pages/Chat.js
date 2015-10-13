@@ -144,7 +144,7 @@ var Chat = React.createClass({
                                 returnKeyType='default'
                                 keyboardType='default'
                                 />
-                            <TouchableOpacity onPress={() => {
+                            <TouchableOpacity style={{backgroundColor: 'rgba(255,255,255,0.3)'}} onPress={() => {
                         if(this.state.message.length) this._sendMessage()
                         else this.refs[MESSAGE_TEXT_INPUT_REF].blur();
                     }}>

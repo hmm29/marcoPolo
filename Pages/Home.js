@@ -107,9 +107,9 @@ var Home = React.createClass({
     onSubmitActivity() {
         let activityTitleInputWithoutPunctuation = (this.state.activityTitleInput).replace(/[^\w\s]|_/g, '').replace(/\s+/g, ' '),
             activityPreferenceChange = {
-                title: activityTitleInputWithoutPunctuation,
+                title: activityTitleInputWithoutPunctuation + '?',
                 tags: this.state.tagsArr,
-                status: this.state.activeTimeOption,
+                status: this.state.activeTimeOption.toUpperCase(),
                 start: {
                     time: this._getTimeString(this.state.date),
                     dateTime: this.state.date,
@@ -162,7 +162,8 @@ var Home = React.createClass({
     },
 
     handleScroll: function(event: Object) {
-        console.log(event.nativeEvent.contentOffset.y);
+        if(event.nativeEvent.contentOffset.x > 200 && event.nativeEvent.contentOffset.x < 300) this.setState({trendingContent: 'YALIES'})
+        else this.setState({trendingContent: 'EVENTS'});
     },
 
     _onBlur() {
@@ -246,9 +247,11 @@ var Home = React.createClass({
                     pagingEnabled={true}
                     directionalLockEnabled={true}
                     onScroll={this.handleScroll}
+                    onMomentumScrollEnd={() => this.setState({trendingContent: 'EVENTS'})}
                     snapToAlignment='center'
                     snapToInterval={64}
-                    style={[styles.scrollView, styles.horizontalScrollView, {marginTop: 20}]}>
+                    showsHorizontalScrollIndicator={true}
+                    style={[styles.scrollView, styles.horizontalScrollView, {marginTop: 10}]}>
                     {YALIES.map(this._createTrendingItem.bind(null, 'user'))}
                     {EVENTS.map(this._createTrendingItem.bind(null, 'event'))}
                 </ScrollView>
@@ -290,9 +293,9 @@ var Home = React.createClass({
                         centerContent={true}
                         contentContainerStyle={{flex: 1, flexDirection: 'row', width: SCREEN_WIDTH * 1.18, alignItems: 'center'}}
                         contentOffset={{x: this.state.contentOffsetXVal, y: 0}}
+                        decelerationRate={0.7}
                         horizontal={true}
                         directionalLockEnabled={true}
-                        showsHorizontalScrollIndicator={true}
                         style={[styles.scrollView, styles.horizontalScrollView, {paddingTop: 10}]}>
                         <CheckboxIcon
                             active={this.state.activeTimeOption === 'now'}
@@ -380,12 +383,12 @@ var Home = React.createClass({
                     style={styles.backdrop}>
                     <Header>
                         <ProfilePageIcon style={{opacity: 0.4}} onPress={() =>  this.props.navigator.push({
-                        title: 'Users',
+                        title: 'Profile',
                         component: MainLayout,
                         passProps: {selected: 'profile'}
                     })}/>
                         <ChatsListPageIcon style={{opacity: 0.4}} onPress={() =>  this.props.navigator.push({
-                    title: 'Users',
+                    title: 'Chats',
                     component: MainLayout,
                     passProps: {selected: 'chats'}
                 })}/>

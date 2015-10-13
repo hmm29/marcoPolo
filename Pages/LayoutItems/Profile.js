@@ -156,7 +156,7 @@ var Profile = React.createClass({
         }
 
         loginStatus.once('value', snapshot => {
-            if (!snapshot.val()) _this._createAccount(ventureId);
+            if (snapshot.val() === null) _this._createAccount(ventureId);
             else if (isOnline) loginStatus.set(isOnline);
 
             currentUser.once('value', snapshot => {
@@ -256,13 +256,17 @@ var Profile = React.createClass({
     renderHeader() {
         return (
             <View style={styles.header}>
-                <HomeIcon onPress={() => this.props.navigator.popToTop()}/>
-                <EditProfilePageIcon
-                    onPress={() => InteractionManager.runAfterInteractions(() => {
+                <View style={{left: 20}}>
+                    <HomeIcon onPress={() => this.props.navigator.popToTop()}/>
+                </View>
+                <View style={{right: 20}}>
+                    <EditProfilePageIcon
+                        onPress={() => InteractionManager.runAfterInteractions(() => {
                         let ventureId = hash(this.state.user.userId);
                         this.props.navigator.push({title: 'EditProfile', component: EditProfile, passProps: {ventureId}})
                         })
-                    } />
+                    }/>
+                </View>
             </View>
         )
     }
@@ -275,7 +279,6 @@ var Photo = React.createClass({
 
     render() {
         if (this.props.user.userId) {
-            LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
             return (
                 <View style={styles.photoContent}>
                     <Image
@@ -307,24 +310,30 @@ var Info = React.createClass({
             renderLoadingView: true
         };
     },
-    componentDidMount() {
-            let _this = this,
-                firebaseRef = new Firebase('https://ventureappinitial.firebaseio.com/'),
-                firebaseUserData = firebaseRef.child(`users/${this.props.ventureId}`);
+    componentWillMount() {
+        let _this = this,
+            firebaseRef = new Firebase('https://ventureappinitial.firebaseio.com/'),
+            firebaseUserData = firebaseRef.child(`users/${this.props.ventureId}`);
 
-            firebaseUserData.once('value', snapshot =>
-                    _this.setState({
-                        renderLoadingView: false,
-                        info: {
-                            name: snapshot.val() && snapshot.val().name,
-                            email: snapshot.val() && snapshot.val().email,
-                            gender: snapshot.val() && snapshot.val().gender,
-                            ageRange: snapshot.val() && snapshot.val().ageRange,
-                            bio: snapshot.val() && snapshot.val().bio
-                        }
-                    })
-            );
+        firebaseUserData.on('value', snapshot =>
+                _this.setState({
+                    firebaseUserData,
+                    renderLoadingView: false,
+                    info: {
+                        name: snapshot.val() && snapshot.val().name,
+                        email: snapshot.val() && snapshot.val().email,
+                        gender: snapshot.val() && snapshot.val().gender,
+                        ageRange: snapshot.val() && snapshot.val().ageRange,
+                        bio: snapshot.val() && snapshot.val().bio
+                    }
+                })
+        );
     },
+
+    componentWillUmount() {
+      this.state.firebaseUserData.off();
+    },
+
     render() {
         let info = this.state.info;
 
@@ -383,7 +392,8 @@ var styles = StyleSheet.create({
         paddingBottom: 5
     },
     infoContent: {
-        paddingVertical: 20
+        paddingLeft: 20,
+        paddingTop: 20
     },
     infoText: {
         color: 'white',
