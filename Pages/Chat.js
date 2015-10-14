@@ -282,11 +282,11 @@ var RecipientInfoBar = React.createClass({
                        style={{width: SCREEN_WIDTH/1.8, height: SCREEN_WIDTH/1.8, borderRadius: SCREEN_WIDTH/3.6, alignSelf: 'center', marginVertical: SCREEN_WIDTH/18}}/>
                 <Text
                     style={{color: '#222', fontSize: 20, fontFamily: 'AvenirNextCondensed-Medium', textAlign: 'center'}}>
-                    {user.firstName || 'Harrison'}, {this.getUserAge(user.firstName)} {'\t'} |{'\t'}
+                    {user.firstName}, {user.ageRange && user.ageRange.exactVal} {'\t'} |{'\t'}
                     <Text style={{fontFamily: 'AvenirNextCondensed-Medium'}}>
                         <Text
-                            style={{fontSize: 20}}>{user === currentUserData ? this.state.activity && this.state.activity.toUpperCase() : user.activityPreference && user.activityPreference.title && user.activityPreference.title.capitalize()}</Text>: {this.state.time}
-                        PM {'\n'}
+                            style={{fontSize: 20}}>{user === currentUserData ? this.state.activity && this.state.activity.slice(0,-1) : user.activityPreference && user.activityPreference.title && user.activityPreference.title.capitalize().slice(0,-1)}</Text>: {user.activityPreference && (user.activityPreference.start.time || user.activityPreference.status)}
+                        {'\n'}
                     </Text>
                 </Text>
                 {user === currentUserData ? <TextInput
@@ -392,33 +392,35 @@ var TimerBar = React.createClass({
     _handle: null,
 
     componentWillMount() {
-        var _this = this,
-            chatRoomRef = this.props.chatRoomRef
+        InteractionManager.runAfterInteractions(() => {
+            var _this = this,
+                chatRoomRef = this.props.chatRoomRef
 
-        chatRoomRef.child('createdAt').once('value', snapshot => {
-            if(snapshot.val() === null) {
-                chatRoomRef.child('createdAt').set(new Date());
+            chatRoomRef.child('createdAt').once('value', snapshot => {
+                if (snapshot.val() === null) {
+                    chatRoomRef.child('createdAt').set(new Date());
 
-                _this.handle = _this.setInterval(() => {
-                    _this.setState({timerValInMs: this.state.timerValInMs-1000});
-                    chatRoomRef.child('timer').set({value: this.state.timerValInMs});
+                    _this.handle = _this.setInterval(() => {
+                        _this.setState({timerValInMs: this.state.timerValInMs - 1000});
+                        chatRoomRef.child('timer').set({value: this.state.timerValInMs});
 
-                    if(this.state.timerValInMs === 0) {
-                        _this.clearInterval(_this.handle);
-                        if(_.last(this.props.navigator.getCurrentRoutes()).title !== 'Chat') this.props.navigator.pop();
-                        chatRoomRef.set({null});
-                    }
-                }, 1000);
-            } else {
-                chatRoomRef.child('timer/value').on('value', snapshot => {
-                    this.setState({timerValInMs: snapshot.val()});
+                        if (this.state.timerValInMs === 0) {
+                            _this.clearInterval(_this.handle);
+                            if (_.last(this.props.navigator.getCurrentRoutes()).title !== 'Chat') this.props.navigator.pop();
+                            chatRoomRef.set({null});
+                        }
+                    }, 1000);
+                } else {
+                    chatRoomRef.child('timer/value').on('value', snapshot => {
+                        this.setState({timerValInMs: snapshot.val()});
 
-                    if(this.state.timerValInMs === 0) {
-                        if(_.last(this.props.navigator.getCurrentRoutes()).title !== 'Chat') this.props.navigator.pop();
-                    }
+                        if (this.state.timerValInMs === 0) {
+                            if (_.last(this.props.navigator.getCurrentRoutes()).title !== 'Chat') this.props.navigator.pop();
+                        }
 
-                })
-            }
+                    })
+                }
+            });
         });
 
     },
