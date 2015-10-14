@@ -16,6 +16,7 @@ var React = require('react-native');
 
 var {
     AsyncStorage,
+    InteractionManager,
     SliderIOS,
     StyleSheet,
     Text,
@@ -27,37 +28,51 @@ var {
 var _ = require('lodash');
 var CloseIcon = require('../Partials/Icons/CloseIcon');
 var Display = require('react-native-device-display');
+var MainLayout = require('../Layouts/MainLayout');
 
 var SCREEN_HEIGHT = Display.height;
 
 var Filters = React.createClass({
+    propTypes: {
+        passProps: React.PropTypes.object
+    },
+
     getInitialState() {
         return {
-            distance: 10.0,
+            ageRangeLower: null,
+            ageRangeUpper: null,
+            distance: 1.0,
+            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             gender: ['male', 'female', 'other'],
-            privacy: ['friends', 'friends+']
+            privacy: ['friends', 'friends+', 'all']
         };
     },
 
-    componentDidMount() {
-        var _this = this;
+    componentWillMount() {
+            let _this = this,
+                firebaseUserMatchingPreferencesRef = this.state.firebaseRef.child(`users/${this.props.passProps.ventureId}/matchingPreferences`);
 
-        AsyncStorage.multiGet([
-            '@AsyncStorage:Venture:settings:distance',
-            '@AsyncStorage:Venture:settings:gender',
-            '@AsyncStorage:Venture:settings:privacy'])
-            .then((value:Array<Array>) => {
-                _this.setState({
-                    distance: value[0][1],
-                    gender: value[2][1] && (value[2][1]).split(','),
-                    privacy: value[3][1] && (value[3][1]).split(','),
-                    originalDistance: value[0][1],
-                    originalGender: value[2][1] && (value[2][1]).split(','),
-                    originalPrivacy: value[3][1] && (value[3][1]).split(',')
-                })
-            })
-            .catch((error) => console.log(error.message))
-            .done();
+            firebaseUserMatchingPreferencesRef.once('value', snapshot =>
+                    _this.setState({
+                        firebaseUserMatchingPreferencesRef,
+                        distance: snapshot.val() && snapshot.val().maxSearchDistance,
+                        privacy: snapshot.val() && snapshot.val().privacy,
+                        gender: snapshot.val() && snapshot.val().gender,
+                        ageRangeUpper: snapshot.val() && snapshot.val().ageRangeUpper,
+                        ageRangeLower: snapshot.val() && snapshot.val().ageRangeLower
+                    })
+            );
+    },
+
+    _safelyNavigateToUsersList() {
+        let currentRouteStack = this.props.navigator.getCurrentRoutes(),
+            usersListRoute = _.findWhere(currentRouteStack, {title: 'Users'});
+
+        if(currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
+        else {
+            currentRouteStack.push(usersListRoute);
+            this.props.navigator.immediatelyResetRouteStack(currentRouteStack);
+        }
     },
 
     saveFilters() {
@@ -74,49 +89,16 @@ var Filters = React.createClass({
         }
 
 
-        var _this = this;
-        var settingsChanges = {
-            matchingPreferences: {
-                ageRangeLower: 22,
-                ageRangeUpper: 28,
-                genderPreferences: _this.state.gender,
-                maxSearchDistance: _this.state.distance
-            }
-        };
+        let _this = this,
+            filtersChanges = {
+                ageRangeLower: _this.state.ageRangeLower || 18,
+                ageRangeUpper: _this.state.ageRangeUpper || 24,
+                gender: _this.state.gender,
+                maxSearchDistance: _this.state.distance,
+                privacy: _this.state.privacy
+            };
 
-        AsyncStorage.getItem('@AsyncStorage:Venture:account')
-            .then((account:string) => {
-                if (!JSON.parse(account)) return;
-
-                account = JSON.parse(account);
-
-                // @HM: Only set if current values different from originals
-                if (!(_.isEqual(_this.state.originalDistance, _this.state.distance)
-                    && _.isEqual(_this.state.originalGender, _this.state.gender)
-                    && _.isEqual(_this.state.originalPrivacy, _this.state.privacy))) {
-
-                    ddpClient.connect(() => {
-                        ddpClient.call('Accounts.updateUser', [{ventureId: account.ventureId}, settingsChanges, account.ventureId, account.name, account.email],
-                            function (err, resp) {
-                                if (resp) {
-                                    AsyncStorage.multiSet([
-                                        ['@AsyncStorage:Venture:settings:distance', (_this.state.distance).toString()],
-                                        ['@AsyncStorage:Venture:settings:gender', _this.state.gender.toString()],
-                                        ['@AsyncStorage:Venture:settings:privacy', _this.state.privacy.toString()]
-                                    ])
-                                        .then(() => console.log('Saved settings to disk.' + 'distance: ' + (_this.state.distance).toString() + 'gender' + _this.state.gender.toString() + 'privacy :' + _this.state.privacy.toString()))
-                                        .catch((error) => console.log(error.message))
-                                        .done();
-                                }
-                                if (err) alert(err.message);
-
-                                ddpClient.close();
-                            });
-                    });
-                }
-            })
-            .catch((error) => console.log(error.message))
-            .done();
+        this.state.firebaseUserMatchingPreferencesRef.set(filtersChanges);
     },
 
     _setButtonState(field:string, value:string) {
@@ -267,10 +249,10 @@ var Filters = React.createClass({
                             </TouchableHighlight>
                         </View>
                     </View>
-                    <TouchableOpacity onPress={this.saveFilter}
-                                      style={{backgroundColor: '#040A19', alignSelf: 'center', top: 16, borderRadius: 4, paddingHorizontal: 30, paddingVertical: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                    <TouchableOpacity onPress={this.saveFilters}
+                                      style={styles.saveButton}>
                         <Text
-                            style={{color: '#fff', fontSize: 15, fontFamily: 'AvenirNextCondensed-Medium'}}>S A V E</Text>
+                            style={styles.saveButtonText}>S A V E</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -281,23 +263,32 @@ var Filters = React.createClass({
         return (
             <View style={styles.header}>
                 <Text
-                    style={{color: '#fff', fontSize: 22, fontFamily: 'AvenirNextCondensed-Regular'}}>SEARCH  PREFERENCES </Text>
-                <View style={{position: 'absolute', top: 25, left: 320, right: 0}}>
-                    <CloseIcon onPress={() => this.props.navigator.pop()} />
+                    style={styles.pageTitle}>SEARCH
+                    PREFERENCES </Text>
+                <View style={styles.closeIconContainer}>
+                    <CloseIcon onPress={() => {
+                        this._safelyNavigateToUsersList();
+                    }}/>
                 </View>
             </View>
         );
-    },
+    }
 
 });
 
 var styles = StyleSheet.create({
+    closeIconContainer: {
+        position: 'absolute',
+        top: 25,
+        left: 320,
+        right: 0
+    },
     container: {
         flexDirection: 'column',
         justifyContent: 'center',
         padding: 20,
         backgroundColor: '#FFF5EA',
-        height: SCREEN_HEIGHT-80
+        height: SCREEN_HEIGHT - 80
     },
     header: {
         flex: 1,
@@ -307,6 +298,27 @@ var styles = StyleSheet.create({
         backgroundColor: '#040A19',
         paddingTop: 30,
         paddingBottom: 15
+    },
+    pageTitle: {
+        color: '#fff',
+        fontSize: 22,
+        fontFamily: 'AvenirNextCondensed-Regular'
+    },
+    saveButton: {
+        backgroundColor: '#040A19',
+        alignSelf: 'center',
+        top: 16,
+        borderRadius: 4,
+        paddingHorizontal: 30,
+        paddingVertical: 5,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    saveButtonText: {
+        color: '#fff',
+        fontSize: 15,
+        fontFamily: 'AvenirNextCondensed-Medium'
     },
     section: {
         borderRadius: 3,

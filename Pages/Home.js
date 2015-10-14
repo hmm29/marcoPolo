@@ -35,7 +35,6 @@ var CheckboxIcon = require('../Partials/Icons/CheckboxIcon');
 var ChevronIcon = require('../Partials/Icons/ChevronIcon');
 var ClockIcon = require('../Partials/Icons/ClockIcon');
 var Display = require('react-native-device-display');
-var DDPClient = require('ddp-client');
 var Header = require('../Partials/Header');
 var { Icon, } = require('react-native-icons');
 var Logo = require('../Partials/Logo');
@@ -87,6 +86,16 @@ var Home = React.createClass({
         }
     },
 
+    componentDidMount() {
+        AsyncStorage.getItem('@AsyncStorage:Venture:account')
+            .then((account: string) => {
+                account = JSON.parse(account);
+                this.setState({ventureId: account.ventureId});
+            })
+            .catch((error) => console.log(error.message))
+            .done();
+    },
+
     animateViewLayout(text:string) {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
         this.setState({
@@ -97,7 +106,7 @@ var Home = React.createClass({
         });
     },
 
-    _createTrendingItem(type, uri, i) {
+    _createTrendingItem(type, uri,i) {
         return (
             <TrendingItem type={type} key={i} uri={uri}/>
         )
@@ -111,7 +120,7 @@ var Home = React.createClass({
                 tags: this.state.tagsArr,
                 status: this.state.activeTimeOption.toUpperCase(),
                 start: {
-                    time: (this.state.status === 'specify' ? this._getTimeString(this.state.date) : ''),
+                    time: (this.state.activeTimeOption === 'specify' ? this._getTimeString(this.state.date) : ''),
                     dateTime: this.state.date,
                     timeZoneOffsetInHours: this.state.timeZoneOffsetInHours
                 },
@@ -121,16 +130,20 @@ var Home = React.createClass({
             firebaseRef = new Firebase('https://ventureappinitial.firebaseio.com/'),
             _this = this;
 
+        // @hmm: have to manually blur the text input,
+        // since were not using navigator.push()
+
+        this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
+
         AsyncStorage.getItem('@AsyncStorage:Venture:account')
             .then((account: string) => {
                 account = JSON.parse(account);
                 firebaseRef.child(`users/${account.ventureId}/activityPreference`).set(activityPreferenceChange)
+                return account;
             })
-            .then(() => _this.props.navigator.push({
-                title: 'Users',
-                component: MainLayout,
-                passProps: {selected: 'users'}
-            }))
+            .then((account) => {
+                _this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {selected: 'users', ventureId: account.ventureId}})
+            })
             .catch((error) => console.log(error.message))
             .done();
 
@@ -165,6 +178,18 @@ var Home = React.createClass({
         if(event.nativeEvent.contentOffset.x < 0) {}
         else if(event.nativeEvent.contentOffset.x > 200 && event.nativeEvent.contentOffset.x < 300) this.setState({trendingContent: 'YALIES'})
         else this.setState({trendingContent: 'EVENTS'});
+    },
+
+    _safelyNavigateForward(route:{title:string, component:ReactClass<any,any,any>, passProps?:Object}) {
+        let abbrevRoute = _.omit(route, 'component'),
+            currentRouteStack = this.props.navigator.getCurrentRoutes();
+
+        if(currentRouteStack.indexOf(abbrevRoute) > -1) this.props.navigator.jumpTo(abbrevRoute);
+
+        else {
+            currentRouteStack.push(route);
+            this.props.navigator.immediatelyResetRouteStack(currentRouteStack)
+        }
     },
 
     _onBlur() {
@@ -248,7 +273,7 @@ var Home = React.createClass({
                     pagingEnabled={true}
                     directionalLockEnabled={true}
                     onScroll={this.handleScroll}
-                    snapToAlignment='end'
+                    snapToAlignment='center'
                     snapToInterval={64}
                     showsHorizontalScrollIndicator={true}
                     style={[styles.scrollView, styles.horizontalScrollView, {marginTop: 10}]}>
@@ -266,7 +291,7 @@ var Home = React.createClass({
                         mode="time"
                         timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
                         onDateChange={this.onDateChange}
-                        minuteInterval={10}
+                        minuteInterval={5}
                         style={styles.timeSpecificationDatePicker}/>
                     <View style={styles.timeSpecificationButtons}>
                         <ClockIcon
@@ -382,16 +407,11 @@ var Home = React.createClass({
                     source={require('image!HomeBackground')}
                     style={styles.backdrop}>
                     <Header>
-                        <ProfilePageIcon style={{opacity: 0.4}} onPress={() =>  this.props.navigator.push({
-                        title: 'Profile',
-                        component: MainLayout,
-                        passProps: {selected: 'profile'}
-                    })}/>
-                        <ChatsListPageIcon style={{opacity: 0.4}} onPress={() =>  this.props.navigator.push({
-                    title: 'Chats',
-                    component: MainLayout,
-                    passProps: {selected: 'chats'}
-                })}/>
+                        <ProfilePageIcon style={{opacity: 0.4}}
+                                         onPress={() => this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {selected: 'profile', ventureId: this.state.ventureId}})}/>
+                        <ChatsListPageIcon style={{opacity: 0.4}}
+                                           onPress={() => this._safelyNavigateForward({title: 'Chats', component: MainLayout, passProps: {selected: 'chats', ventureId: this.state.ventureId}})}
+                            />
                     </Header>
                     <Logo
                         logoContainerStyle={styles.logoContainerStyle}

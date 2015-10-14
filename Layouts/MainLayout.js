@@ -16,11 +16,14 @@ var Platform = require('Platform');
 var React = require('react-native');
 
 var {
+    AsyncStorage,
+    InteractionManager,
     View
     } = React;
 
 var ChatsList = require('../Pages/LayoutItems/ChatsList');
 var EventsList = require('../Pages/LayoutItems/EventsList');
+var Firebase = require('firebase');
 var Hot = require('../Pages/LayoutItems/Hot');
 var Profile = require('../Pages/LayoutItems/Profile');
 var UsersList = require('../Pages/LayoutItems/UsersList');
@@ -33,22 +36,36 @@ var MainLayout = React.createClass({
     },
 
     render() {
-        var navigator = this.props.navigator,
-            selected = this.props.passProps.selected;
+        let navigator = this.props.navigator,
+            selected = this.props.passProps.selected,
+            ventureId = this.props.passProps.ventureId;
 
         if (Platform.OS === 'android') {
             return <AndroidLayout navigator={navigator} selected={selected} />;
         }
 
-        return <IOSLayout navigator={navigator} selected={selected} />;
+        return <IOSLayout navigator={navigator} selected={selected} ventureId={ventureId} />;
     }
 });
 
 var IOSLayout = React.createClass({
     getInitialState() {
         return {
+            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             selectedTab: this.props.selected
         }
+    },
+
+    componentWillMount() {
+        let chatCountRef = this.state.firebaseRef.child(`users/${this.props.ventureId}/chatCount`);
+
+        chatCountRef.on('value', snapshot => {
+            this.setState({chatCount: snapshot.val(), chatCountRef})
+        });
+    },
+
+    componentWillUnmount() {
+        // this.state.chatCountRef.off();
     },
 
     _renderComponent(title:string) {
@@ -116,7 +133,7 @@ var IOSLayout = React.createClass({
                     iconName={'ion|ios-chatboxes-outline'}
                     title={'Chats'}
                     iconSize={TAB_BAR_ICON_SIZE}
-                    badgeValue={'3'}
+                    badgeValue={JSON.stringify(this.state.chatCount) || ''}
                     selected={this.state.selectedTab === 'chats'}
                     onPress={() => {
                     this.setState({

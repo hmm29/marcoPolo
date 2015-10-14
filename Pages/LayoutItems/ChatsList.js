@@ -38,7 +38,6 @@ var FilterModalIcon = require('../../Partials/Icons/FilterModalIcon');
 var Filters = require('../Filters');
 var Firebase = require('firebase');
 var Header = require('../../Partials/Header');
-var Home = require('../Home');
 var HomeIcon = require('../../Partials/Icons/HomeIcon');
 var LinearGradient = require('react-native-linear-gradient');
 var Logo = require('../../Partials/Logo');
@@ -401,7 +400,6 @@ var ChatsList = React.createClass({
                 this.setTimeout(() => {
                     _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
 
-                    //@hmm cover up the glitch haha
                     this.setTimeout(() => {
                         _this.setState({showLoadingModal: false})
                     }, 300)
@@ -411,6 +409,7 @@ var ChatsList = React.createClass({
             AsyncStorage.getItem('@AsyncStorage:Venture:account')
                 .then((account: string) => {
                     account = JSON.parse(account);
+
                     this.setState({currentUserVentureId: account.ventureId});
 
                     this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {
@@ -437,15 +436,34 @@ var ChatsList = React.createClass({
         });
     },
 
+    _safelyNavigateToHome() {
+        let currentRouteStack = this.props.navigator.getCurrentRoutes(),
+            homeRoute = currentRouteStack[0];
+
+        if(currentRouteStack.indexOf(homeRoute) > -1) this.props.navigator.jumpTo(homeRoute);
+    },
+
+    _safelyNavigateForward(route:{title:string, component:ReactClass<any,any,any>, passProps?:Object}) {
+        let abbrevRoute = _.omit(route, 'component'),
+            currentRouteStack = this.props.navigator.getCurrentRoutes();
+
+        if(currentRouteStack.indexOf(abbrevRoute) > -1) this.props.navigator.jumpTo(abbrevRoute);
+
+        else {
+            currentRouteStack.push(route);
+            this.props.navigator.immediatelyResetRouteStack(currentRouteStack)
+        }
+    },
+
     updateRows(userRows:Array) {
         this.setState({dataSource: this.state.dataSource.cloneWithRows(userRows)});
     },
     _renderHeader() {
         return (
             <Header containerStyle={{position: 'relative'}}>
-                <HomeIcon onPress={() => this.props.navigator.pop()}/>
+                <HomeIcon onPress={() => this._safelyNavigateToHome()}/>
                 <FilterModalIcon
-                    onPress={() => this.props.navigator.push({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom})}/>
+                    onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}/>
             </Header>
         )
     },
@@ -453,6 +471,7 @@ var ChatsList = React.createClass({
 
     _renderUser(user:Object, sectionID:number, rowID:number) {
         // @hmm: only users with extant interactions
+        if (user.ventureId === this.state.currentUserVentureId) return <View />;
 
         return <User currentUserData={this.state.currentUserData}
                      currentUserIDHashed={this.state.currentUserVentureId}

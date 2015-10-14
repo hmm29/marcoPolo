@@ -38,7 +38,6 @@ var FilterModalIcon = require('../../Partials/Icons/FilterModalIcon');
 var Filters = require('../Filters');
 var Firebase = require('firebase');
 var Header = require('../../Partials/Header');
-var Home = require('../Home');
 var HomeIcon = require('../../Partials/Icons/HomeIcon');
 var LinearGradient = require('react-native-linear-gradient');
 var Logo = require('../../Partials/Logo');
@@ -93,16 +92,12 @@ var User = React.createClass({
             currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
 
         currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).on('value', snapshot => {
-            _this.setState({status: snapshot.val() && snapshot.val().status});
+            _this.setState({currentUserMatchRequestsRef, status: snapshot.val() && snapshot.val().status});
         });
     },
 
     componentWillUnmount() {
-        let currentUserIDHashed = this.props.currentUserIDHashed,
-            firebaseRef = this.props.firebaseRef,
-            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
-
-        currentUserMatchRequestsRef && currentUserMatchRequestsRef.off();
+        this.state.currentUserMatchRequestsRef && this.state.currentUserMatchRequestsRef.off();
     },
 
     componentWillReceiveProps(nextProps) {
@@ -393,9 +388,9 @@ var UsersList = React.createClass({
         InteractionManager.runAfterInteractions(() => {
             let usersListRef = this.state.firebaseRef.child('/users'), _this = this;
 
-            usersListRef.once('value', snapshot => {
+            usersListRef.on('value', snapshot => {
                 _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
-                _this.setState({rows: _.cloneDeep(_.values(snapshot.val()))});
+                _this.setState({rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
             });
 
             this.bindAsArray(usersListRef, 'rows');
@@ -403,6 +398,8 @@ var UsersList = React.createClass({
             AsyncStorage.getItem('@AsyncStorage:Venture:account')
                 .then((account: string) => {
                     account = JSON.parse(account);
+
+                    this.setState({currentUserVentureId: account.ventureId})
 
                     this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {
                         _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
@@ -428,14 +425,38 @@ var UsersList = React.createClass({
         });
     },
 
+    componentWillUnmount() {
+        if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
+        this.state.usersListRef.off();
+    },
+
+    _safelyNavigateToHome() {
+        let currentRouteStack = this.props.navigator.getCurrentRoutes(),
+            homeRoute = currentRouteStack[0];
+
+        if(currentRouteStack.indexOf(homeRoute) > -1) this.props.navigator.jumpTo(homeRoute);
+    },
+
+    _safelyNavigateForward(route:{title:string, component:ReactClass<any,any,any>, passProps?:Object}) {
+        let abbrevRoute = _.omit(route, 'component'),
+            currentRouteStack = this.props.navigator.getCurrentRoutes();
+
+        if(currentRouteStack.indexOf(abbrevRoute) > -1) this.props.navigator.jumpTo(abbrevRoute);
+
+        else {
+            currentRouteStack.push(route);
+            this.props.navigator.immediatelyResetRouteStack(currentRouteStack)
+        }
+    },
+
+
     search(text:string) {
         let checkFilter = user => {
             let activity = (user.activityPreference.title).toLowerCase(),
                 lowText = text.toLowerCase(),
-                name = (user.firstName).toLowerCase(),
-                tags = (user.activityPreference && user.activityPreference.tags)
+                name = (user.firstName).toLowerCase();
 
-            return (activity.indexOf(lowText) > -1 || name.indexOf(lowText) > -1) || tags && tags.indexOf(lowText);
+            return (activity.indexOf(lowText) > -1 || name.indexOf(lowText) > -1);
         };
 
         this.updateRows(_.cloneDeep(_.values(_.filter(this.state.rows, checkFilter))));
@@ -464,19 +485,19 @@ var UsersList = React.createClass({
     _renderHeader() {
         return (
             <Header containerStyle={{position: 'relative'}}>
-                <HomeIcon onPress={() => this.props.navigator.pop()}/>
+                <HomeIcon onPress={() => this._safelyNavigateToHome()} />
                 <TextInput
                     ref={SEARCH_TEXT_INPUT_REF}
                     autoCapitalize='none'
                     autoCorrect={true}
                     clearButtonMode='always'
                     onChangeText={(text) => this.search(text)}
-                    placeholder='Search name or tag'
+                    placeholder='Search name or activity'
                     placeholderTextColor='rgba(0,0,0,0.4)'
                     returnKeyType='done'
                     style={styles.searchTextInput}/>
                 <FilterModalIcon
-                    onPress={() => this.props.navigator.push({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom})}/>
+                    onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}/>
                 <Text />
             </Header>
         )
@@ -484,17 +505,13 @@ var UsersList = React.createClass({
 
 
     _renderUser(user:Object, sectionID:number, rowID:number) {
-        if(user.ventureId === this.state.currentUserData.ventureId) return <View />;
+        if (user.ventureId === this.state.currentUserVentureId) return <View />;
 
         return <User currentUserData={this.state.currentUserData}
-                     currentUserIDHashed={this.state.currentUserData.ventureId}
+                     currentUserIDHashed={this.state.currentUserVentureId}
                      data={user}
                      firebaseRef={this.state.firebaseRef}
                      navigator={this.props.navigator} />;
-    },
-
-    componentWillUnmount: function () {
-        if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
     },
 
     render() {

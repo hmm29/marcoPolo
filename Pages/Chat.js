@@ -15,7 +15,6 @@
 var React = require('react-native');
 
 var {
-    AsyncStorage,
     Image,
     InteractionManager,
     LayoutAnimation,
@@ -75,10 +74,6 @@ var Chat = React.createClass({
 
             this.bindAsObject(chatRoomMessagesRef, 'messageList');
 
-            // @kp: first message in messageList is to initiate the room
-
-            // @kp: first message in messageList is to initiate the room
-
             chatRoomMessagesRef.once('value', (snapshot) => {
                 _this.setState({
                     contentOffsetYValue: 0,
@@ -109,7 +104,8 @@ var Chat = React.createClass({
     _renderHeader() {
         return (
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => this.props.navigator.jumpBack()} style={{right: 30}}>
+                <TouchableOpacity onPress={() => {
+                        this.props.navigator.jumpBack()}} style={{right: 30}}>
                     <Icon
                         color="#fff"
                         name="ion|ios-arrow-thin-left"
@@ -191,7 +187,7 @@ var Chat = React.createClass({
                     {this._renderHeader()}
                 </View>
                 <View onStartShouldSetResponder={this.containerTouched} style={styles.container}>
-                    <RecipientInfoBar chatRoomRef={this.props.passProps.chatRoomRef} navigator={this.props.navigator} recipientData={this.props.passProps}/>
+                    <RecipientInfoBar chatRoomRef={this.props.passProps.chatRoomRef} closeDropdownProfile={this.state.closeDropdownProfile} navigator={this.props.navigator} recipientData={this.props.passProps}/>
                     <ListView
                         contentOffset={{x: 0, y: this.state.contentOffsetYValue}}
                         dataSource={this.state.dataSource}
@@ -210,11 +206,11 @@ var Chat = React.createClass({
                                 ref={MESSAGE_TEXT_INPUT_REF}
                                 onBlur={() => {
                     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-                    this.setState({hasKeyboardSpace: false})
+                    this.setState({hasKeyboardSpace: false, closeDropdownProfile: false})
                     }}
                                 onFocus={() => {
                     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-                    this.setState({hasKeyboardSpace: true})
+                    this.setState({hasKeyboardSpace: true, closeDropdownProfile: true})
                     }}
                                 multiline={true}
                                 style={{width: SCREEN_WIDTH/1.2, backgroundColor: 'rgba(255,255,255,0.75)', height: 30, paddingLeft: 10, borderColor: 'gray', borderRadius: 10, fontFamily: 'AvenirNext-Regular', color: '#111', borderWidth: 1, margin: SCREEN_WIDTH/35}}
@@ -256,17 +252,6 @@ var RecipientInfoBar = React.createClass({
         console.log('Mounted Chat Info Bar');
     },
 
-    getUserAge(firstName:string) {
-        if(firstName === 'Sophie') return 20;
-        else if(firstName === 'Clint') return 19;
-        else if(firstName === 'Jessica') return 19;
-        else if(firstName === 'Viviana') return 19;
-        else if(firstName === 'Alex') return 21;
-        else if(firstName === 'Titania') return 19;
-        else if(firstName === 'Becky') return 21;
-        else return this.state.age;
-    },
-
     render(){
         var recipient = this.props.recipientData.recipient;
         var currentUserData = this.props.recipientData.currentUserData;
@@ -285,7 +270,7 @@ var RecipientInfoBar = React.createClass({
                     {user.firstName}, {user.ageRange && user.ageRange.exactVal} {'\t'} |{'\t'}
                     <Text style={{fontFamily: 'AvenirNextCondensed-Medium'}}>
                         <Text
-                            style={{fontSize: 20}}>{user === currentUserData ? this.state.activity && this.state.activity.slice(0,-1) : user.activityPreference && user.activityPreference.title && user.activityPreference.title.capitalize().slice(0,-1)}</Text>: {user.activityPreference && (user.activityPreference.start.time || user.activityPreference.status)}
+                            style={{fontSize: 20}}>{user === currentUserData ? this.state.activity && this.state.activity : user.activityPreference && user.activityPreference.title && user.activityPreference.title.capitalize().slice(0,-1)}</Text>: {user.activityPreference && (user.activityPreference.start.time || user.activityPreference.status)}
                         {'\n'}
                     </Text>
                 </Text>
@@ -339,7 +324,7 @@ var RecipientInfoBar = React.createClass({
                 }} navigator={this.props.navigator} currentUserActivityPreference={this.state.activity}
                                      currentUserData={currentUserData} style={{marginRight: 20}}/>
                 </View>
-                <TimerBar chatRoomRef={this.props.chatRoomRef} navigator={this.props.navigator}/>
+                <TimerBar chatRoomRef={this.props.chatRoomRef} currentUserData={currentUserData} navigator={this.props.navigator} recipient={recipient}/>
                 {this.state.dir === 'column' ?
                     <View style={{backgroundColor: '#fff'}}>
                         {infoContent}
@@ -394,11 +379,15 @@ var TimerBar = React.createClass({
     componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
             var _this = this,
-                chatRoomRef = this.props.chatRoomRef
+                recipient = this.props.recipient,
+                currentUserData = this.props.currentUserData,
+                firebaseRef = new Firebase('https://ventureappinitial.firebaseio.com/'),
+                chatRoomRef = this.props.chatRoomRef;
 
             chatRoomRef.child('createdAt').once('value', snapshot => {
+
                 if (snapshot.val() === null) {
-                    chatRoomRef.child('createdAt').set(new Date());
+                    chatRoomRef.child('createdAt').set((new Date()) + '');
 
                     _this.handle = _this.setInterval(() => {
                         _this.setState({timerValInMs: this.state.timerValInMs - 1000});
@@ -406,16 +395,27 @@ var TimerBar = React.createClass({
 
                         if (this.state.timerValInMs === 0) {
                             _this.clearInterval(_this.handle);
-                            if (_.last(this.props.navigator.getCurrentRoutes()).title !== 'Chat') this.props.navigator.pop();
+                            if (_.last(this.props.navigator.getCurrentRoutes()).title === 'Chat') this.props.navigator.pop();
                             chatRoomRef.set({null});
                         }
                     }, 1000);
+
+                    // update chat count for participating users
+
+                    firebaseRef.child(`users/${recipient.ventureId}/chatCount`).once('value', snapshot => {
+                        firebaseRef.child(`users/${recipient.ventureId}/chatCount`).set(snapshot.val() + 1);
+                    });
+
+                    firebaseRef.child(`users/${currentUserData.ventureId}/chatCount`).once('value', snapshot => {
+                        firebaseRef.child(`users/${currentUserData.ventureId}/chatCount`).set(snapshot.val() + 1);
+                    })
+
                 } else {
                     chatRoomRef.child('timer/value').on('value', snapshot => {
                         this.setState({timerValInMs: snapshot.val()});
 
                         if (this.state.timerValInMs === 0) {
-                            if (_.last(this.props.navigator.getCurrentRoutes()).title !== 'Chat') this.props.navigator.pop();
+                            if (_.last(this.props.navigator.getCurrentRoutes()).title === 'Chat') this.props.navigator.pop();
                         }
 
                     })

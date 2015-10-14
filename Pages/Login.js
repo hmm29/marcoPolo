@@ -31,7 +31,8 @@ var SCREEN_HEIGHT = Display.height;
 
 var Login = React.createClass({
     _navigateToNextPage() {
-        if(this.props.navigator.getCurrentRoutes()[this.props.navigator.getCurrentRoutes().length-2].title ==='Profile') this.props.navigator.popToTop();
+        if(this.props.navigator.getCurrentRoutes()[this.props.navigator.getCurrentRoutes().length-2].title ==='Profile')
+            this.props.navigator.popToTop();
 
         this.props.navigator.pop()
     },

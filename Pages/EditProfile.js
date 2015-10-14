@@ -57,7 +57,6 @@ var EditProfile = React.createClass({
     },
 
     componentWillMount() {
-        InteractionManager.runAfterInteractions(() => {
             let ventureId = this.props.passProps.ventureId;
 
             this.state.firebaseRef.child(`users/${ventureId}`).once('value', snapshot => {
@@ -76,8 +75,6 @@ var EditProfile = React.createClass({
                 });
 
             });
-        });
-
     },
 
     _onBlurBio() {

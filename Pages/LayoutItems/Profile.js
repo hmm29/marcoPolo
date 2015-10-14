@@ -18,7 +18,6 @@ var {
     ActivityIndicatorIOS,
     AsyncStorage,
     Image,
-    InteractionManager,
     LayoutAnimation,
     Navigator,
     PixelRatio,
@@ -35,6 +34,7 @@ var EditProfile = require('../EditProfile');
 var FBLogin = require('react-native-facebook-login');
 var Firebase = require('firebase');
 var Header = require('../../Partials/Header');
+var Home = require('../Home');
 var HomeIcon = require('../../Partials/Icons/HomeIcon');
 var Login = require('../Login');
 var sha256 = require('sha256');
@@ -82,7 +82,7 @@ var Profile = React.createClass({
 
     _createAccount() {
         let user = this.state.user,
-            ventureId = hash(user.userId),
+            ventureId = this.state.ventureId,
             pixelRatioCalc = PixelRatio.getPixelSizeForLayoutSize(200),
             api = `https://graph.facebook.com/v2.3/${user && user.userId}?fields=name,email,gender,age_range&access_token=${user.token}`;
 
@@ -138,9 +138,27 @@ var Profile = React.createClass({
             .done();
     },
 
+    _safelyNavigateToHome() {
+        let currentRouteStack = this.props.navigator.getCurrentRoutes(),
+            homeRoute = currentRouteStack[0];
+
+        if(currentRouteStack.indexOf(homeRoute) > -1) this.props.navigator.jumpTo(homeRoute);
+    },
+
+    _safelyNavigateForward(route:{title:string, component:ReactClass<any,any,any>, passProps?:Object}) {
+        let abbrevRoute = _.omit(route, 'component'),
+            currentRouteStack = this.props.navigator.getCurrentRoutes();
+
+        if(currentRouteStack.indexOf(abbrevRoute) > -1) this.props.navigator.jumpTo(abbrevRoute);
+        else {
+            currentRouteStack.push(route);
+            this.props.navigator.immediatelyResetRouteStack(currentRouteStack)
+        }
+    },
+
+
     _updateUserLoginStatus(isOnline:boolean) {
-        let user = this.state.user,
-            ventureId = hash(user.userId),
+        let ventureId = this.state.ventureId,
             currentUser = this.state.firebaseRef.child(`users/${ventureId}`),
             loginStatus = currentUser.child(`status/isOnline`),
             _this = this;
@@ -175,7 +193,8 @@ var Profile = React.createClass({
 
     render() {
         let _this = this,
-            user = this.state.user;
+            user = this.state.user,
+            ventureId = this.state.ventureId
 
         return (
             <View style={styles.container}>
@@ -187,13 +206,13 @@ var Profile = React.createClass({
                     <View style={styles.loginContainer}>
                         <View>
                             { user && <Photo user={user}/> }
-                            { user && <Info ventureId={hash(user.userId)} user={user}/>}
+                            { user && ventureId && <Info ventureId={ventureId} user={user}/>}
                         </View>
                         <FBLogin style={styles.FBLoginButton}
                                  permissions={['email', 'user_friends']}
                                  onLogin={function(data) {
 
-                                _this.setState({user: data.credentials});
+                                _this.setState({user: data.credentials, ventureId: hash(data.credentials.userId)});
 
                                   AsyncStorage.setItem('@AsyncStorage:Venture:isOnline', 'true')
                                     .then(() => _this._updateUserLoginStatus(true))
@@ -205,7 +224,7 @@ var Profile = React.createClass({
 
                                  onLogout={function(){
 
-                                    _this.setState({user : null });
+                                    _this.setState({user : null, ventureId: null});
 
                                     // @hmm: bring up sign in modal
                                     _this.props.navigator.push({title: 'Login', component: Login});
@@ -221,7 +240,7 @@ var Profile = React.createClass({
                                  onLoginFound={function(data){
 
 
-                                _this.setState({ user : data.credentials });
+                                _this.setState({ user : data.credentials, ventureId: hash(data.credentials.userId)});
 
                                 console.log("Existing login found.");
 
@@ -229,7 +248,7 @@ var Profile = React.createClass({
 
                                  onLoginNotFound={function(){
 
-                                _this.setState({ user : null });
+                                _this.setState({ user : null, ventureId: null });
 
                                 console.log("No user logged in.");
 
@@ -257,15 +276,15 @@ var Profile = React.createClass({
         return (
             <View style={styles.header}>
                 <View style={{left: 20}}>
-                    <HomeIcon onPress={() => this.props.navigator.popToTop()}/>
+                    <HomeIcon onPress={() => {
+                        this._safelyNavigateToHome();
+                    }}/>
                 </View>
                 <View style={{right: 20}}>
                     <EditProfilePageIcon
-                        onPress={() => InteractionManager.runAfterInteractions(() => {
-                        let ventureId = hash(this.state.user.userId);
-                        this.props.navigator.push({title: 'EditProfile', component: EditProfile, passProps: {ventureId}})
-                        })
-                    }/>
+                        onPress={() => {
+                          this._safelyNavigateForward({title: 'EditProfile',component: EditProfile,  passProps: {ventureId: this.state.ventureId}});
+                    }} />
                 </View>
             </View>
         )
@@ -307,13 +326,13 @@ var Info = React.createClass({
     getInitialState() {
         return {
             info: null,
+            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             renderLoadingView: true
         };
     },
     componentWillMount() {
         let _this = this,
-            firebaseRef = new Firebase('https://ventureappinitial.firebaseio.com/'),
-            firebaseUserData = firebaseRef.child(`users/${this.props.ventureId}`);
+            firebaseUserData = this.state.firebaseRef.child(`users/${this.props.ventureId}`);
 
         firebaseUserData.on('value', snapshot =>
                 _this.setState({
@@ -330,7 +349,7 @@ var Info = React.createClass({
         );
     },
 
-    componentWillUmount() {
+    componentWillUnmount() {
       this.state.firebaseUserData.off();
     },
 

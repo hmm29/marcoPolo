@@ -40,9 +40,7 @@ var CheckboxIcon = React.createClass({
         return (
             <View style={styles.container}>
                 <TouchableOpacity
-                    onPress={() =>  InteractionManager.runAfterInteractions(() => {
-                        this.props.onPress();
-                    })}
+                    onPress={this.props.onPress}
                     stlye={this.props.style}>
                     <Icon
                         color={this.props.color || "#fff"}
