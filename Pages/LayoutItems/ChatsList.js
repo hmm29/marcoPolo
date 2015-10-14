@@ -212,16 +212,22 @@ var User = React.createClass({
 
             currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).off();
 
-            this.props.navigator.push({
-                title: 'Chat',
-                component: Chat,
-                passProps: {
-                    recipient: _this.props.data,
-                    distance,
-                    chatRoomRef,
-                    currentUserData: _this.props.currentUserData
+            chatRoomRef.once('value', snapshot => {
+                if(snapshot.val() && _.last(_this.props.navigator.getCurrentRoutes()).title === 'Chat') _this.props.navigator.jumpForward();
+                else {
+                    _this.props.navigator.push({
+                        title: 'Chat',
+                        component: Chat,
+                        passProps: {
+                            recipient: _this.props.data,
+                            distance,
+                            chatRoomRef,
+                            currentUserData: _this.props.currentUserData
+                        }
+                    });
                 }
-            });
+            })
+
         }
 
         else {
