@@ -158,7 +158,7 @@ var EditProfile = React.createClass({
                     <Icon
                         color="rgba(255,255,255,0.7)"
                         name="ion|edit"
-                        size={18}
+                        size={22}
                         style={{width: 18, height: 18}}
                         />
                 </TouchableOpacity>

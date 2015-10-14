@@ -36,6 +36,7 @@ var LinearGradient = require('react-native-linear-gradient');
 var ReactFireMixin = require('reactfire');
 var TimerMixin = require('react-timer-mixin');
 
+var INITIAL_TIMER_VAL_IN_MS = 300000;
 var SCREEN_HEIGHT = Display.height;
 var SCREEN_WIDTH = Display.width;
 var MESSAGE_TEXT_INPUT_REF = 'messageTextInput';
@@ -56,7 +57,7 @@ var Chat = React.createClass({
 
     getInitialState() {
         return {
-            chatRoomRef: null,
+            chatRoomMessagesRef: null,
             contentOffsetYValue: 0,
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
@@ -70,15 +71,15 @@ var Chat = React.createClass({
 
     componentDidMount() {
         InteractionManager.runAfterInteractions(() => {
-            let chatRoomRef = this.props.passProps.chatRoomRef.child('messages'), _this = this;
+            let chatRoomMessagesRef = this.props.passProps.chatRoomRef.child('messages'), _this = this;
 
-            this.bindAsObject(chatRoomRef, 'messageList');
-
-            // @kp: first message in messageList is to initiate the room
+            this.bindAsObject(chatRoomMessagesRef, 'messageList');
 
             // @kp: first message in messageList is to initiate the room
 
-            chatRoomRef.once('value', (snapshot) => {
+            // @kp: first message in messageList is to initiate the room
+
+            chatRoomMessagesRef.once('value', (snapshot) => {
                 _this.setState({
                     contentOffsetYValue: 0,
                     message: '',
@@ -87,7 +88,7 @@ var Chat = React.createClass({
                 _this.updateMessages(_.cloneDeep(_.values(snapshot.val())))
             });
 
-            this.setState({chatRoomRef});
+            this.setState({chatRoomMessagesRef});
         });
     },
 
@@ -105,61 +106,10 @@ var Chat = React.createClass({
         });
     },
 
-    render() {
-        return (
-            <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.96)'}}>
-                <View>
-                    {this._renderHeader()}
-                </View>
-                <View onStartShouldSetResponder={this.containerTouched} style={styles.container}>
-                    <RecipientInfoBar navigator={this.props.navigator} recipientData={this.props.passProps}/>
-                    <ListView
-                        contentOffset={{x: 0, y: this.state.contentOffsetYValue}}
-                        dataSource={this.state.dataSource}
-                        renderRow={this._renderMessage}
-                        initialListSize={15}
-                        pageSize={15}
-                        scrollsToTOp={false}
-                        automaticallyAdjustContentInsets={false}
-                        style={{backgroundColor: 'rgba(0,0,0,0.01)', width: SCREEN_WIDTH}}
-                        >
-                    </ListView>
-                    <View>
-                        <View
-                            style={[styles.textBoxContainer, {marginBottom: this.state.hasKeyboardSpace ? SCREEN_HEIGHT/3.1 : 0}]}>
-                            <TextInput
-                                ref={MESSAGE_TEXT_INPUT_REF}
-                                onBlur={() => {
-                    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-                    this.setState({hasKeyboardSpace: false})
-                    }}
-                                onFocus={() => {
-                    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-                    this.setState({hasKeyboardSpace: true})
-                    }}
-                                multiline={true}
-                                style={{width: SCREEN_WIDTH/1.2, backgroundColor: 'rgba(255,255,255,0.75)', height: 30, paddingLeft: 10, borderColor: 'gray', borderRadius: 10, fontFamily: 'AvenirNext-Regular', color: '#111', borderWidth: 1, margin: SCREEN_WIDTH/35}}
-                                onChangeText={(text) => this.setState({message: text})}
-                                value={this.state.message}
-                                returnKeyType='default'
-                                keyboardType='default'
-                                />
-                            <TouchableOpacity style={{backgroundColor: 'rgba(255,255,255,0.3)'}} onPress={() => {
-                        if(this.state.message.length) this._sendMessage()
-                        else this.refs[MESSAGE_TEXT_INPUT_REF].blur();
-                    }}>
-                                 <Text style={{color: 'white', fontFamily: 'AvenirNextCondensed-Regular', marginHorizontal: 20}}>Send</Text></TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </View>
-        );
-    },
-
     _renderHeader() {
         return (
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => this.props.navigator.pop()} style={{right: 30}}>
+                <TouchableOpacity onPress={() => this.props.navigator.jumpBack()} style={{right: 30}}>
                     <Icon
                         color="#fff"
                         name="ion|ios-arrow-thin-left"
@@ -222,8 +172,8 @@ var Chat = React.createClass({
             senderIDHashed: this.props.passProps.currentUserData.ventureId,
             body: this.state.message
         };
-        this.state.chatRoomRef.push(messageObj);
-        this.state.chatRoomRef.once('value', (snapshot) => {
+        this.state.chatRoomMessagesRef.push(messageObj);
+        this.state.chatRoomMessagesRef.once('value', (snapshot) => {
             LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
             _this.setState({
                 contentOffsetYValue: 0,
@@ -232,6 +182,57 @@ var Chat = React.createClass({
             _this.updateMessages(_.cloneDeep(_.values(snapshot.val())));
             _this.refs[MESSAGE_TEXT_INPUT_REF].blur();
         });
+    },
+
+    render() {
+        return (
+            <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.96)'}}>
+                <View>
+                    {this._renderHeader()}
+                </View>
+                <View onStartShouldSetResponder={this.containerTouched} style={styles.container}>
+                    <RecipientInfoBar chatRoomRef={this.props.passProps.chatRoomRef} navigator={this.props.navigator} recipientData={this.props.passProps}/>
+                    <ListView
+                        contentOffset={{x: 0, y: this.state.contentOffsetYValue}}
+                        dataSource={this.state.dataSource}
+                        renderRow={this._renderMessage}
+                        initialListSize={15}
+                        pageSize={15}
+                        scrollsToTOp={false}
+                        automaticallyAdjustContentInsets={false}
+                        style={{backgroundColor: 'rgba(0,0,0,0.01)', width: SCREEN_WIDTH}}
+                        >
+                    </ListView>
+                    <View>
+                        <View
+                            style={[styles.textBoxContainer, {marginBottom: this.state.hasKeyboardSpace ? SCREEN_HEIGHT/3.1 : 0}]}>
+                            <TextInput
+                                ref={MESSAGE_TEXT_INPUT_REF}
+                                onBlur={() => {
+                    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+                    this.setState({hasKeyboardSpace: false})
+                    }}
+                                onFocus={() => {
+                    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+                    this.setState({hasKeyboardSpace: true})
+                    }}
+                                multiline={true}
+                                style={{width: SCREEN_WIDTH/1.2, backgroundColor: 'rgba(255,255,255,0.75)', height: 30, paddingLeft: 10, borderColor: 'gray', borderRadius: 10, fontFamily: 'AvenirNext-Regular', color: '#111', borderWidth: 1, margin: SCREEN_WIDTH/35}}
+                                onChangeText={(text) => this.setState({message: text})}
+                                value={this.state.message}
+                                returnKeyType='default'
+                                keyboardType='default'
+                                />
+                            <TouchableOpacity onPress={() => {
+                        if(this.state.message.length) this._sendMessage();
+                        else this.refs[MESSAGE_TEXT_INPUT_REF].blur();
+                    }}>
+                                <Text style={{color: 'white', fontFamily: 'AvenirNextCondensed-Regular', marginHorizontal: 20, backgroundColor: 'rgba(255,255,255,0.3)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 3}}>Send</Text></TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </View>
+        );
     }
 });
 
@@ -338,7 +339,7 @@ var RecipientInfoBar = React.createClass({
                 }} navigator={this.props.navigator} currentUserActivityPreference={this.state.activity}
                                      currentUserData={currentUserData} style={{marginRight: 20}}/>
                 </View>
-                <TimerBar/>
+                <TimerBar chatRoomRef={this.props.chatRoomRef} navigator={this.props.navigator}/>
                 {this.state.dir === 'column' ?
                     <View style={{backgroundColor: '#fff'}}>
                         {infoContent}
@@ -382,7 +383,7 @@ var RecipientAvatar = React.createClass({
 var TimerBar = React.createClass({
     getInitialState() {
         return {
-            timerValueInMilliseconds: 300000
+            timerValInMs: INITIAL_TIMER_VAL_IN_MS
         }
     },
 
@@ -390,14 +391,35 @@ var TimerBar = React.createClass({
 
     _handle: null,
 
-    componentDidMount() {
-        var _this = this;
+    componentWillMount() {
+        var _this = this,
+            chatRoomRef = this.props.chatRoomRef
 
-        this._handle = this.setInterval(() => {
-            _this.setState({
-                timerValueInMilliseconds: _this.state.timerValueInMilliseconds - 1000
-            })
-        }, 1000);
+        chatRoomRef.child('createdAt').once('value', snapshot => {
+            if(snapshot.val() === null) {
+                chatRoomRef.child('createdAt').set(new Date());
+
+                _this.handle = _this.setInterval(() => {
+                    _this.setState({timerValInMs: this.state.timerValInMs-1000});
+                    chatRoomRef.child('timer').set({value: this.state.timerValInMs});
+
+                    if(this.state.timerValInMs === 0) {
+                        _this.clearInterval(_this.handle);
+                        if(_.last(this.props.navigator.getCurrentRoutes()).title !== 'Chat') this.props.navigator.pop();
+                        chatRoomRef.set({null});
+                    }
+                }, 1000);
+            } else {
+                chatRoomRef.child('timer/value').on('value', snapshot => {
+                    this.setState({timerValInMs: snapshot.val()});
+
+                    if(this.state.timerValInMs === 0) {
+                        if(_.last(this.props.navigator.getCurrentRoutes()).title !== 'Chat') this.props.navigator.pop();
+                    }
+
+                })
+            }
+        });
 
     },
 
@@ -415,7 +437,7 @@ var TimerBar = React.createClass({
             <View
                 style={{backgroundColor: 'rgba(0,0,0,0.2)', width: SCREEN_WIDTH, height: 40, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
                 <Text
-                    style={{color: '#fff', fontFamily: 'AvenirNextCondensed-Medium'}}>{this._getTimerValue(this.state.timerValueInMilliseconds)}</Text>
+                    style={{color: '#fff', fontFamily: 'AvenirNextCondensed-Medium'}}>{this._getTimerValue(this.state.timerValInMs)}</Text>
             </View>
         )
     }

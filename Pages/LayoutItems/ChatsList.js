@@ -208,7 +208,7 @@ var User = React.createClass({
 
             let chatRoomRef = firebaseRef.child('chat_rooms/' + currentUserIDHashed + '_TO_' + targetUserIDHashed);
 
-            chatRoomRef.child('timer').set({value: 300000}); // start timer
+            chatRoomRef.child('timer').set({value: 300000}); // set timer
 
             currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).off();
 

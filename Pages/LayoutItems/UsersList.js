@@ -208,20 +208,26 @@ var User = React.createClass({
 
                 let chatRoomRef = firebaseRef.child('chat_rooms/' + currentUserIDHashed + '_TO_' + targetUserIDHashed);
 
-                    chatRoomRef.child('timer').set({value: 300000}); // start timer
+                    chatRoomRef.child('timer').set({value: 300000}); // set timer
 
                 currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).off();
 
-                this.props.navigator.push({
-                    title: 'Chat',
-                    component: Chat,
-                    passProps: {
-                        recipient: _this.props.data,
-                        distance,
-                        chatRoomRef,
-                        currentUserData: _this.props.currentUserData
+                chatRoomRef.once('value', snapshot => {
+                    if(snapshot.val() && _.last(_this.props.navigator.getCurrentRoutes()).title === 'Chat') _this.props.navigator.jumpForward();
+                    else {
+                        _this.props.navigator.push({
+                            title: 'Chat',
+                            component: Chat,
+                            passProps: {
+                                recipient: _this.props.data,
+                                distance,
+                                chatRoomRef,
+                                currentUserData: _this.props.currentUserData
+                            }
+                        });
                     }
-                });
+                })
+
             }
 
         else {
