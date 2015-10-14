@@ -105,6 +105,18 @@ var EditProfile = React.createClass({
         this.setState({genderMatches});
     },
 
+    _safelyNavigateToProfile() {
+        let currentRouteStack = this.props.navigator.getCurrentRoutes(),
+            profileRoute = _.findWhere(currentRouteStack, {title: 'Profile'});
+
+        if(currentRouteStack.indexOf(profileRoute) > -1) this.props.navigator.jumpTo(profileRoute);
+        else {
+            currentRouteStack.push(_.assign(profileRoute, {component: MainLayout}));
+            this.props.navigator.immediatelyResetRouteStack(currentRouteStack);
+            this.props.navigator.jumpTo(profileRoute);
+        }
+    },
+
     _setGender(selectedGender:string) {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
         this.setState({selectedGender: selectedGender});
@@ -123,7 +135,7 @@ var EditProfile = React.createClass({
         if (this.state.currentPic !== this.state.originalPic)
             this.state.firebaseRef.child(`users/${ventureId}/picture`).set(this.state.currentPic);
 
-        this.props.navigator.pop()
+        this._safelyNavigateToProfile();
     },
 
     render() {
@@ -217,7 +229,7 @@ var EditProfile = React.createClass({
     _renderHeader() {
         return (
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => this.props.navigator.pop()} style={{right: 30}}>
+                <TouchableOpacity onPress={() => this._safelyNavigateToProfile()} style={{right: 30}}>
                     <Icon
                         color="#fff"
                         name="ion|ios-arrow-thin-left"

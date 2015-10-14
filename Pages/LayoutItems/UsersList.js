@@ -96,25 +96,18 @@ var User = React.createClass({
         });
     },
 
-    componentWillUnmount() {
-        this.state.currentUserMatchRequestsRef && this.state.currentUserMatchRequestsRef.off();
-    },
-
     componentWillReceiveProps(nextProps) {
 
         let _this = this;
 
         if ((_this.props.data && _this.props.data.ventureId !== nextProps.data.ventureId)) {
-            var targetUserIDHashed = nextProps.data.ventureId,
-                currentUserIDHashed = nextProps.currentUserIDHashed,
-                firebaseRef = nextProps.firebaseRef,
-                currentUserRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
+            var targetUserIDHashed = nextProps.data.ventureId;
 
             // make sure to reset state
 
             _this.setState({status: ''});
 
-            currentUserRef && currentUserRef.child(targetUserIDHashed).once('value', snapshot => {
+            this.state.currentUserMatchRequestsRef && this.state.currentUserMatchRequestsRef.child(targetUserIDHashed).once('value', snapshot => {
                 _this.setState({status: snapshot.val() && snapshot.val().status});
             });
         }
@@ -427,7 +420,6 @@ var UsersList = React.createClass({
 
     componentWillUnmount() {
         if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
-        this.state.usersListRef.off();
     },
 
     _safelyNavigateToHome() {

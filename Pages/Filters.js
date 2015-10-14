@@ -66,12 +66,14 @@ var Filters = React.createClass({
 
     _safelyNavigateToUsersList() {
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
+            chatsListRoute = _.findWhere(currentRouteStack, {title: 'Chats'}),
             usersListRoute = _.findWhere(currentRouteStack, {title: 'Users'});
 
-        if(currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
+        if(currentRouteStack.indexOf(chatsListRoute) > -1) this.props.navigator.jumpTo(chatsListRoute);
+        else if (currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
         else {
-            currentRouteStack.push(usersListRoute);
-            this.props.navigator.immediatelyResetRouteStack(currentRouteStack);
+            // worst case scenario just jump back
+            this.props.navigator.jumpBack();
         }
     },
 
@@ -99,6 +101,8 @@ var Filters = React.createClass({
             };
 
         this.state.firebaseUserMatchingPreferencesRef.set(filtersChanges);
+
+        this._safelyNavigateToUsersList();
     },
 
     _setButtonState(field:string, value:string) {
