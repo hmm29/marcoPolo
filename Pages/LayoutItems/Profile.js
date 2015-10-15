@@ -178,7 +178,7 @@ var Profile = React.createClass({
             else if (isOnline) loginStatus.set(isOnline);
 
             currentUser.once('value', snapshot => {
-                let asyncObj = _.pick(snapshot.val(), 'ventureId', 'name', 'firstName', 'lastName', 'activityPreference', 'age', 'picture', 'bio', 'gender');
+                let asyncObj = _.pick(snapshot.val(), 'ventureId', 'name', 'firstName', 'lastName', 'activityPreference', 'age', 'picture', 'bio', 'gender', 'matchingPreferences');
 
                 // @hmm: slight defer to allow for snapshot.val()
                 this.setTimeout(() => {

@@ -184,11 +184,11 @@ var User = React.createClass({
 
                 targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
                     status: 'matched',
-                }, 3000);
+                }, 100);
 
                 currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
                     status: 'matched',
-                }, 3000);
+                }, 100);
             }
 
             else if (this.state.status === 'matched') {
@@ -221,10 +221,10 @@ var User = React.createClass({
         else {
             targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
                 status: 'received'
-            }, 2000);
+            }, 200);
             currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
                 status: 'sent'
-            }, 1000);
+            }, 300);
             }
     },
 
@@ -281,7 +281,7 @@ var User = React.createClass({
                     style={[styles.profileModal, {backgroundColor: this._getSecondaryStatusColor()}]}>
                     <Image
                         source={{uri: this.props.data && this.props.data.picture}}
-                        style={styles.profileModalUserPicture}/>
+                        style={[styles.profileModalUserPicture, (this.state.isFacebookFriend ? {borderWidth: 3, borderColor: '#4E598C'} : {})]}/>
                     <Text
                         style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'} | {'\t'}
                         <Text style={styles.profileModalActivityInfo}>
@@ -323,7 +323,7 @@ var User = React.createClass({
                             <Image
                                 onPress={this._onPressItem}
                                 source={{uri: this.props.data && this.props.data.picture}}
-                                style={styles.thumbnail}/>
+                                style={[styles.thumbnail, (this.state.isFacebookFriend ? {borderWidth: 3, borderColor: '#4E598C'} : {})]}/>
                             <View style={styles.rightContainer}>
                                 <Text style={styles.distance}>{distance}</Text>
                                 <Text style={styles.activityPreference}>
@@ -381,7 +381,9 @@ var UsersList = React.createClass({
         InteractionManager.runAfterInteractions(() => {
             let usersListRef = this.state.firebaseRef.child('/users'), _this = this;
 
-            usersListRef.on('value', snapshot => {
+            // @hmm: show users based on filter settings
+
+            usersListRef.orderByChild('gender').equalTo('male').on('value', snapshot => {
                 _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
                 _this.setState({rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
             });

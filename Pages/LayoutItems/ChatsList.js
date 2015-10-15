@@ -190,16 +190,14 @@ var User = React.createClass({
 
             // @hmm: accept the request
             // chatroom reference uses id of the user who accepts the received matchInteraction
-
-            // let chatRoomRef = firebaseRef.child('chat_rooms/' + targetUserIDHashed + '_TO_' + currentUserIDHashed);
-
+            
             targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
                 status: 'matched',
-            }, 3000);
+            }, 100);
 
             currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
                 status: 'matched',
-            }, 3000);
+            }, 100);
         }
 
         else if (this.state.status === 'matched') {
@@ -232,10 +230,10 @@ var User = React.createClass({
         else {
             targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
                 status: 'received'
-            }, 2000);
+            }, 200);
             currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
                 status: 'sent'
-            }, 1000);
+            }, 300);
         }
     },
 
@@ -392,23 +390,25 @@ var ChatsList = React.createClass({
 
     componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
-            let chatsListRef = this.state.firebaseRef.child('/users'), _this = this;
-
-            chatsListRef.once('value', snapshot => {
-                _this.setState({userRows: _.cloneDeep(_.values(snapshot.val())), chatsListRef});
-
-                this.setTimeout(() => {
-                    _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
-
-                    this.setTimeout(() => {
-                        _this.setState({showLoadingModal: false})
-                    }, 300)
-                }, 200);
-            });
+            let usersListRef = this.state.firebaseRef.child('/users'), _this = this;
 
             AsyncStorage.getItem('@AsyncStorage:Venture:account')
                 .then((account: string) => {
                     account = JSON.parse(account);
+
+                    usersListRef.once('value', snapshot => {
+                        _this.setState({userRows: _.cloneDeep(_.values(snapshot.val()))});
+
+                        _this.setTimeout(() => {
+
+                            // @hmm: sweet! order alphabetically to sort with priority ('matched' --> 'received' --> 'sent')
+                            _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${account.ventureId}.status`));
+
+                            _this.setTimeout(() => {
+                                _this.setState({showLoadingModal: false})
+                            }, 300)
+                        }, 200);
+                    });
 
                     this.setState({currentUserVentureId: account.ventureId});
 

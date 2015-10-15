@@ -127,8 +127,7 @@ var Home = React.createClass({
                 createdAt: new Date(),
                 updatedAt: new Date()
             },
-            firebaseRef = new Firebase('https://ventureappinitial.firebaseio.com/'),
-            _this = this;
+            firebaseRef = new Firebase('https://ventureappinitial.firebaseio.com/');
 
         // @hmm: have to manually blur the text input,
         // since were not using navigator.push()
@@ -139,10 +138,8 @@ var Home = React.createClass({
             .then((account: string) => {
                 account = JSON.parse(account);
                 firebaseRef.child(`users/${account.ventureId}/activityPreference`).set(activityPreferenceChange)
-                return account;
-            })
-            .then((account) => {
-                _this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {selected: 'users', ventureId: account.ventureId}})
+
+                this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {selected: 'users', ventureId: account.ventureId}})
             })
             .catch((error) => console.log(error.message))
             .done();
@@ -184,7 +181,9 @@ var Home = React.createClass({
         let abbrevRoute = _.omit(route, 'component'),
             currentRouteStack = this.props.navigator.getCurrentRoutes();
 
-        if(currentRouteStack.indexOf(abbrevRoute) > -1) this.props.navigator.jumpTo(abbrevRoute);
+        if(currentRouteStack.indexOf(abbrevRoute) > -1) {
+            this.props.navigator.jumpTo(abbrevRoute);
+        }
 
         else {
             currentRouteStack.push(route);
@@ -402,6 +401,8 @@ var Home = React.createClass({
         );
 
         return (
+            // @hmm: passProps ventureId is for MainLayout and not for profile or chat
+
             <View style={styles.container}>
                 <Image
                     source={require('image!HomeBackground')}

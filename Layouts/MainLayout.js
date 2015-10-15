@@ -129,7 +129,10 @@ var IOSLayout = React.createClass({
                     {this._renderComponent('users')}
 
                 </TabBarItemIOS>
-                <TabBarItemIOS
+
+                {this.state.chatCount ?
+
+                    <TabBarItemIOS
                     iconName={'ion|ios-chatboxes-outline'}
                     title={'Chats'}
                     iconSize={TAB_BAR_ICON_SIZE}
@@ -142,6 +145,23 @@ var IOSLayout = React.createClass({
                  }}>
                     {this._renderComponent('chats')}
                 </TabBarItemIOS>
+
+                    :
+
+                    <TabBarItemIOS
+                    iconName={'ion|ios-chatboxes-outline'}
+                    title={'Chats'}
+                    iconSize={TAB_BAR_ICON_SIZE}
+                    selected={this.state.selectedTab === 'chats'}
+                    onPress={() => {
+                    this.setState({
+                      selectedTab: 'chats'
+                    });
+                 }}>
+                    {this._renderComponent('chats')}
+                </TabBarItemIOS>
+
+                }
                 <TabBarItemIOS
                     iconName={'ion|ios-person-outline'}
                     title={'Profile'}
