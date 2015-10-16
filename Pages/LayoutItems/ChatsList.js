@@ -382,18 +382,18 @@ var ChatsList = React.createClass({
         InteractionManager.runAfterInteractions(() => {
             let usersListRef = this.state.firebaseRef.child('/users'), _this = this;
 
-            // @hmm: show users based on filter settings
-
-            usersListRef.orderByChild('gender').equalTo('male').on('value', snapshot => {
-                _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
-                _this.setState({rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
-            });
-
-            this.bindAsArray(usersListRef, 'rows');
+            this.bindAsArray(usersListRef, 'userRows');
 
             AsyncStorage.getItem('@AsyncStorage:Venture:account')
                 .then((account: string) => {
                     account = JSON.parse(account);
+
+                    // @hmm: sweet! order alphabetically to sort with priority ('matched' --> 'received' --> 'sent')
+
+                    usersListRef.on('value', snapshot => {
+                        _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${account.ventureId}.status`));
+                        _this.setState({rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
+                    });
 
                     this.setState({currentUserVentureId: account.ventureId})
 

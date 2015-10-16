@@ -400,6 +400,8 @@ var Home = React.createClass({
             </View>
         );
 
+        let MainLayout = require('../Layouts/MainLayout');
+
         return (
             // @hmm: passProps ventureId is for MainLayout and not for profile or chat
 

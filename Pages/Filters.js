@@ -66,14 +66,11 @@ var Filters = React.createClass({
 
     _safelyNavigateToUsersList() {
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
-            chatsListRoute = _.findWhere(currentRouteStack, {title: 'Chats'}),
             usersListRoute = _.findWhere(currentRouteStack, {title: 'Users'});
 
-        if(currentRouteStack.indexOf(chatsListRoute) > -1) this.props.navigator.jumpTo(chatsListRoute);
-        else if (currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
+        if (currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
         else {
-            // worst case scenario just jump back
-            this.props.navigator.jumpBack();
+            this.props.navigator.replace(_.assign(usersListRoute, {component: MainLayout}));
         }
     },
 

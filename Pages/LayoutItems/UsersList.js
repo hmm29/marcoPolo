@@ -173,13 +173,13 @@ var User = React.createClass({
 
             // let chatRoomRef = firebaseRef.child('chat_rooms/' + targetUserIDHashed + '_TO_' + currentUserIDHashed);
 
-            targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+            targetUserMatchRequestsRef.child(currentUserIDHashed).set({
                 status: 'matched',
-            }, 100);
+            });
 
-            currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+            currentUserMatchRequestsRef.child(targetUserIDHashed).set({
                 status: 'matched',
-            }, 100);
+            });
         }
 
         else if (this.state.status === 'matched') {
@@ -210,12 +210,12 @@ var User = React.createClass({
         }
 
         else {
-            targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+            targetUserMatchRequestsRef.child(currentUserIDHashed).set({
                 status: 'received'
-            }, 200);
-            currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+            });
+            currentUserMatchRequestsRef.child(targetUserIDHashed).set({
                 status: 'sent'
-            }, 300);
+            });
         }
     },
 

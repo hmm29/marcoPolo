@@ -33,6 +33,7 @@ var GenderList = require('../data/genders.json').genders;
 var Header = require('../Partials/Header');
 var { Icon, } = require('react-native-icons');
 var MainLayout = require('../Layouts/MainLayout');
+var Profile = require('../Pages/LayoutItems/Profile');
 
 var SCREEN_WIDTH = Display.width;
 var SCREEN_HEIGHT = Display.height;
@@ -111,7 +112,7 @@ var EditProfile = React.createClass({
 
         if(currentRouteStack.indexOf(profileRoute) > -1) this.props.navigator.jumpTo(profileRoute);
         else {
-            this.props.navigator.jumpBack();
+            this.props.navigator.replace(_.assign(profileRoute, {component: Profile}));
         }
     },
 
