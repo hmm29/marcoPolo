@@ -108,21 +108,21 @@ var User = React.createClass({
         currentUserMatchRequestsRef && currentUserMatchRequestsRef.off();
     },
 
-    //calculateDistance(pt1:Object, pt2:Object) {
-    //    if (!pt1) {
-    //        return '';
-    //    }
-    //    var lon1 = Number(pt1.longitude),
-    //        lat1 = Number(pt1.latitude),
-    //        lon2 = pt2[0],
-    //        lat2 = pt2[1];
-    //    var dLat = this.numberToRadius(lat2 - lat1),
-    //        dLon = this.numberToRadius(lon2 - lon1),
-    //        a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(this.numberToRadius(lat1))
-    //            * Math.cos(this.numberToRadius(lat2)) * Math.pow(Math.sin(dLon / 2), 2);
-    //    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    //    return ((6371 * c) * 1000 * 0.000621371).toFixed(1); // returns miles
-    //},
+    calculateDistance(pt1:Object, pt2:Object) {
+        if (!pt1) {
+            return '';
+        }
+        var lon1 = Number(pt1.longitude),
+            lat1 = Number(pt1.latitude),
+            lon2 = pt2[0],
+            lat2 = pt2[1];
+        var dLat = this.numberToRadius(lat2 - lat1),
+            dLon = this.numberToRadius(lon2 - lon1),
+            a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(this.numberToRadius(lat1))
+                * Math.cos(this.numberToRadius(lat2)) * Math.pow(Math.sin(dLon / 2), 2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return ((6371 * c) * 1000 * 0.000621371).toFixed(1); // returns miles
+    },
 
     _getSecondaryStatusColor() {
         if(this.props.isCurrentUser) return '#FBFBF1';
@@ -258,7 +258,8 @@ var User = React.createClass({
 
         let distance, profileModal, swipeoutBtns;
 
-        distance = 0.7 + ' mi';
+        if (!this.props.currentUser && this.props.currentPosition) distance = 0.7 + 'mi';
+        //this.calculateDistance(this.props.currentPosition.coords, this.props.data.location.coordinates) + ' mi'
 
         if (!this.props.isCurrentUser)
             swipeoutBtns = [
@@ -281,7 +282,7 @@ var User = React.createClass({
                         style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'} | {'\t'}
                         <Text style={styles.profileModalActivityInfo}>
                             <Text
-                                style={styles.profileModalActivityPreference}>{this.props.data && this.props.data.activityPreference.title.slice(0,-1)} </Text>:
+                                style={styles.profileModalActivityPreference}>{this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title && this.props.data.activityPreference.title.slice(0,-1)} </Text>:
                             {'\t'} {this.props.data && this.props.data.activityPreference && (this.props.data.activityPreference.start.time || this.props.data.activityPreference.status)} {'\n'}
                         </Text>
                     </Text>
@@ -322,7 +323,7 @@ var User = React.createClass({
                             <View style={styles.rightContainer}>
                                 <Text style={styles.distance}>{distance}</Text>
                                 <Text style={styles.activityPreference}>
-                                    {this.props.data && this.props.data.activityPreference.title}
+                                    {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title}
                                 </Text>
                                 <View>
                                     {!this.props.isCurrentUser ?
@@ -398,71 +399,23 @@ var ChatsList = React.createClass({
                         _this.setState({currentUserData: snapshot.val()});
                     });
                 })
+                .then(() => {
+                    InteractionManager.runAfterInteractions(() => {
+                        navigator.geolocation.getCurrentPosition(
+                            (currentPosition) => {
+                                _this.setState({currentPosition});
+                            },
+                            (error) => {
+                                console.error(error);
+                            },
+                            {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
+                        );
+                    });
+                })
                 .catch((error) => console.log(error.message))
                 .done();
-
-            //navigator.geolocation.getCurrentPosition(
-            //    (currentPosition) => {
-            //        _this.setState({currentPosition});
-            //    },
-            //    (error) => {
-            //        console.error(error);
-            //    },
-            //    {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
-            //);
-            //
-            //_this.watchID = navigator.geolocation.watchPosition((currentPosition) => {
-            //    _this.setState({currentPosition});
-            //});
-
         });
     },
-
-
-    //componentWillMount() {
-    //    InteractionManager.runAfterInteractions(() => {
-    //        let _this = this;
-    //
-    //        AsyncStorage.getItem('@AsyncStorage:Venture:account')
-    //            .then((account: string) => {
-    //                account = JSON.parse(account);
-    //
-    //                let usersListRef = _this.state.firebaseRef.child('users'), _this = this;
-    //
-    //                usersListRef && usersListRef.once('value', snapshot => {
-    //
-    //                    // @hmm: sweet! order alphabetically to sort with priority ('matched' --> 'received' --> 'sent')
-    //                    // _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${account.ventureId}.status`));
-    //                    _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
-    //                });
-    //
-    //                _this.setState({currentUserVentureId: account.ventureId});
-    //
-    //                _this.state.firebaseRef.child(`users/${account.ventureId}`) && _this.state.firebaseRef.child(`users/${account.ventureId}`).once('value', snapshot => {
-    //                    _this.setState({currentUserData: snapshot.val()});
-    //                });
-    //            })
-    //            .catch((error) => console.log(error.message))
-    //            .done();
-    //
-    //        //navigator.geolocation.getCurrentPosition(
-    //        //    (currentPosition) => {
-    //        //        _this.setState({currentPosition});
-    //        //    },
-    //        //    (error) => {
-    //        //        console.error(error);
-    //        //    },
-    //        //    {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
-    //        //);
-    //        //
-    //        //_this.watchID = navigator.geolocation.watchPosition((currentPosition) => {
-    //        //    _this.setState({currentPosition});
-    //        //});
-    //
-    //    });
-    //},
-
-
 
     _safelyNavigateToHome() {
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
@@ -506,23 +459,13 @@ var ChatsList = React.createClass({
 
         return <User currentUserData={this.state.currentUserData}
                      currentUserIDHashed={this.state.currentUserVentureId}
+                     currentPosition={this.state.currentPosition}
                      data={user}
                      firebaseRef={this.state.firebaseRef}
                      navigator={this.props.navigator} />;
     },
 
     render() {
-        let funFactBg = (
-            <View style={{position: 'absolute', top: 105, left: 0, right: 0}}>
-                <TouchableOpacity>
-                    <Text
-                        style={{color: '#fff', fontFamily: 'AvenirNextCondensed-Medium', textAlign: 'center', fontSize: 18, alignSelf: 'center', width: Display.width/1.4, top: Display.height/4, padding: Display.width/18, borderRadius: Display.width/10}}>
-                        <Text style={{fontSize: Display.height/30, top: 15}}>Did You Know ?</Text> {'\n\n'} 1 in every 16 Yale students {'\n'}
-                        is a section asshole.</Text>
-                </TouchableOpacity>
-            </View>
-        );
-
         return (
             <View style={styles.usersListBaseContainer}>
                 <View>

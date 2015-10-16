@@ -47,6 +47,7 @@ var ReactFireMixin = require('reactfire');
 var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
 var RefreshableListView = require('react-native-refreshable-listview');
 var Swipeout = require('react-native-swipeout');
+var TimerMixin = require('react-timer-mixin');
 
 var INITIAL_LIST_SIZE = 8;
 var LOGO_WIDTH = 200;
@@ -70,6 +71,7 @@ String.prototype.capitalize = function () {
 var User = React.createClass({
 
     propTypes: {
+        currentPosition: React.PropTypes.object,
         isCurrentUser: React.PropTypes.boolean,
         data: React.PropTypes.object
     },
@@ -85,41 +87,39 @@ var User = React.createClass({
     componentWillMount() {
         let _this = this;
 
-            this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-            && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).once('value', snapshot => {
-                _this.setState({status: snapshot.val() && snapshot.val().status});
-            });
+        this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+        && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).once('value', snapshot => {
+            _this.setState({status: snapshot.val() && snapshot.val().status});
+        });
     },
 
     componentWillReceiveProps(nextProps) {
-
         let _this = this;
 
-            this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-            && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).once('value', snapshot => {
-                _this.setState({status: snapshot.val() && snapshot.val().status});
-            });
+        this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+        && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).once('value', snapshot => {
+            _this.setState({status: snapshot.val() && snapshot.val().status});
+        });
     },
 
-
-    //calculateDistance(pt1:Object, pt2:Object) {
-    //    if (!pt1) {
-    //        return '';
-    //    }
-    //    var lon1 = Number(pt1.longitude),
-    //        lat1 = Number(pt1.latitude),
-    //        lon2 = pt2[0],
-    //        lat2 = pt2[1];
-    //    var dLat = this.numberToRadius(lat2 - lat1),
-    //        dLon = this.numberToRadius(lon2 - lon1),
-    //        a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(this.numberToRadius(lat1))
-    //            * Math.cos(this.numberToRadius(lat2)) * Math.pow(Math.sin(dLon / 2), 2);
-    //    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    //    return ((6371 * c) * 1000 * 0.000621371).toFixed(1); // returns miles
-    //},
+    calculateDistance(pt1:Object, pt2:Object) {
+        if (!pt1) {
+            return '';
+        }
+        var lon1 = Number(pt1.longitude),
+            lat1 = Number(pt1.latitude),
+            lon2 = pt2[0],
+            lat2 = pt2[1];
+        var dLat = this.numberToRadius(lat2 - lat1),
+            dLon = this.numberToRadius(lon2 - lon1),
+            a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(this.numberToRadius(lat1))
+                * Math.cos(this.numberToRadius(lat2)) * Math.pow(Math.sin(dLon / 2), 2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return ((6371 * c) * 1000 * 0.000621371).toFixed(1); // returns miles
+    },
 
     _getSecondaryStatusColor() {
-        if(this.props.isCurrentUser) return '#FBFBF1';
+        if (this.props.isCurrentUser) return '#FBFBF1';
 
         switch (this.state.status) {
             case 'sent':
@@ -190,7 +190,7 @@ var User = React.createClass({
             currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).off();
 
             chatRoomRef.once('value', snapshot => {
-                if(snapshot.val() && _.last(_this.props.navigator.getCurrentRoutes()).title === 'Chat') _this.props.navigator.jumpForward();
+                if (snapshot.val() && _.last(_this.props.navigator.getCurrentRoutes()).title === 'Chat') _this.props.navigator.jumpForward();
                 else {
                     _this.props.navigator.push({
                         title: 'Chat',
@@ -245,14 +245,15 @@ var User = React.createClass({
                     color='rgba(0,0,0,0.2)'
                     direction='right'
                     onPress={() => this.handleMatchInteraction()}
-                    size={22} />
+                    size={22}/>
         }
     },
 
     render() {
         let distance, profileModal, swipeoutBtns;
 
-        distance = 0.7 + ' mi';
+        if (!this.props.currentUser && this.props.currentPosition) distance = 0.7 + 'mi';
+        //this.calculateDistance(this.props.currentPosition.coords, this.props.data.location.coordinates) + ' mi'
 
         if (!this.props.isCurrentUser)
             swipeoutBtns = [
@@ -272,10 +273,11 @@ var User = React.createClass({
                         source={{uri: this.props.data && this.props.data.picture}}
                         style={[styles.profileModalUserPicture, (this.state.isFacebookFriend ? {borderWidth: 3, borderColor: '#4E598C'} : {})]}/>
                     <Text
-                        style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'} | {'\t'}
+                        style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'}
+                        | {'\t'}
                         <Text style={styles.profileModalActivityInfo}>
                             <Text
-                                style={styles.profileModalActivityPreference}>{this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title && this.props.data.activityPreference.title.slice(0,-1)} </Text>:
+                                style={styles.profileModalActivityPreference}>{this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title && this.props.data.activityPreference.title.slice(0, -1)} </Text>:
                             {'\t'} {this.props.data && this.props.data.activityPreference && (this.props.data.activityPreference.start.time || this.props.data.activityPreference.status)} {'\n'}
                         </Text>
                     </Text>
@@ -324,7 +326,7 @@ var User = React.createClass({
                                 </View>
                             </View>
                         </LinearGradient>
-                        {this.state.dir === 'column' ? profileModal: <View />}
+                        {this.state.dir === 'column' ? profileModal : <View />}
                     </View>
                 </TouchableHighlight>
             </Swipeout>
@@ -348,9 +350,10 @@ var CustomRefreshingIndicator = React.createClass({
 });
 
 var UsersList = React.createClass({
-    mixins: [ReactFireMixin],
+    mixins: [TimerMixin, ReactFireMixin],
 
-    watchID: null,
+    // @hmm: no watching just yet
+    // watchID: null,
 
     getInitialState() {
         return {
@@ -380,7 +383,7 @@ var UsersList = React.createClass({
             this.bindAsArray(usersListRef, 'rows');
 
             AsyncStorage.getItem('@AsyncStorage:Venture:account')
-                .then((account: string) => {
+                .then((account:string) => {
                     account = JSON.parse(account);
 
                     this.setState({currentUserVentureId: account.ventureId})
@@ -389,42 +392,40 @@ var UsersList = React.createClass({
                         _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
                     });
                 })
+                .then(() => {
+                    InteractionManager.runAfterInteractions(() => {
+                        navigator.geolocation.getCurrentPosition(
+                            (currentPosition) => {
+                                _this.setState({currentPosition});
+                            },
+                            (error) => {
+                                console.error(error);
+                            },
+                            {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
+                        );
+                    });
+                })
                 .catch((error) => console.log(error.message))
                 .done();
-
-            //navigator.geolocation.getCurrentPosition(
-            //    (currentPosition) => {
-            //        _this.setState({currentPosition});
-            //    },
-            //    (error) => {
-            //        console.error(error);
-            //    },
-            //    {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
-            //);
-            //
-            //_this.watchID = navigator.geolocation.watchPosition((currentPosition) => {
-            //    _this.setState({currentPosition});
-            //});
-
         });
     },
 
     componentWillUnmount() {
-        if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
+       // if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
     },
 
     _safelyNavigateToHome() {
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
             homeRoute = currentRouteStack[0];
 
-        if(currentRouteStack.indexOf(homeRoute) > -1) this.props.navigator.jumpTo(homeRoute);
+        if (currentRouteStack.indexOf(homeRoute) > -1) this.props.navigator.jumpTo(homeRoute);
     },
 
     _safelyNavigateForward(route:{title:string, component:ReactClass<any,any,any>, passProps?:Object}) {
         let abbrevRoute = _.omit(route, 'component'),
             currentRouteStack = this.props.navigator.getCurrentRoutes();
 
-        if(currentRouteStack.indexOf(abbrevRoute) > -1) this.props.navigator.jumpTo(abbrevRoute);
+        if (currentRouteStack.indexOf(abbrevRoute) > -1) this.props.navigator.jumpTo(abbrevRoute);
 
         else {
             currentRouteStack.push(route);
@@ -461,14 +462,14 @@ var UsersList = React.createClass({
             <User backgroundColor={'rgba(255,245,226, 0.5)'}
                   data={this.state.currentUserData}
                   editable={true}
-                  isCurrentUser={true} />
+                  isCurrentUser={true}/>
         )
     },
 
     _renderHeader() {
         return (
             <Header containerStyle={{position: 'relative'}}>
-                <HomeIcon onPress={() => this._safelyNavigateToHome()} />
+                <HomeIcon onPress={() => this._safelyNavigateToHome()}/>
                 <TextInput
                     ref={SEARCH_TEXT_INPUT_REF}
                     autoCapitalize='none'
@@ -492,9 +493,10 @@ var UsersList = React.createClass({
 
         return <User currentUserData={this.state.currentUserData}
                      currentUserIDHashed={this.state.currentUserVentureId}
+                     currentPosition={this.state.currentPosition}
                      data={user}
                      firebaseRef={this.state.firebaseRef}
-                     navigator={this.props.navigator} />;
+                     navigator={this.props.navigator}/>;
     },
 
     render() {

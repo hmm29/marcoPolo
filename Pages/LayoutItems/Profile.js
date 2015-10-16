@@ -159,12 +159,12 @@ var Profile = React.createClass({
 
     _updateUserLoginStatus(isOnline:boolean) {
         let ventureId = this.state.ventureId,
-            currentUser = this.state.firebaseRef.child(`users/${ventureId}`),
-            loginStatus = currentUser.child(`status/isOnline`),
+            currentUserRef = this.state.firebaseRef.child(`users/${ventureId}`),
+            loginStatusRef = currentUserRef.child(`status/isOnline`),
             _this = this;
 
         if (!isOnline) {
-            loginStatus.set(false);
+            loginStatusRef.set(false);
 
             AsyncStorage.setItem('@AsyncStorage:Venture:account', 'null')
                 .catch(error => console.log(error.message))
@@ -173,16 +173,29 @@ var Profile = React.createClass({
             return;
         }
 
-        loginStatus.once('value', snapshot => {
+        loginStatusRef.once('value', snapshot => {
             if (snapshot.val() === null) _this._createAccount(ventureId);
-            else if (isOnline) loginStatus.set(isOnline);
+            else if (isOnline) loginStatusRef.set(isOnline);
 
-            currentUser.once('value', snapshot => {
+            currentUserRef.once('value', snapshot => {
                 let asyncObj = _.pick(snapshot.val(), 'ventureId', 'name', 'firstName', 'lastName', 'activityPreference', 'age', 'picture', 'bio', 'gender', 'matchingPreferences');
 
                 // @hmm: slight defer to allow for snapshot.val()
                 this.setTimeout(() => {
                     AsyncStorage.setItem('@AsyncStorage:Venture:account', JSON.stringify(asyncObj))
+                        .then(() => {
+
+                            //@hmm: get current user location & save to firebase object
+                            navigator.geolocation.getCurrentPosition(
+                                (currentPosition) => {
+                                    currentUserRef.child(`location/coordinates`).set(currentPosition.coords)
+                                },
+                                (error) => {
+                                    console.error(error);
+                                },
+                                {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
+                            );
+                        })
                         .catch(error => console.log(error.message))
                         .done();
                 }, 0);
