@@ -387,6 +387,7 @@ var TimerBar = React.createClass({
             chatRoomRef.child('createdAt').once('value', snapshot => {
 
                 if (snapshot.val() === null) {
+                    console.log('Chat created and timer started');
                     chatRoomRef.child('createdAt').set((new Date()) + '');
 
                     _this.handle = _this.setInterval(() => {

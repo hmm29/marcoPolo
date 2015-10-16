@@ -47,7 +47,6 @@ var ReactFireMixin = require('reactfire');
 var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
 var RefreshableListView = require('react-native-refreshable-listview');
 var Swipeout = require('react-native-swipeout');
-var TimerMixin = require('react-timer-mixin');
 
 var INITIAL_LIST_SIZE = 8;
 var LOGO_WIDTH = 200;
@@ -69,28 +68,36 @@ String.prototype.capitalize = function () {
 };
 
 var User = React.createClass({
-    getInitialState() {
-        return {
-            dir: 'row',
-            status: ''
-        }
-    },
-
-    mixins: [TimerMixin],
-
     propTypes: {
         isCurrentUser: React.PropTypes.boolean,
         data: React.PropTypes.object
     },
 
-    componentWillMount() {
-        let targetUserIDHashed = this.props.data && this.props.data.ventureId,
-            currentUserIDHashed = this.props.currentUserIDHashed,
-            firebaseRef = this.props.firebaseRef,
-            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests'),
-            _this = this;
+    getInitialState() {
+        return {
+            dir: 'row',
+            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
+            status: ''
+        }
+    },
 
-        currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).on('value', snapshot => {
+    componentWillMount() {
+        let _this = this;
+
+        InteractionManager.runAfterInteractions(() => {
+            this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+            && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).once('value', snapshot => {
+                _this.setState({status: snapshot.val() && snapshot.val().status});
+            });
+        });
+    },
+
+    componentWillReceiveProps(nextProps) {
+
+        let _this = this;
+
+        this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+        && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).once('value', snapshot => {
             _this.setState({status: snapshot.val() && snapshot.val().status});
         });
     },
@@ -102,21 +109,6 @@ var User = React.createClass({
 
         currentUserMatchRequestsRef && currentUserMatchRequestsRef.off();
     },
-
-    componentWillReceiveProps(nextProps) {
-
-        let targetUserIDHashed = nextProps.data && nextProps.data.ventureId,
-            currentUserIDHashed = nextProps.currentUserIDHashed,
-            firebaseRef = nextProps.firebaseRef,
-            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests'),
-            _this = this;
-
-        currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).once('value', snapshot => {
-            _this.setState({status: snapshot.val() && snapshot.val().status});
-        });
-
-    },
-
 
     //calculateDistance(pt1:Object, pt2:Object) {
     //    if (!pt1) {
@@ -364,7 +356,7 @@ var CustomRefreshingIndicator = React.createClass({
 });
 
 var ChatsList = React.createClass({
-    mixins: [ReactFireMixin, TimerMixin],
+    mixins: [ReactFireMixin],
 
     watchID: null,
 
@@ -388,25 +380,25 @@ var ChatsList = React.createClass({
 
     componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
-            let _this = this;
+            let usersListRef = this.state.firebaseRef.child('/users'), _this = this;
+
+            // @hmm: show users based on filter settings
+
+            usersListRef.orderByChild('gender').equalTo('male').on('value', snapshot => {
+                _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
+                _this.setState({rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
+            });
+
+            this.bindAsArray(usersListRef, 'rows');
 
             AsyncStorage.getItem('@AsyncStorage:Venture:account')
                 .then((account: string) => {
                     account = JSON.parse(account);
 
-                    let usersListRef = _this.state.firebaseRef.child('users'), _this = this;
+                    this.setState({currentUserVentureId: account.ventureId})
 
-                    usersListRef && usersListRef.once('value', snapshot => {
-
-                        // @hmm: sweet! order alphabetically to sort with priority ('matched' --> 'received' --> 'sent')
-                        // _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${account.ventureId}.status`));
-                        _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
-                    });
-
-                    _this.setState({currentUserVentureId: account.ventureId});
-
-                    _this.state.firebaseRef.child(`users/${account.ventureId}`) && _this.state.firebaseRef.child(`users/${account.ventureId}`).once('value', snapshot => {
-                        _this.setState({currentUserData: snapshot.val()});
+                    this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {
+                        _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
                     });
                 })
                 .catch((error) => console.log(error.message))
@@ -429,6 +421,52 @@ var ChatsList = React.createClass({
         });
     },
 
+
+    //componentWillMount() {
+    //    InteractionManager.runAfterInteractions(() => {
+    //        let _this = this;
+    //
+    //        AsyncStorage.getItem('@AsyncStorage:Venture:account')
+    //            .then((account: string) => {
+    //                account = JSON.parse(account);
+    //
+    //                let usersListRef = _this.state.firebaseRef.child('users'), _this = this;
+    //
+    //                usersListRef && usersListRef.once('value', snapshot => {
+    //
+    //                    // @hmm: sweet! order alphabetically to sort with priority ('matched' --> 'received' --> 'sent')
+    //                    // _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${account.ventureId}.status`));
+    //                    _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
+    //                });
+    //
+    //                _this.setState({currentUserVentureId: account.ventureId});
+    //
+    //                _this.state.firebaseRef.child(`users/${account.ventureId}`) && _this.state.firebaseRef.child(`users/${account.ventureId}`).once('value', snapshot => {
+    //                    _this.setState({currentUserData: snapshot.val()});
+    //                });
+    //            })
+    //            .catch((error) => console.log(error.message))
+    //            .done();
+    //
+    //        //navigator.geolocation.getCurrentPosition(
+    //        //    (currentPosition) => {
+    //        //        _this.setState({currentPosition});
+    //        //    },
+    //        //    (error) => {
+    //        //        console.error(error);
+    //        //    },
+    //        //    {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
+    //        //);
+    //        //
+    //        //_this.watchID = navigator.geolocation.watchPosition((currentPosition) => {
+    //        //    _this.setState({currentPosition});
+    //        //});
+    //
+    //    });
+    //},
+
+
+
     _safelyNavigateToHome() {
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
             homeRoute = currentRouteStack[0];
@@ -450,6 +488,9 @@ var ChatsList = React.createClass({
 
     updateRows(userRows:Array) {
         this.setState({dataSource: this.state.dataSource.cloneWithRows(userRows)});
+        InteractionManager.runAfterInteractions(() => {
+            this.setState({showLoadingModal: false});
+        })
     },
     _renderHeader() {
         return (

@@ -47,7 +47,6 @@ var ReactFireMixin = require('reactfire');
 var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
 var RefreshableListView = require('react-native-refreshable-listview');
 var Swipeout = require('react-native-swipeout');
-var TimerMixin = require('react-timer-mixin');
 
 var INITIAL_LIST_SIZE = 8;
 var LOGO_WIDTH = 200;
@@ -69,19 +68,18 @@ String.prototype.capitalize = function () {
 };
 
 var User = React.createClass({
+
+    propTypes: {
+        isCurrentUser: React.PropTypes.boolean,
+        data: React.PropTypes.object
+    },
+
     getInitialState() {
         return {
             dir: 'row',
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             status: ''
         }
-    },
-
-    mixins: [TimerMixin],
-
-    propTypes: {
-        isCurrentUser: React.PropTypes.boolean,
-        data: React.PropTypes.object
     },
 
     componentWillMount() {
@@ -95,6 +93,15 @@ var User = React.createClass({
         });
     },
 
+    componentWillReceiveProps(nextProps) {
+
+        let _this = this;
+
+            this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+            && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).once('value', snapshot => {
+                _this.setState({status: snapshot.val() && snapshot.val().status});
+            });
+    },
 
 
     //calculateDistance(pt1:Object, pt2:Object) {
@@ -343,7 +350,7 @@ var CustomRefreshingIndicator = React.createClass({
 });
 
 var UsersList = React.createClass({
-    mixins: [ReactFireMixin, TimerMixin],
+    mixins: [ReactFireMixin],
 
     watchID: null,
 
