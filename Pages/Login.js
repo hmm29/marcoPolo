@@ -17,6 +17,7 @@ var React = require('react-native');
 var {
     AsyncStorage,
     Image,
+    PixelRatio,
     StyleSheet,
     Text,
     View
@@ -25,19 +26,163 @@ var {
 var _ = require('lodash');
 var Display = require('react-native-device-display');
 var FBLogin = require('react-native-facebook-login');
+var Firebase = require('firebase');
+var Home = require('./Home');
+var sha256 = require('sha256');
+var TimerMixin = require('react-timer-mixin');
 
 var SCREEN_WIDTH = Display.width;
 var SCREEN_HEIGHT = Display.height;
 
-var Login = React.createClass({
-    _navigateToNextPage() {
-        if(this.props.navigator.getCurrentRoutes()[this.props.navigator.getCurrentRoutes().length-2].title ==='Profile')
-            this.props.navigator.popToTop();
+String.prototype.capitalize = () => this.replace(/(?:^|\s)\S/g, a => a.toUpperCase());
 
-        this.props.navigator.pop()
+var getInitialAgeRangeLimits = (ageVal:number, lim:string) => {
+    if (lim === 'upper') {
+        if (ageVal <= 18) return 19;
+        else return ageVal + (ageVal - 18);
+    } else {
+        if (ageVal <= 18) return 18;
+        else return ageVal - (ageVal - 18);
+    }
+};
+
+var hash = (msg:string) => sha256(sha256(sha256(msg)));
+
+var prepAgeRangeVal = (ageRangeObj:Object):{max:number, min: number, exactVal: number} => {
+    if (!ageRangeObj.max) _.assign(ageRangeObj, {max: ageRangeObj.min, exactVal: ageRangeObj.min});
+    return ageRangeObj;
+};
+
+var Login = React.createClass({
+    statics: {
+        title: '<Login>',
+        description: 'Log into the Venture App.'
     },
+
+    mixins: [TimerMixin],
+
+    getInitialState() {
+        return {
+            asyncObj: null,
+            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
+            user: null
+        }
+    },
+
+    _createAccount() {
+        let user = this.state.user,
+            ventureId = this.state.ventureId,
+            pixelRatioCalc = PixelRatio.getPixelSizeForLayoutSize(200),
+            api = `https://graph.facebook.com/v2.3/${user && user.userId}?fields=name,email,gender,age_range&access_token=${user.token}`;
+
+        fetch(api)
+            .then(response => response.json())
+            .then(responseData => {
+
+                let newUserData = {
+                    ventureId,
+                    name: responseData.name,
+                    firstName: responseData.name.split(' ')[0],
+                    lastName: responseData.name.split(' ')[1],
+                    activityPreference: {
+                        title: 'explore',
+                        status: 'now',
+                        start: {
+                            time: '',
+                            dateTime: '',
+                            timeZoneOffsetInHours: ''
+                        },
+                        tags: [],
+                        created: new Date(),
+                        updated: new Date()
+                    },
+                    picture: `https://res.cloudinary.com/dwnyawluh/image/facebook/w_${pixelRatioCalc},h_${pixelRatioCalc}/${this.state.user.userId}.jpg`,
+                    gender: responseData.gender,
+                    bio: 'New to Venture!',
+                    email: responseData.email,
+                    ageRange: prepAgeRangeVal(responseData.age_range),
+                    location: {
+                        type: 'Point',
+                        coordinates: []
+                    },
+                    matchingPreferences: {
+                        maxSearchDistance: 10.0,
+                        ageRangeLower: getInitialAgeRangeLimits(responseData.age_range.min, 'lower'),
+                        ageRangeUpper: getInitialAgeRangeLimits(responseData.age_range.min, 'upper'),
+                        gender: ['male', 'female', 'other'],
+                        privacy: ['friends', 'friends+', 'all']
+                    },
+                    discoveryPreferences: {
+                        genderInclusions: [responseData.gender]
+                    },
+                    status: {
+                        isOnline: true
+                    },
+                    match_requests: {},
+                    events: []
+                };
+
+                this.state.firebaseRef.child(`users/${ventureId}`).set(newUserData);
+            })
+            .done();
+    },
+
+    _navigateToNextPage() {
+        var Home = require('./Home');
+
+        this.props.navigator.replace({title: 'Home', component: Home})
+    },
+
+    _updateUserLoginStatus(isOnline:boolean) {
+        let ventureId = this.state.ventureId,
+            currentUserRef = this.state.firebaseRef.child(`users/${ventureId}`),
+            loginStatusRef = currentUserRef.child(`status/isOnline`),
+            _this = this;
+
+        if (!isOnline) {
+            loginStatusRef.set(false);
+
+            AsyncStorage.setItem('@AsyncStorage:Venture:account', 'null')
+                .catch(error => console.log(error.message))
+                .done();
+
+            return;
+        }
+
+        loginStatusRef.once('value', snapshot => {
+            if (snapshot.val() === null) _this._createAccount(ventureId);
+            else if (isOnline) loginStatusRef.set(isOnline);
+
+            currentUserRef.once('value', snapshot => {
+                let asyncObj = _.pick(snapshot.val(), 'ventureId', 'name', 'firstName', 'lastName', 'activityPreference', 'age', 'picture', 'bio', 'gender', 'matchingPreferences');
+
+                // @hmm: slight defer to allow for snapshot.val()
+                this.setTimeout(() => {
+                    AsyncStorage.setItem('@AsyncStorage:Venture:account', JSON.stringify(asyncObj))
+                        .then(() => {
+                            alert(JSON.stringify(asyncObj))
+
+                            //@hmm: get current user location & save to firebase object
+                            navigator.geolocation.getCurrentPosition(
+                                (currentPosition) => {
+                                    currentUserRef.child(`location/coordinates`).set(currentPosition.coords)
+                                },
+                                (error) => {
+                                    console.error(error);
+                                },
+                                {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
+                            );
+                        })
+                        .catch(error => console.log(error.message))
+                        .done();
+                }, 0);
+            });
+
+        });
+    },
+
     render() {
-        var _this = this;
+        let _this = this;
 
         return (
             <View style={styles.tabContent}>
@@ -51,14 +196,18 @@ var Login = React.createClass({
                     <FBLogin style={{ top: 40 }}
                              permissions={['email','user_friends']}
                              onLogin={function(data){
-                           AsyncStorage.setItem('@AsyncStorage:Venture:isLoggedIn', 'true')
-                            // TODO: update the current user account login status
-                            .then(() => _this._navigateToNextPage())
-                            .then(() => console.log('Logged in!'))
-                            .catch((error) => console.log(error.message))
-                            .done();
 
-                          console.log(data);
+                                _this.setState({user: data.credentials, ventureId: hash(data.credentials.userId)});
+
+                                  AsyncStorage.setItem('@AsyncStorage:Venture:isOnline', 'true')
+                                    .then(() => {
+                                        _this._updateUserLoginStatus(true);
+
+                                        _this._navigateToNextPage();
+                                    })
+                                    .then(() => console.log('Logged in!'))
+                                    .catch((error) => console.log(error.message))
+                                    .done();
                         }}
                         />
                 </Image>

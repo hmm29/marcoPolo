@@ -37,9 +37,11 @@ var ClockIcon = require('../Partials/Icons/ClockIcon');
 var Display = require('react-native-device-display');
 var Header = require('../Partials/Header');
 var { Icon, } = require('react-native-icons');
+var Login = require('../Pages/Login');
 var Logo = require('../Partials/Logo');
 var MainLayout = require('../Layouts/MainLayout');
 var ProfilePageIcon = require('../Partials/Icons/ProfilePageIcon');
+var TimerMixin = require('react-timer-mixin');
 
 var ADD_INFO_BUTTON_SIZE = 32;
 var ACTIVITY_TEXT_INPUT_PADDING = 5;
@@ -60,40 +62,58 @@ var Home = React.createClass({
         description: 'Main screen - activity selection.'
     },
 
+    mixins: [TimerMixin],
+
     getInitialState() {
         return {
+            activeTimeOption: 'now',
             activityTitleInput: '',
+            contentOffsetXVal: 0,
+            date: new Date(),
+            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
+            hasIshSelected: false,
             hasKeyboardSpace: false,
+            hasSpecifiedTime: false,
+            isLoggedIn: true,
             showAddInfoBox: false,
             showAddInfoButton: true,
             showNextButton: false,
             showTextInput: true,
+            showTimeSpecificationOptions: false,
             showTrendingItems: true,
             tagsArr: [],
+            tagInput: '',
+            timeZoneOffsetInHours: (-1) * (new Date()).getTimezoneOffset() / 60,
             trendingContent: 'YALIES',
+            ventureId: '',
             viewStyle: {
                 marginHorizontal: 0,
                 borderRadius: 0
-            },
-            activeTimeOption: 'now',
-            contentOffsetXVal: 0,
-            date: new Date(),
-            hasIshSelected: false,
-            hasSpecifiedTime: false,
-            showTimeSpecificationOptions: false,
-            tagInput: '',
-            timeZoneOffsetInHours: (-1) * (new Date()).getTimezoneOffset() / 60
+            }
         }
     },
 
     componentDidMount() {
-        AsyncStorage.getItem('@AsyncStorage:Venture:account')
-            .then((account: string) => {
-                account = JSON.parse(account);
-                this.setState({ventureId: account.ventureId});
-            })
-            .catch((error) => console.log(error.message))
-            .done();
+        //@hmm: wait for async storage account to update on login
+        InteractionManager.runAfterInteractions(() => {
+            this.setTimeout(() => {
+                AsyncStorage.getItem('@AsyncStorage:Venture:account')
+                    .then((account:string) => {
+                        account = JSON.parse(account);
+
+                        alert(JSON.stringify(account));
+
+                        if (account === null) {
+                            this.setState({isLoggedIn: false})
+                            return;
+                        }
+
+                        this.setState({ventureId: account.ventureId});
+                    })
+                    .catch((error) => console.log(error.message))
+                    .done();
+            }, 800);
+        });
     },
 
     animateViewLayout(text:string) {
@@ -127,7 +147,7 @@ var Home = React.createClass({
                 createdAt: new Date(),
                 updatedAt: new Date()
             },
-            firebaseRef = new Firebase('https://ventureappinitial.firebaseio.com/');
+            firebaseRef = this.state.firebaseRef;
 
         // @hmm: have to manually blur the text input,
         // since were not using navigator.push()
@@ -139,7 +159,8 @@ var Home = React.createClass({
                 account = JSON.parse(account);
                 firebaseRef.child(`users/${account.ventureId}/activityPreference`).set(activityPreferenceChange)
 
-                this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {selected: 'users', ventureId: account.ventureId}})
+                if (!this.state.isLoggedIn) this._safelyNavigateToLogin()
+                else this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {selected: 'users', ventureId: account.ventureId}})
             })
             .catch((error) => console.log(error.message))
             .done();
@@ -177,6 +198,20 @@ var Home = React.createClass({
         else this.setState({trendingContent: 'EVENTS'});
     },
 
+    _onBlur() {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+        this.setState({hasKeyboardSpace: false, showAddInfoButton: true, showNextButton: !!this.state.activityTitleInput, showTextInput: true});
+    },
+
+    onDateChange(date): void {
+        this.setState({date: date});
+    },
+
+    _onFocus() {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring)
+        this.setState({hasKeyboardSpace: true, showAddInfoButton: false, showNextButton: false, showTextInput: false});
+    },
+
     _safelyNavigateForward(route:{title:string, component:ReactClass<any,any,any>, passProps?:Object}) {
         let abbrevRoute = _.omit(route, 'component'),
             currentRouteStack = this.props.navigator.getCurrentRoutes();
@@ -191,18 +226,8 @@ var Home = React.createClass({
         }
     },
 
-    _onBlur() {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-        this.setState({hasKeyboardSpace: false, showAddInfoButton: true, showNextButton: !!this.state.activityTitleInput, showTextInput: true});
-    },
-
-    onDateChange(date): void {
-        this.setState({date: date});
-    },
-
-    _onFocus() {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring)
-        this.setState({hasKeyboardSpace: true, showAddInfoButton: false, showNextButton: false, showTextInput: false});
+    _safelyNavigateToLogin() {
+        this.props.navigator.push({title: 'Login', component: Login});
     },
 
     render() {
@@ -413,11 +438,13 @@ var Home = React.createClass({
                         <ProfilePageIcon style={{opacity: 0.4}}
                                          onPress={() => {
                                             this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
-                                            this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {selected: 'profile', ventureId: this.state.ventureId}})
+                                            if (!this.state.isLoggedIn) this._safelyNavigateToLogin()
+                                            else this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {selected: 'profile', ventureId: this.state.ventureId}})
                                          }}/>
                         <ChatsListPageIcon style={{opacity: 0.4}}
                                            onPress={() => {
                                             this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
+                                            if (!this.state.isLoggedIn) this._safelyNavigateToLogin()
                                             this._safelyNavigateForward({title: 'Chats', component: MainLayout, passProps: {selected: 'chats', ventureId: this.state.ventureId}})
                                            }}
                             />

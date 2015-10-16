@@ -40,7 +40,6 @@ var Login = require('../Login');
 var sha256 = require('sha256');
 var TimerMixin = require('react-timer-mixin');
 
-var FB_PHOTO_WIDTH = 360;
 var SCREEN_WIDTH = Display.width;
 var SCREEN_HEIGHT = Display.height;
 
@@ -73,7 +72,6 @@ var Profile = React.createClass({
 
     getInitialState() {
         return {
-            api: '',
             asyncObj: null,
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             user: null
@@ -184,7 +182,6 @@ var Profile = React.createClass({
                 this.setTimeout(() => {
                     AsyncStorage.setItem('@AsyncStorage:Venture:account', JSON.stringify(asyncObj))
                         .then(() => {
-
                             //@hmm: get current user location & save to firebase object
                             navigator.geolocation.getCurrentPosition(
                                 (currentPosition) => {
@@ -221,6 +218,7 @@ var Profile = React.createClass({
                             { user && <Photo user={user}/> }
                             { user && ventureId && <Info ventureId={ventureId} user={user}/>}
                         </View>
+
                         <FBLogin style={styles.FBLoginButton}
                                  permissions={['email', 'user_friends']}
                                  onLogin={function(data) {
