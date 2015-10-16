@@ -235,7 +235,7 @@ var EditProfile = React.createClass({
                         />
                 </TouchableOpacity>
                 <Text
-                    style={{color: '#fff', right: 10, fontSize: 22, paddingVertical: 10, fontFamily: 'AvenirNextCondensed-Medium'}}>
+                    style={styles.headerTitle}>
                     EDIT PROFILE </Text>
                 <Text />
             </View>
@@ -297,6 +297,13 @@ var styles = StyleSheet.create({
         backgroundColor: '#040A19',
         paddingTop: 20,
         paddingBottom: 5
+    },
+    headerTitle: {
+        color: '#fff',
+        right: 10,
+        fontSize: 22,
+        paddingVertical: 10,
+        fontFamily: 'AvenirNextCondensed-Medium'
     },
     label: {
         color: 'white',

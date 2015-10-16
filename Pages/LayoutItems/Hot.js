@@ -24,13 +24,33 @@ var {
     } = React;
 
 var Display = require('react-native-device-display');
+var HomeIcon = require('../../Partials/Icons/HomeIcon');
+var { Icon, } = require('react-native-icons');
 var ReactFireMixin = require('reactfire');
 
 var SCREEN_HEIGHT = Display.height;
 var SCREEN_WIDTH = Display.width;
 
-var YALIES = [`http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_56,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206258/Harrison%20Miller.png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_52,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206076/Noah%20Cho.png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Sophie%20Dillon.png`];
-var EVENTS = [`http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Frozen%20Four%20(Center%20-%20Big%20Text).png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_48,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442894669/Event%20-%20Freshman%20Screw%20(Center%20-%20Big%20Text).png`,`http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Frozen%20Four%20(Center%20-%20Big%20Text).png`];
+var YALIES = [
+    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_56,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206258/Harrison%20Miller.png`,
+    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_52,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206076/Noah%20Cho.png`,
+    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Sophie%20Dillon.png`,
+    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Titania%20Nguyen.png`,
+    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Ivonne%20Gonzalez.png`,
+    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Brandon%20Sherrod.png`,
+    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Isaak%20Cuenco.png`,
+    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Jessica%20Nelson.png`,
+    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/JT%20Flowers.png`
+];
+var EVENTS = [
+    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Venture%20Launch%20Party.png`,
+    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Frozen%20Four%20(Center%20-%20Big%20Text).png`,
+    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_48,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442894669/Event%20-%20Freshman%20Screw%20(Center%20-%20Big%20Text).png`,
+    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Swab%20A%20Cheek.png`,
+    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20The%20Game%20(Center%20-%20Big%20Text).png`,
+    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Freshman%20Screw%20(Center%20-%20Big%20Text).png`,
+    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20YSO%20Halloween%20(Center%20-%20Big%20Text).png`
+];
 
 class TrendingItem extends React.Component {
     render() {
@@ -91,54 +111,95 @@ var Hot = React.createClass({
 
     },
 
-    _createTrendingItem(type, uri,i) {
+    _createTrendingItem(type, uri, i) {
         return (
             <TrendingItem type={type} key={i} uri={uri}/>
         )
 
     },
 
-    render: function() {
-        return (
-            <View style={[styles.tabContent, {backgroundColor: '#888'}]}>
-                <View style={styles.trendingItemsCarousel}>
-                    <Title>TRENDING <Text style={{color: '#ee964b'}}>YALIES</Text></Title>
-                    <ScrollView
-                        automaticallyAdjustContentInsets={false}
-                        centerContent={true}
-                        horizontal={true}
-                        pagingEnabled={true}
-                        directionalLockEnabled={true}
-                        onScroll={this.handleScroll}
-                        snapToAlignment='center'
-                        snapToInterval={64}
-                        showsHorizontalScrollIndicator={true}
-                        style={[styles.scrollView, styles.horizontalScrollView, {marginTop: 10}]}>
-                        {this.state.yalies && this.state.yalies.map(this._createTrendingItem.bind(null, 'user'))}
-                    </ScrollView>
-                </View>
+    _safelyNavigateToHome() {
+        let currentRouteStack = this.props.navigator.getCurrentRoutes(),
+            homeRoute = currentRouteStack[0];
 
-                <View style={styles.trendingItemsCarousel}>
-                    <Title>TRENDING <Text style={{color: '#ee964b'}}>EVENTS</Text></Title>
-                    <ScrollView
-                        automaticallyAdjustContentInsets={false}
-                        centerContent={true}
-                        horizontal={true}
-                        pagingEnabled={true}
-                        directionalLockEnabled={true}
-                        onScroll={this.handleScroll}
-                        snapToAlignment='center'
-                        snapToInterval={64}
-                        showsHorizontalScrollIndicator={true}
-                        style={[styles.scrollView, styles.horizontalScrollView, {marginTop: 10}]}>
-                        {this.state.events && this.state.events.map(this._createTrendingItem.bind(null, 'event'))}
-                    </ScrollView>
+        if (currentRouteStack.indexOf(homeRoute) > -1) this.props.navigator.jumpTo(homeRoute);
+    },
+
+    render: function () {
+        return (
+            <View style={styles.container}>
+                {this._renderHeader()}
+                <View style={[styles.tabContent, {flex: 1}]}>
+                    <View style={styles.trendingItemsCarousel}>
+                        <Title>TRENDING <Text style={{color: '#ee964b'}}>YALIES</Text></Title>
+                        <ScrollView
+                            automaticallyAdjustContentInsets={false}
+                            centerContent={true}
+                            horizontal={true}
+                            pagingEnabled={true}
+                            directionalLockEnabled={true}
+                            onScroll={this.handleScroll}
+                            snapToAlignment='center'
+                            snapToInterval={64}
+                            showsHorizontalScrollIndicator={true}
+                            style={[styles.scrollView, styles.horizontalScrollView, {marginTop: 10}]}>
+                            {this.state.yalies && this.state.yalies.map(this._createTrendingItem.bind(null, 'user'))}
+                        </ScrollView>
+                    </View>
+
+                    <View style={styles.trendingItemsCarousel}>
+                        <Title>TRENDING <Text style={{color: '#ee964b'}}>EVENTS</Text></Title>
+                        <ScrollView
+                            automaticallyAdjustContentInsets={false}
+                            centerContent={true}
+                            horizontal={true}
+                            pagingEnabled={true}
+                            directionalLockEnabled={true}
+                            onScroll={this.handleScroll}
+                            snapToAlignment='center'
+                            snapToInterval={64}
+                            showsHorizontalScrollIndicator={true}
+                            style={[styles.scrollView, styles.horizontalScrollView, {marginTop: 10}]}>
+                            {this.state.events && this.state.events.map(this._createTrendingItem.bind(null, 'event'))}
+                        </ScrollView>
+                    </View>
                 </View>
-            </View>);
+                <View style={{height: 48}} />
+            </View>
+        );
+    },
+
+    _renderHeader() {
+        return (
+            <View style={styles.header}>
+                <Text
+                    style={styles.headerTitle}>
+                    HOT! </Text>
+                <Text />
+            </View>
+        )
     }
 });
 
 var styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#FFF5EA'
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#040A19',
+        paddingTop: 20,
+        paddingBottom: 5
+    },
+    headerTitle: {
+        color: '#fff',
+        fontSize: 22,
+        paddingVertical: 10,
+        fontFamily: 'AvenirNextCondensed-Medium'
+    },
     horizontalScrollView: {
         height: 85
     },
@@ -146,10 +207,9 @@ var styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.008)'
     },
     tabContent: {
-        flex: 1,
         flexDirection: 'column',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     tabText: {
         color: 'white',

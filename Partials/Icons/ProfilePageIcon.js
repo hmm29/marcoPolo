@@ -66,8 +66,8 @@ var styles = StyleSheet.create({
         fontWeight: '500'
     },
     profilePageIcon: {
-        width: SIZE,
-        height: SIZE
+        width: SIZE * 1.5,
+        height: SIZE * 1.5
     }
 });
 

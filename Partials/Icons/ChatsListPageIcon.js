@@ -66,8 +66,8 @@ var styles = StyleSheet.create({
         fontWeight: '500'
     },
     chatsListPageIcon: {
-        width: SIZE * 1.14,
-        height: SIZE * 1.14
+        width: SIZE * 1.5,
+        height: SIZE * 1.5
     }
 });
 

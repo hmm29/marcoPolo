@@ -9,7 +9,6 @@
 
 #import "AppDelegate.h"
 #import "RCTRootView.h"
-#import "RCTPushNotificationManager.h"
 
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
@@ -74,18 +73,6 @@
                                                sourceApplication:sourceApplication
                                                       annotation:annotation];
  }
-
-// Required for the register event.
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
-{
- [RCTPushNotificationManager application:application didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
-}
-
-// Required for the notification event.
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification
-{
- [RCTPushNotificationManager application:application didReceiveRemoteNotification:notification];
-}
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED < 90000
 - (NSUInteger)supportedInterfaceOrientations

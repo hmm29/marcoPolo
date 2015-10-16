@@ -68,8 +68,8 @@ var styles = StyleSheet.create({
         fontWeight: '500'
     },
     chevronIcon: {
-        width: SIZE * 1.14,
-        height: SIZE * 1.14
+        width: SIZE * 1.2,
+        height: SIZE * 1.2
     }
 });
 

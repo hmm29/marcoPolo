@@ -65,7 +65,7 @@ var IOSLayout = React.createClass({
     },
 
     componentWillUnmount() {
-        // this.state.chatCountRef.off();
+        this.state.chatCountRef.off();
     },
 
     _renderComponent(title:string) {

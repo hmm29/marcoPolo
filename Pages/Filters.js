@@ -67,14 +67,15 @@ var Filters = React.createClass({
 
     _safelyNavigateToUsersList() {
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
+            chatsListRoute = _.findWhere(currentRouteStack, {title: 'Chats'}),
             usersListRoute = _.findWhere(currentRouteStack, {title: 'Users'});
 
+        //TODO: sometimes still routes to profile page
+
         if (currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
+        else if (currentRouteStack.indexOf(chatsListRoute) > -1) this.props.navigator.jumpTo(chatsListRoute);
         else {
             this.props.navigator.pop();
-            //let MainLayout = require('../Layouts/MainLayout');
-            //
-            //this.props.navigator.replace({title: 'Users', component: MainLayout, passProps: {selected: 'users', ventureId: this.state.ventureId}});
         }
     },
 

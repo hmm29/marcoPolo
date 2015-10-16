@@ -34,7 +34,6 @@ var EditProfile = require('../EditProfile');
 var FBLogin = require('react-native-facebook-login');
 var Firebase = require('firebase');
 var Header = require('../../Partials/Header');
-var Home = require('../Home');
 var HomeIcon = require('../../Partials/Icons/HomeIcon');
 var Login = require('../Login');
 var sha256 = require('sha256');
@@ -154,7 +153,6 @@ var Profile = React.createClass({
         }
     },
 
-
     _updateUserLoginStatus(isOnline:boolean) {
         let ventureId = this.state.ventureId,
             currentUserRef = this.state.firebaseRef.child(`users/${ventureId}`),
@@ -235,10 +233,8 @@ var Profile = React.createClass({
 
                                  onLogout={function(){
 
-                                    _this.setState({user : null, ventureId: null});
-
-                                    // @hmm: bring up sign in modal
                                     _this.props.navigator.push({title: 'Login', component: Login});
+                                    _this.setState({user : null, ventureId: null});
                                     _this._updateUserLoginStatus(false);
 
                                   AsyncStorage.setItem('@AsyncStorage:Venture:isOnline', 'false')

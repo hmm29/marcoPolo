@@ -160,8 +160,6 @@ var Login = React.createClass({
                 this.setTimeout(() => {
                     AsyncStorage.setItem('@AsyncStorage:Venture:account', JSON.stringify(asyncObj))
                         .then(() => {
-                            alert(JSON.stringify(asyncObj))
-
                             //@hmm: get current user location & save to firebase object
                             navigator.geolocation.getCurrentPosition(
                                 (currentPosition) => {
