@@ -101,8 +101,6 @@ var Home = React.createClass({
                     .then((account:string) => {
                         account = JSON.parse(account);
 
-                        alert(JSON.stringify(account));
-
                         if (account === null) {
                             this.setState({isLoggedIn: false})
                             return;

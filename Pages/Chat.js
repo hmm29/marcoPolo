@@ -194,11 +194,10 @@ var Chat = React.createClass({
                         renderRow={this._renderMessage}
                         initialListSize={15}
                         pageSize={15}
-                        scrollsToTOp={false}
+                        scrollsToTop={false}
                         automaticallyAdjustContentInsets={false}
                         style={{backgroundColor: 'rgba(0,0,0,0.01)', width: SCREEN_WIDTH}}
-                        >
-                    </ListView>
+                        />
                     <View>
                         <View
                             style={[styles.textBoxContainer, {marginBottom: this.state.hasKeyboardSpace ? SCREEN_HEIGHT/3.1 : 0}]}>

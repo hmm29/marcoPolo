@@ -120,15 +120,11 @@ var EventsList = React.createClass({
     },
 
     renderHeader: function() {
-        var headerLikeText = this.state.headerPressCount % 2 ?
-            <View><Text style={styles.text}>1 Like</Text></View> :
-            null;
         return (
             <TouchableOpacity onPress={this._onPressHeader} style={styles.header}>
-                {headerLikeText}
                 <View>
                     <Text style={styles.text}>
-                        Table Header (click me)
+                        Events
                     </Text>
                 </View>
             </TouchableOpacity>
