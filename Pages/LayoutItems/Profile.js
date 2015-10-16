@@ -347,7 +347,6 @@ var Info = React.createClass({
                     renderLoadingView: false,
                     info: {
                         name: snapshot.val() && snapshot.val().name,
-                        email: snapshot.val() && snapshot.val().email,
                         gender: snapshot.val() && snapshot.val().gender,
                         ageRange: snapshot.val() && snapshot.val().ageRange,
                         bio: snapshot.val() && snapshot.val().bio
@@ -371,7 +370,6 @@ var Info = React.createClass({
             <View style={styles.infoContent}>
                 <Text
                     style={[styles.infoText, styles.infoTextNameAge]}>{ info && (info.name + ', ') } { info && info.ageRange && info.ageRange.min }</Text>
-                <Text style={[styles.infoText, styles.infoTextEmail]}>{ info && info.email }</Text>
                 <Text
                     style={[styles.infoText, styles.infoTextGender]}>{ info && info.gender && info.gender.capitalize() }</Text>
                 <Text style={[styles.infoText, styles.infoTextBio]}>{ info && info.bio }</Text>

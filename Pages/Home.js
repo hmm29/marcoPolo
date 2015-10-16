@@ -410,7 +410,7 @@ var Home = React.createClass({
                         this.setState({tagsArr, tagInput: ''});
                     }
                     }}
-                    placeholder={'Type a tag, separate by comma, tap to delete'}
+                    placeholder={'Type a tag. Separate by comma. Tap to delete.'}
                     placeholderTextColor={'rgba(0,0,0,0.8)'}
                     returnKeyType='done'
                     style={styles.tagsInputText}
@@ -609,14 +609,15 @@ var styles = StyleSheet.create({
         color: '#000',
         textAlign: 'center',
         fontFamily: 'AvenirNextCondensed-Regular',
-        borderRadius: 5
+        borderRadius: 5,
+        bottom: 8
     },
     tagSelection: {
         marginTop: 8,
         height: SCREEN_HEIGHT / 6.6,
         paddingTop: 19,
         paddingHorizontal: 25,
-        bottom: 5
+        bottom: 10
     },
     timeSpecificationDatePicker: {
         top: 10,
