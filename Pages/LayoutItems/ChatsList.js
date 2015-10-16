@@ -45,7 +45,6 @@ var MatchedIcon = require('../../Partials/Icons/MatchedIcon');
 var Modal = require('react-native-swipeable-modal');
 var ReactFireMixin = require('reactfire');
 var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
-var RefreshableListView = require('react-native-refreshable-listview');
 var Swipeout = require('react-native-swipeout');
 
 var INITIAL_LIST_SIZE = 8;
@@ -336,21 +335,6 @@ var User = React.createClass({
                 </TouchableHighlight>
             </Swipeout>
         );
-    }
-});
-
-var CustomRefreshingIndicator = React.createClass({
-    render() {
-        return (
-            <View style={styles.customRefreshingIndicatorContainer}>
-                <Text style={styles.customRefreshingIndicatorText}>{this.props.description}</Text>
-                <ActivityIndicatorIOS
-                    color='#fff'
-                    animating={true}
-                    style={styles.customRefreshingActivityIndicatorIOS}
-                    size='small'/>
-            </View>
-        )
     }
 });
 
