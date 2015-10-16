@@ -84,12 +84,11 @@ var User = React.createClass({
     },
 
     componentWillMount() {
-        let _this = this;
-
-        var targetUserIDHashed = _this.props.data && _this.props.data.ventureId,
-            currentUserIDHashed = _this.props.currentUserIDHashed,
-            firebaseRef = _this.props.firebaseRef,
-            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
+        let targetUserIDHashed = this.props.data && this.props.data.ventureId,
+            currentUserIDHashed = this.props.currentUserIDHashed,
+            firebaseRef = this.props.firebaseRef,
+            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests'),
+            _this = this;
 
         currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).on('value', snapshot => {
             _this.setState({status: snapshot.val() && snapshot.val().status});
@@ -106,23 +105,18 @@ var User = React.createClass({
 
     componentWillReceiveProps(nextProps) {
 
-        let _this = this;
+        let targetUserIDHashed = nextProps.data && nextProps.data.ventureId,
+            currentUserIDHashed = nextProps.currentUserIDHashed,
+            firebaseRef = nextProps.firebaseRef,
+            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests'),
+            _this = this;
 
-        if ((_this.props.data && _this.props.data.ventureId !== nextProps.data.ventureId)) {
-            var targetUserIDHashed = nextProps.data.ventureId,
-                currentUserIDHashed = nextProps.currentUserIDHashed,
-                firebaseRef = nextProps.firebaseRef,
-                currentUserRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
+        currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).once('value', snapshot => {
+            _this.setState({status: snapshot.val() && snapshot.val().status});
+        });
 
-            // make sure to reset state
-
-            _this.setState({status: ''});
-
-            currentUserRef && currentUserRef.child(targetUserIDHashed).once('value', snapshot => {
-                _this.setState({status: snapshot.val() && snapshot.val().status});
-            });
-        }
     },
+
 
     //calculateDistance(pt1:Object, pt2:Object) {
     //    if (!pt1) {
@@ -190,7 +184,7 @@ var User = React.createClass({
 
             // @hmm: accept the request
             // chatroom reference uses id of the user who accepts the received matchInteraction
-            
+
             targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
                 status: 'matched',
             }, 100);
@@ -375,44 +369,43 @@ var ChatsList = React.createClass({
     watchID: null,
 
     getInitialState() {
+        let firebaseRef = new Firebase('https://ventureappinitial.firebaseio.com/'),
+            usersListRef = firebaseRef.child('users');
+
         return {
             currentPosition: null,
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
             }),
-            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
+            firebaseRef,
             userRows: [],
             searchText: '',
             showCurrentUser: false,
-            showLoadingModal: true
+            showLoadingModal: true,
+            usersListRef
         };
     },
 
     componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
-            let usersListRef = this.state.firebaseRef.child('/users'), _this = this;
+            let _this = this;
 
             AsyncStorage.getItem('@AsyncStorage:Venture:account')
                 .then((account: string) => {
                     account = JSON.parse(account);
 
-                    usersListRef.once('value', snapshot => {
-                        _this.setState({userRows: _.cloneDeep(_.values(snapshot.val()))});
+                    let usersListRef = _this.state.firebaseRef.child('users'), _this = this;
 
-                        _this.setTimeout(() => {
+                    usersListRef && usersListRef.once('value', snapshot => {
 
-                            // @hmm: sweet! order alphabetically to sort with priority ('matched' --> 'received' --> 'sent')
-                            _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${account.ventureId}.status`));
-
-                            _this.setTimeout(() => {
-                                _this.setState({showLoadingModal: false})
-                            }, 300)
-                        }, 200);
+                        // @hmm: sweet! order alphabetically to sort with priority ('matched' --> 'received' --> 'sent')
+                        // _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${account.ventureId}.status`));
+                        _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
                     });
 
-                    this.setState({currentUserVentureId: account.ventureId});
+                    _this.setState({currentUserVentureId: account.ventureId});
 
-                    this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {
+                    _this.state.firebaseRef.child(`users/${account.ventureId}`) && _this.state.firebaseRef.child(`users/${account.ventureId}`).once('value', snapshot => {
                         _this.setState({currentUserData: snapshot.val()});
                     });
                 })
@@ -516,7 +509,7 @@ var ChatsList = React.createClass({
                             right: 0,
                             bottom: 0
                         }}
-                    swipeHideLength={0}>
+                    swipeHideLength={1.0}>
                     <View style={styles.modalView}>
                         <Logo
                             logoContainerStyle={styles.logoContainerStyle}

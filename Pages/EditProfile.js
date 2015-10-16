@@ -110,6 +110,9 @@ var EditProfile = React.createClass({
             profileRoute = _.findWhere(currentRouteStack, {title: 'Profile'});
 
         if(currentRouteStack.indexOf(profileRoute) > -1) this.props.navigator.jumpTo(profileRoute);
+        else {
+            this.props.navigator.jumpBack();
+        }
     },
 
     _setGender(selectedGender:string) {
