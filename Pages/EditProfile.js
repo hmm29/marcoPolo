@@ -107,15 +107,7 @@ var EditProfile = React.createClass({
     },
 
     _safelyNavigateToProfile() {
-        let currentRouteStack = this.props.navigator.getCurrentRoutes(),
-            profileRoute = _.findWhere(currentRouteStack, {title: 'Profile'});
-
-        if(currentRouteStack.indexOf(profileRoute) > -1) this.props.navigator.jumpTo(profileRoute);
-        else {
-            let MainLayout = require('../Layouts/MainLayout');
-
-            this.props.navigator.push({title: 'Profile', component: MainLayout, passProps: {selected: 'profile', ventureId: this.state.ventureId}});
-        }
+            this.props.navigator.pop();
     },
 
     _setGender(selectedGender:string) {

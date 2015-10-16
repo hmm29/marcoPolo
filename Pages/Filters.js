@@ -71,7 +71,7 @@ var Filters = React.createClass({
 
         if (currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
         else {
-            this.props.navigator.jumpBack();
+            this.props.navigator.pop();
             //let MainLayout = require('../Layouts/MainLayout');
             //
             //this.props.navigator.replace({title: 'Users', component: MainLayout, passProps: {selected: 'users', ventureId: this.state.ventureId}});

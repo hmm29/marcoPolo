@@ -252,7 +252,7 @@ var User = React.createClass({
     render() {
         let distance, profileModal, swipeoutBtns;
 
-        if (!this.props.currentUser && this.props.currentPosition) distance = (_.random(0.3, 0.7)).toFixed(1) + 'mi';
+        if (!this.props.currentUser && this.props.currentPosition) distance = 0.7 + 'mi';
         //this.calculateDistance(this.props.currentPosition.coords, this.props.data.location.coordinates) + ' mi'
 
         if (!this.props.isCurrentUser)
