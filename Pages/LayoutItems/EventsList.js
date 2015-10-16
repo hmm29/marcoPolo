@@ -370,8 +370,6 @@ var EventsList = React.createClass({
                 .then((account: string) => {
                     account = JSON.parse(account);
 
-                    // @hmm: sweet! order alphabetically to sort with priority ('matched' --> 'received' --> 'sent')
-
                     usersListRef.on('value', snapshot => {
                         _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${account.ventureId}.status`));
                         _this.setState({rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
@@ -430,6 +428,7 @@ var EventsList = React.createClass({
         return (
             <Header containerStyle={{position: 'relative'}}>
                 <HomeIcon onPress={() => this._safelyNavigateToHome()}/>
+                <Text>EVENTS</Text>
                 <FilterModalIcon
                     onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}/>
             </Header>
