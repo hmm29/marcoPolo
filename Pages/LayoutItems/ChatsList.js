@@ -370,7 +370,6 @@ var ChatsList = React.createClass({
             firebaseRef,
             userRows: [],
             searchText: '',
-            showCurrentUser: false,
             showLoadingModal: true,
             usersListRef
         };
@@ -396,7 +395,7 @@ var ChatsList = React.createClass({
                     this.setState({currentUserVentureId: account.ventureId})
 
                     this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {
-                        _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
+                        _this.setState({currentUserData: snapshot.val()});
                     });
                 })
                 .catch((error) => console.log(error.message))

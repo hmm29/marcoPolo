@@ -411,9 +411,15 @@ var Home = React.createClass({
                     style={styles.backdrop}>
                     <Header>
                         <ProfilePageIcon style={{opacity: 0.4}}
-                                         onPress={() => this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {selected: 'profile', ventureId: this.state.ventureId}})}/>
+                                         onPress={() => {
+                                            this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
+                                            this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {selected: 'profile', ventureId: this.state.ventureId}})
+                                         }}/>
                         <ChatsListPageIcon style={{opacity: 0.4}}
-                                           onPress={() => this._safelyNavigateForward({title: 'Chats', component: MainLayout, passProps: {selected: 'chats', ventureId: this.state.ventureId}})}
+                                           onPress={() => {
+                                            this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
+                                            this._safelyNavigateForward({title: 'Chats', component: MainLayout, passProps: {selected: 'chats', ventureId: this.state.ventureId}})
+                                           }}
                             />
                     </Header>
                     <Logo
