@@ -152,7 +152,7 @@ var User = React.createClass({
     },
 
     handleMatchInteraction() {
-        // @hmm: use hashed targetUserID as key for Firebase database
+        // @hmm: use hashed targetUserID as key for data for user in list
 
         let targetUserIDHashed = this.props.data.ventureId,
             currentUserIDHashed = this.props.currentUserIDHashed,
