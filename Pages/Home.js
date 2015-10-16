@@ -218,6 +218,11 @@ var Home = React.createClass({
         this.setState({hasKeyboardSpace: true, showAddInfoButton: false, showNextButton: false, showTextInput: false});
     },
 
+    _roundDateDownToNearestXMinutes(date, num) {
+        var coeff = 1000 * 60 * num;
+        return new Date(Math.floor(date.getTime() / coeff) * coeff);
+    },
+
     _safelyNavigateForward(route:{title:string, component:ReactClass<any,any,any>, passProps?:Object}) {
         let abbrevRoute = _.omit(route, 'component'),
             currentRouteStack = this.props.navigator.getCurrentRoutes();
@@ -366,7 +371,7 @@ var Home = React.createClass({
                             onPress={() => this.setState({activeTimeOption: 'later', hasSpecifiedTime: false})}/>
                         <ClockIcon
                             active={this.state.activeTimeOption === 'specify'}
-                            caption={this.state.hasSpecifiedTime ? this._getTimeString(this.state.date) : 'specify'}
+                            caption={this.state.hasSpecifiedTime ? this._getTimeString(this._roundDateDownToNearestXMinutes(this.state.date, 5)) : 'specify'}
                             captionStyle={styles.captionStyle}
                             onPress={() => {
                             LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);

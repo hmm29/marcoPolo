@@ -74,9 +74,9 @@ var Filters = React.createClass({
 
         if (currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
         else if (currentRouteStack.indexOf(chatsListRoute) > -1) this.props.navigator.jumpTo(chatsListRoute);
-        else {
-            this.props.navigator.pop();
-        }
+        //else {
+        //    this.props.navigator.pop();
+        //}
     },
 
     saveFilters() {
