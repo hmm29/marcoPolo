@@ -393,7 +393,6 @@ var Home = React.createClass({
 
         tagSelection = (
             <View style={[styles.tagSelection]}>
-                <Title fontSize={16}>TAGS</Title>
                 <TextInput
                     onFocus={this._onFocus}
                     onBlur={this._onBlur}
@@ -411,8 +410,8 @@ var Home = React.createClass({
                         this.setState({tagsArr, tagInput: ''});
                     }
                     }}
-                    placeholder={'Type tag, then a comma'}
-                    placeholderTextColor={'rgba(255,255,255,0.9)'}
+                    placeholder={'Type a tag, separate by comma, tap to delete'}
+                    placeholderTextColor={'rgba(0,0,0,0.8)'}
                     returnKeyType='done'
                     style={styles.tagsInputText}
                     value={this.state.tagInput}/>
@@ -466,7 +465,7 @@ var Home = React.createClass({
                         logoStyle={styles.logoStyle}/>
                     {this.state.showTextInput ? activityTitleInput : <View />}
                     {this.state.showNextButton ? nextButton : <View />}
-                    {this.state.showAddInfoButton && !this.state.showTimeSpecificationOptions ? addInfoButton : <View />}
+                    {this.state.showAddInfoButton && !this.state.showTimeSpecificationOptions && this.state.activityTitleInput ? addInfoButton : <View />}
                     {this.state.showAddInfoBox ? addInfoBox : <View/>}
                     {this.state.showTrendingItems && !this.state.showAddInfoBox ? trendingItemsCarousel : <View/>}
                 </Image>
@@ -592,35 +591,40 @@ var styles = StyleSheet.create({
         borderRadius: 12,
         paddingHorizontal: SCREEN_WIDTH / 80,
         marginHorizontal: SCREEN_WIDTH / 70,
-        paddingVertical: SCREEN_WIDTH / 200,
+        paddingVertical: SCREEN_WIDTH / 300,
         borderWidth: 0.5,
         borderColor: 'rgba(255,255,255,0.4)',
-        top: 6
+        top: 6,
+        height: SCREEN_WIDTH / 15
     },
     tagsInputText: {
         top: 5,
         borderWidth: 0.5,
         borderColor: '#0f0f0f',
-        backgroundColor: 'rgba(0,0,0,0.8)',
+        backgroundColor: 'rgba(255,255,255,0.4)',
         flex: 1,
         padding: TAG_TEXT_INPUT_PADDING,
-        height: SCREEN_HEIGHT / 30,
-        color: '#fff',
+        height: SCREEN_HEIGHT / 158,
+        fontSize: SCREEN_HEIGHT / 45,
+        color: '#000',
         textAlign: 'center',
-        fontFamily: 'AvenirNextCondensed-Regular'
+        fontFamily: 'AvenirNextCondensed-Regular',
+        borderRadius: 5
     },
     tagSelection: {
-        marginVertical: 8,
-        height: SCREEN_HEIGHT / 6.1
+        marginTop: 8,
+        height: SCREEN_HEIGHT / 6.6,
+        paddingTop: 19,
+        paddingHorizontal: 25,
+        bottom: 5
     },
     timeSpecificationDatePicker: {
         top: 10,
         height: 40,
         justifyContent: 'center',
         alignSelf: 'center',
-        backgroundColor: 'rgba(255,255,255,0.8)',
+        backgroundColor: 'rgba(255,255,255,0.8)'
     },
-
     tagText: {
         color: 'rgba(255,255,255,0.5)',
         fontFamily: 'AvenirNextCondensed-Medium'
