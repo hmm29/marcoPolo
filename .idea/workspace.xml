@@ -5,8 +5,8 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js" afterPath="$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/EditProfile.js" afterPath="$PROJECT_DIR$/Pages/EditProfile.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/Filters.js" afterPath="$PROJECT_DIR$/Pages/Filters.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/Home.js" afterPath="$PROJECT_DIR$/Pages/Home.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" afterPath="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="VentureApp.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -26,48 +26,128 @@
     <favorites_list name="VentureApp" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="UsersList.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/UsersList.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.33333334">
-              <caret line="374" column="49" selection-start-line="374" selection-start-column="48" selection-end-line="374" selection-end-column="49" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Filters.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Pages/Filters.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="68" column="0" selection-start-line="68" selection-start-column="0" selection-end-line="68" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="EditProfile.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Pages/EditProfile.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="35" column="54" selection-start-line="35" selection-start-column="54" selection-end-line="35" selection-end-column="54" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ChatsList.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="395" column="23" selection-start-line="395" selection-start-column="23" selection-end-line="395" selection-end-column="23" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.5">
+      <split-first>
+        <leaf>
+          <file leaf-file-name="UsersList.js" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/UsersList.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.4176707">
+                  <caret line="91" column="0" selection-start-line="91" selection-start-column="0" selection-end-line="91" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="Filters.js" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/Pages/Filters.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="-8.740741">
+                  <caret line="64" column="14" selection-start-line="64" selection-start-column="14" selection-end-line="64" selection-end-column="14" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="EditProfile.js" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/Pages/EditProfile.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="-7.185185">
+                  <caret line="117" column="0" selection-start-line="117" selection-start-column="0" selection-end-line="117" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="ChatsList.js" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0">
+                  <caret line="387" column="0" selection-start-line="387" selection-start-column="0" selection-end-line="387" selection-end-column="0" />
+                  <folding>
+                    <marker date="1444981504000" expanded="true" signature="2444:2948" placeholder="{...}" />
+                    <marker date="1444981504000" expanded="true" signature="8315:8448" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="8501:8634" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="8686:8810" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="8855:9048" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="9557:11436" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="9617:11416" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="9746:9900" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="9921:10656" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="10161:10628" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="10236:10401" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="10677:11263" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="10746:10833" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="11045:11182" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="11090:11163" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="11284:11392" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="11478:13398" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="11526:13374" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="11749:13336" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="11873:13229" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="12325:12541" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="12570:13187" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="12719:12897" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="12930:13151" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="13517:13907" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="13689:13887" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="19359:19751" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="19497:19729" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="19984:20257" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="20320:20954" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="20403:20934" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="20442:20898" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="20996:22998" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="21057:21130" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="21147:21472" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="21540:22978" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="22039:22953" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="22095:22234" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="22259:22501" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="22526:22925" placeholder="&lt;xml/&gt;" />
+                    <marker date="1444981504000" expanded="true" signature="22593:22881" placeholder="&lt;xml/&gt;" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="MainLayout.js" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/Layouts/MainLayout.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0">
+                  <caret line="58" column="26" selection-start-line="58" selection-start-column="26" selection-end-line="58" selection-end-column="26" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="Home.js" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/Pages/Home.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="-156.0">
+                  <caret line="413" column="70" selection-start-line="413" selection-start-column="62" selection-end-line="413" selection-end-column="70" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file leaf-file-name="ChatsList.js" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.50666666">
+                  <caret line="90" column="0" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -120,13 +200,13 @@
         <option value="$PROJECT_DIR$/Partials/Icons/FilterModalIcon.js" />
         <option value="$PROJECT_DIR$/Pages/LayoutItems/Profile.js" />
         <option value="$PROJECT_DIR$/ios/VentureApp/AppDelegate.m" />
-        <option value="$PROJECT_DIR$/Layouts/MainLayout.js" />
         <option value="$PROJECT_DIR$/Pages/Chat.js" />
         <option value="$PROJECT_DIR$/Pages/Home.js" />
+        <option value="$PROJECT_DIR$/Layouts/MainLayout.js" />
         <option value="$PROJECT_DIR$/Pages/EditProfile.js" />
-        <option value="$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js" />
         <option value="$PROJECT_DIR$/Pages/Filters.js" />
         <option value="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" />
+        <option value="$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js" />
       </list>
     </option>
   </component>
@@ -777,14 +857,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Layouts/MainLayout.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.73333335">
-          <caret line="65" column="0" selection-start-line="65" selection-start-column="0" selection-end-line="65" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ios/VentureApp/AppDelegate.m">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.53413653">
@@ -809,42 +881,50 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Layouts/MainLayout.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="58" column="26" selection-start-line="58" selection-start-column="26" selection-end-line="58" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Pages/Home.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.333333">
-          <caret line="419" column="70" selection-start-line="419" selection-start-column="70" selection-end-line="419" selection-end-column="70" />
+        <state vertical-scroll-proportion="-156.0">
+          <caret line="413" column="70" selection-start-line="413" selection-start-column="62" selection-end-line="413" selection-end-column="70" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Pages/EditProfile.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="35" column="54" selection-start-line="35" selection-start-column="54" selection-end-line="35" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="395" column="23" selection-start-line="395" selection-start-column="23" selection-end-line="395" selection-end-column="23" />
+        <state vertical-scroll-proportion="-7.185185">
+          <caret line="117" column="0" selection-start-line="117" selection-start-column="0" selection-end-line="117" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Pages/Filters.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="68" column="0" selection-start-line="68" selection-start-column="0" selection-end-line="68" selection-end-column="0" />
+        <state vertical-scroll-proportion="-8.740741">
+          <caret line="64" column="14" selection-start-line="64" selection-start-column="14" selection-end-line="64" selection-end-column="14" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/UsersList.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334">
-          <caret line="374" column="49" selection-start-line="374" selection-start-column="48" selection-end-line="374" selection-end-column="49" />
+        <state vertical-scroll-proportion="0.4176707">
+          <caret line="91" column="0" selection-start-line="91" selection-start-column="0" selection-end-line="91" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.50666666">
+          <caret line="90" column="0" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
           <folding />
         </state>
       </provider>

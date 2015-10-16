@@ -59,7 +59,8 @@ var Filters = React.createClass({
                         privacy: snapshot.val() && snapshot.val().privacy,
                         gender: snapshot.val() && snapshot.val().gender,
                         ageRangeUpper: snapshot.val() && snapshot.val().ageRangeUpper,
-                        ageRangeLower: snapshot.val() && snapshot.val().ageRangeLower
+                        ageRangeLower: snapshot.val() && snapshot.val().ageRangeLower,
+                        ventureId: snapshot.val() && snapshot.val().ventureId
                     })
             );
     },
@@ -70,7 +71,9 @@ var Filters = React.createClass({
 
         if (currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
         else {
-            this.props.navigator.replace(_.assign(usersListRoute, {component: MainLayout}));
+            let MainLayout = require('../Layouts/MainLayout');
+
+            this.props.navigator.replace({title: 'Users', component: MainLayout, passProps: {selected: 'users', ventureId: this.state.ventureId}});
         }
     },
 
