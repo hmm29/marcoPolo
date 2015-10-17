@@ -78,7 +78,7 @@ var Chat = React.createClass({
                 _this.setState({
                     contentOffsetYValue: 0,
                     message: '',
-                    messageList: snapshot && _.cloneDeep(_.values(snapshot.val()))
+                    messageList: snapshot.val() && _.cloneDeep(_.values(snapshot.val()))
                 });
                 _this.updateMessages(_.cloneDeep(_.values(snapshot.val())))
             });
@@ -127,14 +127,14 @@ var Chat = React.createClass({
             currentUserIDHashed = this.props.passProps.currentUserData.ventureId,
             messageRowStyle = styles.receivedMessageRow,
             messageTextStyle = styles.receivedMessageText,
-            sent = (currentUserIDHashed === message.senderIDHashed);
+            sentByCurrentUser = (message.senderIDHashed === currentUserIDHashed);
 
-        if (!sent) {
+        if (!sentByCurrentUser) {
             messageRowStyle = styles.sentMessageRow;
             messageTextStyle = styles.sentMessageText;
         }
 
-        var avatarImage = (!sent) ? recipient.picture : currentUserData.picture;
+        var avatarImage = (!sentByCurrentUser) ? recipient.picture : currentUserData.picture;
 
         var space = (
             <Image
@@ -143,12 +143,12 @@ var Chat = React.createClass({
         );
         return (
             <LinearGradient
-                colors={(!sent) ? ['#124B8F', '#2C90C8', '#fff'] : ['#fff', '#fff']}
+                colors={(!sentByCurrentUser) ? ['#124B8F', '#2C90C8', '#fff'] : ['#fff', '#fff']}
                 start={[0,1]}
                 end={[1,0.9]}
                 locations={[0,1.0,0.9]}
                 style={styles.messageRow}>
-                { (!sent) ? space : null }
+                { (!sentByCurrentUser) ? space : null }
                 <View style={messageRowStyle}>
                     <Text style={styles.baseText}>
                         <Text style={messageTextStyle}>
@@ -156,7 +156,7 @@ var Chat = React.createClass({
                         </Text>
                     </Text>
                 </View>
-                { (sent) ? space : null }
+                { (sentByCurrentUser) ? space : null }
             </LinearGradient>
         );
     },
@@ -187,7 +187,9 @@ var Chat = React.createClass({
                     {this._renderHeader()}
                 </View>
                 <View onStartShouldSetResponder={this.containerTouched} style={styles.container}>
-                    <RecipientInfoBar chatRoomRef={this.props.passProps.chatRoomRef} closeDropdownProfile={this.state.closeDropdownProfile} navigator={this.props.navigator} recipientData={this.props.passProps}/>
+                    <RecipientInfoBar chatRoomRef={this.props.passProps.chatRoomRef}
+                                      closeDropdownProfile={this.state.closeDropdownProfile}
+                                      navigator={this.props.navigator} recipientData={this.props.passProps}/>
                     <ListView
                         contentOffset={{x: 0, y: this.state.contentOffsetYValue}}
                         dataSource={this.state.dataSource}
@@ -222,7 +224,8 @@ var Chat = React.createClass({
                         if(this.state.message.length) this._sendMessage();
                         else this.refs[MESSAGE_TEXT_INPUT_REF].blur();
                     }}>
-                                <Text style={{color: 'white', fontFamily: 'AvenirNextCondensed-Regular', marginHorizontal: 20, backgroundColor: 'rgba(255,255,255,0.3)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 3}}>Send</Text></TouchableOpacity>
+                                <Text
+                                    style={{color: 'white', fontFamily: 'AvenirNextCondensed-Regular', marginHorizontal: 20, backgroundColor: 'rgba(255,255,255,0.3)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 3}}>Send</Text></TouchableOpacity>
                         </View>
                     </View>
                 </View>
@@ -269,7 +272,7 @@ var RecipientInfoBar = React.createClass({
                     {user.firstName}, {user.ageRange && user.ageRange.exactVal} {'\t'} |{'\t'}
                     <Text style={{fontFamily: 'AvenirNextCondensed-Medium'}}>
                         <Text
-                            style={{fontSize: 20}}>{user === currentUserData ? this.state.activity && this.state.activity : user.activityPreference && user.activityPreference.title && user.activityPreference.title.capitalize().slice(0,-1)}</Text>: {user.activityPreference && (user.activityPreference.start.time || user.activityPreference.status)}
+                            style={{fontSize: 20}}>{user === currentUserData ? this.state.activity && this.state.activity : user.activityPreference && user.activityPreference.title && user.activityPreference.title.capitalize().slice(0, -1)}</Text>: {user.activityPreference && (user.activityPreference.start.time || user.activityPreference.status)}
                         {'\n'}
                     </Text>
                 </Text>
@@ -323,7 +326,8 @@ var RecipientInfoBar = React.createClass({
                 }} navigator={this.props.navigator} currentUserActivityPreference={this.state.activity}
                                      currentUserData={currentUserData} style={{marginRight: 20}}/>
                 </View>
-                <TimerBar chatRoomRef={this.props.chatRoomRef} currentUserData={currentUserData} navigator={this.props.navigator} recipient={recipient}/>
+                <TimerBar chatRoomRef={this.props.chatRoomRef} currentUserData={currentUserData}
+                          navigator={this.props.navigator} recipient={recipient}/>
                 {this.state.dir === 'column' ?
                     <View style={{backgroundColor: '#fff'}}>
                         {infoContent}
@@ -349,7 +353,7 @@ var RecipientAvatar = React.createClass({
             recipient = this.props.recipient,
             user;
 
-        if(this.props.recipient) user = {firstName: recipient.firstName, picture: recipient.picture}
+        if (this.props.recipient) user = {firstName: recipient.firstName, picture: recipient.picture}
         else user = {firstName: currentUserData.firstName, picture: currentUserData.picture}
 
         return (
@@ -437,14 +441,13 @@ var TimerBar = React.createClass({
     render() {
         return (
             <View
-                style={{backgroundColor: 'rgba(0,0,0,0.2)', width: SCREEN_WIDTH, height: 40, flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                style={styles.timerBar}>
                 <Text
-                    style={{color: '#fff', fontFamily: 'AvenirNextCondensed-Medium'}}>{this._getTimerValue(this.state.timerValInMs)}</Text>
+                    style={styles.timer}>{this._getTimerValue(this.state.timerValInMs)}</Text>
             </View>
         )
     }
 });
-
 
 var styles = StyleSheet.create({
     avatarImage: {
@@ -586,6 +589,18 @@ var styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'rgba(0,0,0,0.2)',
         width: SCREEN_WIDTH
+    },
+    timer: {
+        color: '#fff',
+        fontFamily: 'AvenirNextCondensed-Medium'
+    },
+    timerBar: {
+        backgroundColor: 'rgba(0,0,0,0.2)',
+        width: SCREEN_WIDTH,
+        height: 40,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     userImage: {
         height: 20,

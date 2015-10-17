@@ -129,14 +129,13 @@ var IOSLayout = React.createClass({
                     {this._renderComponent('users')}
 
                 </TabBarItemIOS>
-
                 {this.state.chatCount ?
 
                     <TabBarItemIOS
                     iconName={'ion|ios-chatboxes-outline'}
                     title={'Chats'}
                     iconSize={TAB_BAR_ICON_SIZE}
-                    badgeValue={JSON.stringify(this.state.chatCount) || ''}
+                    badgeValue={JSON.stringify(this.state.chatCount)}
                     selected={this.state.selectedTab === 'chats'}
                     onPress={() => {
                     this.setState({

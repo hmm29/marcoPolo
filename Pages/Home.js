@@ -343,7 +343,6 @@ var Home = React.createClass({
 
                 </View>
             );
-
         else
             content = (
                 <View style={styles.addTimeInfoContainer}>
@@ -531,8 +530,8 @@ var styles = StyleSheet.create({
     },
     addTimeInfoContainer: {},
     backdrop: {
-        paddingTop: 30,
         flex: 1,
+        paddingTop: 10,
         alignItems: 'center',
         width: SCREEN_WIDTH,
         height: SCREEN_HEIGHT

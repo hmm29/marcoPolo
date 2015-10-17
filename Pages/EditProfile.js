@@ -138,7 +138,7 @@ var EditProfile = React.createClass({
     render() {
         let editBio = (
             <View
-                style={{flexDirection: 'row', alignItems: 'center', margin: 10, justifyContent: 'space-between', bottom: 30}}>
+                style={styles.editBio}>
                 <Text
                     style={styles.label}>Bio</Text>
                 <TextInput
@@ -155,7 +155,7 @@ var EditProfile = React.createClass({
         );
 
         let genderField = (
-            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', margin: 10}}>
+            <View style={styles.genderField}>
                 <Text style={styles.label}>{this.state.selectedGender && this.state.selectedGender.capitalize()}</Text>
                 <TouchableOpacity onPress={() => {
                     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
@@ -172,7 +172,7 @@ var EditProfile = React.createClass({
         );
 
         let genderAutocomplete = (
-            <View style={{margin: 10}}>
+            <View style={styles.genderAutocomplete}>
                 <AutoComplete
                     onBlur={this._onBlurGender}
                     onFocus={this._onFocusGender}
@@ -288,6 +288,22 @@ var styles = StyleSheet.create({
         alignItems: 'flex-start',
         right: 10,
         bottom: 15
+    },
+    editBio: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        margin: 10,
+        justifyContent: 'space-between',
+        bottom: 30
+    },
+    genderAutocomplete: {
+        margin: 10
+    },
+    genderField: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        margin: 10
     },
     header: {
         flex: 1,
