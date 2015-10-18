@@ -324,7 +324,7 @@ var EditProfile = React.createClass({
 
     _renderHeader() {
         return (
-            <View style={styles.header}>
+            <Header containerStyle={{backgroundColor: '#040A19'}}>
                 <TouchableOpacity onPress={() => this._safelyNavigateToProfile()} style={{right: 30}}>
                     <Icon
                         color="#fff"
@@ -337,7 +337,7 @@ var EditProfile = React.createClass({
                     style={styles.headerTitle}>
                     EDIT PROFILE </Text>
                 <Text />
-            </View>
+            </Header>
         )
     }
 });

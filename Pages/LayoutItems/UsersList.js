@@ -468,7 +468,7 @@ var UsersList = React.createClass({
 
     _renderHeader() {
         return (
-            <Header containerStyle={{position: 'relative'}}>
+            <Header>
                 <HomeIcon onPress={() => this._safelyNavigateToHome()}/>
                 <TextInput
                     ref={SEARCH_TEXT_INPUT_REF}

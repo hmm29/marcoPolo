@@ -281,7 +281,7 @@ var Profile = React.createClass({
 
     renderHeader() {
         return (
-            <View style={styles.header}>
+            <Header containerStyle={{backgroundColor: '#040A19'}}>
                 <View style={{left: 20}}>
                     <HomeIcon onPress={() => {
                         this._safelyNavigateToHome();
@@ -293,7 +293,7 @@ var Profile = React.createClass({
                           this._safelyNavigateForward({title: 'EditProfile',component: EditProfile,  passProps: {ventureId: this.state.ventureId}});
                     }} />
                 </View>
-            </View>
+            </Header>
         )
     }
 });
@@ -398,22 +398,12 @@ var styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         width: SCREEN_WIDTH,
-        height: SCREEN_HEIGHT
     },
     container: {
         flex: 1
     },
     FBLoginButton: {
         top: 70
-    },
-    header: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: '#040A19',
-        paddingTop: 20,
-        paddingBottom: 5
     },
     infoContent: {
         paddingLeft: 20,
