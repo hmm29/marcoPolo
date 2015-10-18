@@ -10,6 +10,7 @@
     "lodash": "^3.10.1",
     "react-native": "^0.12.0",
     "react-native-autocomplete": "^0.1.1",
+    "react-native-camera": "^0.3.8",
     "react-native-device-display": "^1.0.4",
     "react-native-facebook-login": "^0.6.0",
     "react-native-icons": "^0.5.1",

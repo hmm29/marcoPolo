@@ -13,10 +13,12 @@
 var React = require('react-native');
 
 var {
+    ActionSheetIOS,
     AsyncStorage,
     Image,
     InteractionManager,
     LayoutAnimation,
+    NativeModules,
     StyleSheet,
     Text,
     TextInput,
@@ -27,6 +29,7 @@ var {
 var _ = require('lodash');
 var AutoComplete = require('react-native-autocomplete');
 var BackIcon = require('../Partials/Icons/BackIcon');
+var Camera = require('react-native-camera');
 var Display = require('react-native-device-display');
 var Firebase = require('firebase');
 var GenderList = require('../data/genders.json').genders;
@@ -35,6 +38,17 @@ var { Icon, } = require('react-native-icons');
 var MainLayout = require('../Layouts/MainLayout');
 var Profile = require('../Pages/LayoutItems/Profile');
 
+var CAMERA_ICON_SIZE = 48;
+var CAMERA_REF = 'camera';
+var CAMERA_ROLL_OPTION = 'Camera Roll';
+var TAKE_PHOTO_OPTION = 'Take Photo';
+
+var BUTTONS = [
+    TAKE_PHOTO_OPTION,
+    CAMERA_ROLL_OPTION,
+    'Cancel'
+];
+var CANCEL_INDEX = 3;
 var SCREEN_WIDTH = Display.width;
 var SCREEN_HEIGHT = Display.height;
 
@@ -48,34 +62,36 @@ var EditProfile = React.createClass({
 
     getInitialState() {
         return {
+            cameraType: Camera.constants.Type.back,
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             hasKeyboardSpace: false,
             showAutocomplete: false,
             showBioField: true,
+            showCamera: false,
             isEditingGenderField: false,
             genderMatches: []
         }
     },
 
     componentWillMount() {
-            let ventureId = this.props.passProps.ventureId;
+        let ventureId = this.props.passProps.ventureId;
 
-            this.state.firebaseRef.child(`users/${ventureId}`).once('value', snapshot => {
+        this.state.firebaseRef.child(`users/${ventureId}`).once('value', snapshot => {
 
-                this.setState({
-                    currentAge: snapshot.val() && snapshot.val().ageRange && snapshot.val().ageRange.exactVal,
-                    currentBio: snapshot.val() && snapshot.val().bio,
-                    currentGender: snapshot.val() && snapshot.val().gender,
-                    currentName: snapshot.val() && snapshot.val().name,
-                    currentPic: snapshot.val() && snapshot.val().picture,
-                    originalBio: snapshot.val() && snapshot.val().bio,
-                    originalGender: snapshot.val() && snapshot.val().gender,
-                    originalPic: snapshot.val() && snapshot.val().picture,
-                    selectedGender: snapshot.val() && snapshot.val().gender,
-                    ventureId
-                });
-
+            this.setState({
+                currentAge: snapshot.val() && snapshot.val().ageRange && snapshot.val().ageRange.exactVal,
+                currentBio: snapshot.val() && snapshot.val().bio,
+                currentGender: snapshot.val() && snapshot.val().gender,
+                currentName: snapshot.val() && snapshot.val().name,
+                currentPic: snapshot.val() && snapshot.val().picture,
+                originalBio: snapshot.val() && snapshot.val().bio,
+                originalGender: snapshot.val() && snapshot.val().gender,
+                originalPic: snapshot.val() && snapshot.val().picture,
+                selectedGender: snapshot.val() && snapshot.val().gender,
+                ventureId
             });
+
+        });
     },
 
     _onBlurBio() {
@@ -90,7 +106,12 @@ var EditProfile = React.createClass({
 
     _onBlurGender() {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-        this.setState({showAutocomplete: false, isEditingGenderField: false, hasKeyboardSpace: false, showBioField: true});
+        this.setState({
+            showAutocomplete: false,
+            isEditingGenderField: false,
+            hasKeyboardSpace: false,
+            showBioField: true
+        });
     },
 
     _onFocusGender() {
@@ -110,14 +131,8 @@ var EditProfile = React.createClass({
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
             profileRoute = _.findWhere(currentRouteStack, {title: 'Profile'});
 
-            if(currentRouteStack.indexOf(profileRoute) > -1) this.props.navigator.jumpTo(profileRoute)
-            else this.props.navigator.pop();
-    },
-
-    _setGender(selectedGender:string) {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-        this.setState({selectedGender: selectedGender});
-        this._onBlurGender()
+        if (currentRouteStack.indexOf(profileRoute) > -1) this.props.navigator.jumpTo(profileRoute)
+        else this.props.navigator.pop();
     },
 
     saveData() {
@@ -133,6 +148,54 @@ var EditProfile = React.createClass({
             this.state.firebaseRef.child(`users/${ventureId}/picture`).set(this.state.currentPic);
 
         this._safelyNavigateToProfile();
+    },
+
+    _setGender(selectedGender:string) {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+        this.setState({selectedGender: selectedGender});
+        this._onBlurGender()
+    },
+
+    _showActionSheet() {
+        ActionSheetIOS.showActionSheetWithOptions({
+                options: BUTTONS,
+                cancelButtonIndex: CANCEL_INDEX
+            },
+            (buttonIndex) => {
+
+                if (BUTTONS[buttonIndex] === TAKE_PHOTO_OPTION) {
+                    //@hmm: open React Native camera
+                    this.setState({showCamera: true});
+                }
+
+                if (BUTTONS[buttonIndex] == CAMERA_ROLL_OPTION) {
+                    //@hmm: show camera roll
+                    alert('show camera roll');
+                }
+
+            });
+    },
+
+    _switchCamera() {
+        let state = this.state;
+        state.cameraType = state.cameraType === Camera.constants.Type.back
+            ? Camera.constants.Type.front : Camera.constants.Type.back;
+        this.setState(state);
+    },
+
+    _takePicture() {
+        let _this = this;
+
+        this.refs[CAMERA_REF].capture(function (err, data) {
+            console.log(err, data);
+
+            //@hmm: HACK to add base_64 data to camera images
+            // See https://medium.com/@scottdixon/react-native-creating-a-custom-module-to-upload-camera-roll-images-7a3c26bac309
+
+            NativeModules.ReadImageData.readImage(data, (image) => {
+                _this.setState({currentPic: 'data:image/jpeg;base64,' + image, showCamera: false});
+            })
+        });
     },
 
     render() {
@@ -151,6 +214,14 @@ var EditProfile = React.createClass({
                     returnKeyType='done'
                     style={styles.bio}
                     value={this.state.currentBio}/>
+            </View>
+        );
+
+        let editPhoto = (
+            <View>
+                <TouchableOpacity onPress={this._showActionSheet}>
+                    <Image source={{isStatic: true, uri: this.state.currentPic}} style={styles.currentPic}/>
+                </TouchableOpacity>
             </View>
         );
 
@@ -196,14 +267,43 @@ var EditProfile = React.createClass({
         );
 
 
-        return (
+        return this.state.showCamera ?
+
+            <Camera
+                ref={CAMERA_REF}
+                style={styles.cameraContainer}
+                type={this.state.cameraType}>
+                <View style={{flexDirection: 'row'}}>
+                    <TouchableOpacity onPress={this._takePicture}>
+                        <Icon
+                            color="#fff"
+                            name="ion|ios-camera"
+                            size={CAMERA_ICON_SIZE}
+                            style={{width: CAMERA_ICON_SIZE, height: CAMERA_ICON_SIZE, paddingHorizontal: SCREEN_WIDTH/5}}
+                            />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={this._switchCamera}>
+                        <Icon
+                            color="#fff"
+                            name="ion|ios-reverse-camera"
+                            size={CAMERA_ICON_SIZE}
+                            style={{width: CAMERA_ICON_SIZE, height: CAMERA_ICON_SIZE, paddingHorizontal: SCREEN_WIDTH/5}}
+                            />
+                    </TouchableOpacity>
+                </View>
+            </Camera>
+
+            :
+
             <View style={styles.container}>
                 <View>
                     {this._renderHeader()}
                 </View>
                 <View style={{bottom: this.state.hasKeyboardSpace ? SCREEN_HEIGHT/ 3 : 0}}>
                     <Image source={require('image!about')} style={styles.backdrop}>
-                        <Image source={{uri: this.state.currentPic}} style={styles.currentPic}/>
+
+                        {editPhoto}
+
                         <Text
                             style={[styles.label, {fontSize: 22}]}>{this.state.currentName} {this.state.currentName ? ',' : ''} {this.state.currentAge}</Text>
 
@@ -220,7 +320,6 @@ var EditProfile = React.createClass({
                     </Image>
                 </View>
             </View>
-        )
     },
 
     _renderHeader() {
@@ -257,7 +356,6 @@ var styles = StyleSheet.create({
     backdrop: {
         width: SCREEN_WIDTH,
         height: SCREEN_HEIGHT,
-        flex: 1,
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
@@ -273,6 +371,14 @@ var styles = StyleSheet.create({
         marginVertical: SCREEN_HEIGHT / 90,
         fontFamily: 'AvenirNextCondensed-Regular',
         color: 'white'
+    },
+    cameraContainer: {
+        height: SCREEN_HEIGHT,
+        width: SCREEN_WIDTH,
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        padding: 20
     },
     container: {
         flex: 1
