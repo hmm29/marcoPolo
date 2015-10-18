@@ -15,6 +15,7 @@
 var React = require('react-native');
 
 var {
+    AppStateIOS,
     Image,
     InteractionManager,
     LayoutAnimation,
@@ -109,12 +110,12 @@ var Chat = React.createClass({
                     <Icon
                         color="#fff"
                         name="ion|ios-arrow-thin-left"
-                        size={32}
-                        style={{width: 32, height: 32}}
+                        size={36}
+                        style={{width: 38, height: 38}}
                         />
                 </TouchableOpacity>
                 <Text
-                    style={{color: '#fff', right: 10, fontSize: 22, fontFamily: 'AvenirNextCondensed-Medium'}}>
+                    style={styles.activityPreferenceTitle}>
                     {this.props.passProps.currentUserData.activityPreference.title && this.props.passProps.currentUserData.activityPreference.title.toUpperCase() + '?'} </Text>
                 <Text />
             </View>
@@ -295,7 +296,7 @@ var RecipientInfoBar = React.createClass({
                     style={styles.textInput}
                     value={this.state.activity}/> : <TextInput />}
                 <View style={[styles.tagBar, {bottom: 10}]}>
-                    <Text style={{color: '#222', fontSize: 16, fontFamily: 'AvenirNextCondensed-Regular'}}>TAGS: </Text>
+                    <Text style={styles.tagsTitle}>TAGS: </Text>
                     {tags && tags.map((tag) => (
                         <TouchableOpacity style={styles.tag}><Text
                             style={styles.tagText}>{tag}</Text></TouchableOpacity>
@@ -371,13 +372,40 @@ var RecipientAvatar = React.createClass({
 var TimerBar = React.createClass({
     getInitialState() {
         return {
-            timerValInMs: INITIAL_TIMER_VAL_IN_MS
+            activeToBackgroundTimeRecordInMs: null,
+            currentAppState: AppStateIOS.currentState,
+            previousAppState: null,
+            timerValInMs: INITIAL_TIMER_VAL_IN_MS,
+            timerValueRecordInMs: null
         }
     },
 
     mixins: [TimerMixin],
 
     _handle: null,
+
+    _handleAppStateChange(currentAppState) {
+        let previousAppState = this.state.currentAppState;
+
+        this.setState({currentAppState, previousAppState});
+
+        // @hmm: Hack for maintaining timer when app goes in background
+        // Background tasks are currently not supported in React Native
+
+        if(currentAppState === 'background') this.setState({
+            activeToBackgroundTimeRecordInMs: (new Date()).getTime(),
+            timerValueRecordInMs: this.state.timerValInMs
+        });
+
+        if(previousAppState === 'background' && currentAppState === 'active') {
+            let currentTimeInMs = (new Date()).getTime(),
+                approxTimeSpentInBackgroundStateInMs = 1000 * Math.floor((currentTimeInMs-this.state.activeToBackgroundTimeRecordInMs) / 1000),
+                updatedTimerValInMs = this.state.timerValRecordInMs-approxTimeSpentInBackgroundStateInMs;
+
+            if(updatedTimerValInMs < 1000) this._destroyChatroom(this.props.chatRoomRef);
+            else this.setState({timerValInMs: updatedTimerValInMs });
+        }
+    },
 
     componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
@@ -397,10 +425,13 @@ var TimerBar = React.createClass({
                         _this.setState({timerValInMs: this.state.timerValInMs - 1000});
                         chatRoomRef.child('timer').set({value: this.state.timerValInMs});
 
-                        if (this.state.timerValInMs === 0) {
+                        if (this.state.timerValInMs <= 1000) {
                             _this.clearInterval(_this.handle);
-                            if (_.last(this.props.navigator.getCurrentRoutes()).title === 'Chat') this.props.navigator.pop();
-                            chatRoomRef.set({null});
+
+                            //TODO: give each chat and its route a globally unique ID
+                            // Find in route stack, delete, and reset the route stack
+
+                            this._destroyChatroom(chatRoomRef);
                         }
                     }, 1000);
 
@@ -418,7 +449,7 @@ var TimerBar = React.createClass({
                     chatRoomRef.child('timer/value').on('value', snapshot => {
                         this.setState({timerValInMs: snapshot.val()});
 
-                        if (this.state.timerValInMs === 0) {
+                        if (this.state.timerValInMs < 1000) {
                             if (_.last(this.props.navigator.getCurrentRoutes()).title === 'Chat') this.props.navigator.pop();
                         }
 
@@ -429,8 +460,17 @@ var TimerBar = React.createClass({
 
     },
 
+    componentDidMount() {
+        AppStateIOS.addEventListener('change', this._handleAppStateChange);
+    },
+
+    _destroyChatroom(chatRoomRef:string) {
+        if (_.last(this.props.navigator.getCurrentRoutes()).title === 'Chat') this.props.navigator.pop();
+        chatRoomRef.set({null});
+    },
+
     componentWillUnmount() {
-        this.clearInterval(this._handle);
+        AppStateIOS.removeEventListener('change', this._handleAppStateChange);
     },
 
     _getTimerValue(numOfMilliseconds:number) {
@@ -450,6 +490,12 @@ var TimerBar = React.createClass({
 });
 
 var styles = StyleSheet.create({
+    activityPreferenceTitle: {
+        color: '#fff',
+        right: 10,
+        fontSize: 22,
+        fontFamily: 'AvenirNextCondensed-Medium'
+    },
     avatarImage: {
         width: 50,
         height: 50,
@@ -561,7 +607,12 @@ var styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginVertical: 10,
+        marginVertical: 10
+    },
+    tagsTitle: {
+        color: '#222',
+        fontSize: 16,
+        fontFamily: 'AvenirNextCondensed-Regular'
     },
     tagText: {
         color: 'rgba(255,255,255,0.95)',
