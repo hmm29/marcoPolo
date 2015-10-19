@@ -147,14 +147,13 @@ var User = React.createClass({
     },
 
     handleMatchInteraction() {
-        // @hmm: use hashed targetUserID as key for Firebase database
+        // @hmm: use hashed targetUserID as key for data for user in list
 
         let targetUserIDHashed = this.props.data.ventureId,
             currentUserIDHashed = this.props.currentUserIDHashed,
             firebaseRef = this.props.firebaseRef,
             targetUserMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/match_requests'),
-            currentUserMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/match_requests'),
-            _this = this;
+            currentUserMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
 
         if (this.state.status === 'sent') {
 
@@ -169,51 +168,68 @@ var User = React.createClass({
             // @hmm: accept the request
             // chatroom reference uses id of the user who accepts the received matchInteraction
 
-            // let chatRoomRef = firebaseRef.child('chat_rooms/' + targetUserIDHashed + '_TO_' + currentUserIDHashed);
-
-            targetUserMatchRequestsRef.child(currentUserIDHashed).set({
+            targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
                 status: 'matched',
-            });
+            }, 100);
 
-            currentUserMatchRequestsRef.child(targetUserIDHashed).set({
+            currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
                 status: 'matched',
-            });
+            }, 100);
         }
 
         else if (this.state.status === 'matched') {
-            let distance = 0.7 + ' mi';
+            let distance = 0.7 + ' mi',
+                _id =  currentUserIDHashed + '_TO_' + targetUserIDHashed;
 
-            let chatRoomRef = firebaseRef.child('chat_rooms/' + currentUserIDHashed + '_TO_' + targetUserIDHashed);
+            let chatRoomRef = firebaseRef.child(`chat_rooms/${_id}`),
+                currentRouteStack = this.props.navigator.getCurrentRoutes(),
+                chatRoomRoute = _.findWhere(currentRouteStack, {title: 'Chat', passProps: {_id}});
 
-            chatRoomRef.child('timer').set({value: 300000}); // set timer
+            chatRoomRef.child('_id').set(_id); // @hmm: set unique chat Id
+            chatRoomRef.child('timer').set({value: 300000}); // @hmm: set timer
 
-            currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).off();
+            // currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).off();
 
-            chatRoomRef.once('value', snapshot => {
-                if (snapshot.val() && _.last(_this.props.navigator.getCurrentRoutes()).title === 'Chat') _this.props.navigator.jumpForward();
-                else {
-                    _this.props.navigator.push({
+            firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).once('value', snapshot => {
+                if(snapshot.val() === 0) {
+                    this.props.navigator.push({
                         title: 'Chat',
                         component: Chat,
                         passProps: {
-                            recipient: _this.props.data,
+                            _id,
+                            recipient: this.props.data,
                             distance,
                             chatRoomRef,
-                            currentUserData: _this.props.currentUserData
+                            currentUserData: this.props.currentUserData
                         }
                     });
                 }
-            })
+                else if (chatRoomRoute) this.props.navigator.jumpTo(chatRoomRoute);
+                else {
+                    currentRouteStack.push({
+                        title: 'Chat',
+                        component: Chat,
+                        passProps: {
+                            _id,
+                            recipient: this.props.data,
+                            distance,
+                            chatRoomRef,
+                            currentUserData: this.props.currentUserData
+                        }
+                    });
+                    this.props.navigator.immediatelyResetRouteStack(currentRouteStack);
+                }
+            });
 
         }
 
         else {
-            targetUserMatchRequestsRef.child(currentUserIDHashed).set({
+            targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
                 status: 'received'
-            });
-            currentUserMatchRequestsRef.child(targetUserIDHashed).set({
+            }, 200);
+            currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
                 status: 'sent'
-            });
+            }, 300);
         }
     },
 

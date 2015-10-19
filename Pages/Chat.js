@@ -36,7 +36,7 @@ var LinearGradient = require('react-native-linear-gradient');
 var ReactFireMixin = require('reactfire');
 var TimerMixin = require('react-timer-mixin');
 
-var INITIAL_TIMER_VAL_IN_MS = 300000;
+var INITIAL_TIMER_VAL_IN_MS = 10000;
 var SCREEN_HEIGHT = Display.height;
 var SCREEN_WIDTH = Display.width;
 var MESSAGE_TEXT_INPUT_REF = 'messageTextInput';
@@ -105,8 +105,7 @@ var Chat = React.createClass({
     _renderHeader() {
         return (
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => {
-                        this.props.navigator.jumpBack()}} style={{right: 30}}>
+                <TouchableOpacity onPress={this._safelyNavigateToMainLayout} style={{right: 30}}>
                     <Icon
                         color="#fff"
                         name="ion|ios-arrow-thin-left"
@@ -162,6 +161,24 @@ var Chat = React.createClass({
         );
     },
 
+    _safelyNavigateToMainLayout() {
+        let currentRouteStack = this.props.navigator.getCurrentRoutes(),
+            // @hmm navigate back to one of main layout components
+            chatsListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Chats'}),
+            eventsListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Events'}),
+            hotRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Hot'}),
+            profileRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Profile'}),
+            usersListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Users'});
+
+        if(currentRouteStack.indexOf(chatsListRoute) > -1) this.props.navigator.jumpTo(chatsListRoute);
+
+        if(currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
+        else if(currentRouteStack.indexOf(eventsListRoute) > -1) this.props.navigator.jumpTo(eventsListRoute);
+        else if(currentRouteStack.indexOf(profileRoute) > -1) this.props.navigator.jumpTo(profileRoute);
+        else if(currentRouteStack.indexOf(hotRoute) > -1) this.props.navigator.jumpTo(hotRoute);
+        else this.props.navigator.jumpBack();
+    },
+
     _sendMessage() {
         var _this = this;
 
@@ -190,7 +207,11 @@ var Chat = React.createClass({
                 <View onStartShouldSetResponder={this.containerTouched} style={styles.container}>
                     <RecipientInfoBar chatRoomRef={this.props.passProps.chatRoomRef}
                                       closeDropdownProfile={this.state.closeDropdownProfile}
-                                      navigator={this.props.navigator} recipientData={this.props.passProps}/>
+                                      _id={this.props.passProps._id}
+                                      navigator={this.props.navigator}
+                                      recipientData={this.props.passProps}
+                                      safelyNavigateToMainLayout={this._safelyNavigateToMainLayout}
+                        />
                     <ListView
                         contentOffset={{x: 0, y: this.state.contentOffsetYValue}}
                         dataSource={this.state.dataSource}
@@ -237,7 +258,12 @@ var Chat = React.createClass({
 
 var RecipientInfoBar = React.createClass({
     propTypes: {
+        chatRoomRef: React.PropTypes.string.isRequired,
+        closeDropdownProfile: React.PropTypes.bool.isRequired,
+        _id: React.PropTypes.string.isRequired,
+        navigator: React.PropTypes.object,
         recipientData: React.PropTypes.object.isRequired,
+        safelyNavigateToMainLayout: React.PropTypes.func.isRequired
     },
 
     getInitialState() {
@@ -256,14 +282,12 @@ var RecipientInfoBar = React.createClass({
     },
 
     render(){
-        var recipient = this.props.recipientData.recipient;
-        var currentUserData = this.props.recipientData.currentUserData;
+        let currentUserData = this.props.recipientData.currentUserData,
+            recipient = this.props.recipientData.recipient,
+            tags = (this.state.infoContent === 'recipient' ? recipient.activityPreference.tags : currentUserData.activityPreference.tags),
+            user = (this.state.infoContent === 'recipient' ? recipient : currentUserData);
 
-        var user = (this.state.infoContent === 'recipient' ? recipient : currentUserData);
-
-        var tags = (this.state.infoContent === 'recipient' ? recipient.activityPreference.tags : currentUserData.activityPreference.tags)
-
-        var infoContent = (
+        let infoContent = (
             <View
                 style={{paddingVertical: (user === recipient ? SCREEN_HEIGHT/40 : SCREEN_HEIGHT/97), bottom: (this.state.hasKeyboardSpace ? SCREEN_HEIGHT/3.5 : 0), backgroundColor: '#eee', flexDirection: 'column', justifyContent: 'center'}}>
                 <Image source={{uri: user.picture}}
@@ -327,8 +351,13 @@ var RecipientInfoBar = React.createClass({
                 }} navigator={this.props.navigator} currentUserActivityPreference={this.state.activity}
                                      currentUserData={currentUserData} style={{marginRight: 20}}/>
                 </View>
-                <TimerBar chatRoomRef={this.props.chatRoomRef} currentUserData={currentUserData}
-                          navigator={this.props.navigator} recipient={recipient}/>
+                <TimerBar chatRoomRef={this.props.chatRoomRef}
+                          currentUserData={currentUserData}
+                          _id={this.props._id}
+                          navigator={this.props.navigator}
+                          recipient={recipient}
+                          safelyNavigateToMainLayout={this.props.safelyNavigateToMainLayout}
+                    />
                 {this.state.dir === 'column' ?
                     <View style={{backgroundColor: '#fff'}}>
                         {infoContent}
@@ -346,7 +375,8 @@ var RecipientAvatar = React.createClass({
         onPress: React.PropTypes.func,
         currentUserData: React.PropTypes.object,
         currentUserActivityPreference: React.PropTypes.string,
-        recipient: React.PropTypes.object
+        recipient: React.PropTypes.object,
+        safelyNavigateToMainLayout: React.PropTypes.func.isRequired
     },
 
     render() {
@@ -370,13 +400,23 @@ var RecipientAvatar = React.createClass({
 });
 
 var TimerBar = React.createClass({
+    propTypes: {
+        chatRoomRef: React.PropTypes.string.isRequired,
+        currentUserData: React.PropTypes.object.isRequired,
+        _id: React.PropTypes.string.isRequired,
+        navigator: React.PropTypes.object.isRequired,
+        recipient: React.PropTypes.object.isRequired,
+        safelyNavigateToMainLayout: React.PropTypes.func.isRequired
+    },
+
     getInitialState() {
         return {
             activeToBackgroundTimeRecordInMs: null,
             currentAppState: AppStateIOS.currentState,
+            _id: React.PropTypes.string.isRequired,
+            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             previousAppState: null,
-            timerValInMs: INITIAL_TIMER_VAL_IN_MS,
-            timerValueRecordInMs: null
+            timerValInMs: INITIAL_TIMER_VAL_IN_MS
         }
     },
 
@@ -384,38 +424,15 @@ var TimerBar = React.createClass({
 
     _handle: null,
 
-    _handleAppStateChange(currentAppState) {
-        let previousAppState = this.state.currentAppState;
-
-        this.setState({currentAppState, previousAppState});
-
-        // @hmm: Hack for maintaining timer when app goes in background
-        // Background tasks are currently not supported in React Native
-
-        if(currentAppState === 'background') this.setState({
-            activeToBackgroundTimeRecordInMs: (new Date()).getTime(),
-            timerValueRecordInMs: this.state.timerValInMs
-        });
-
-        if(previousAppState === 'background' && currentAppState === 'active') {
-            let currentTimeInMs = (new Date()).getTime(),
-                approxTimeSpentInBackgroundStateInMs = 1000 * Math.floor((currentTimeInMs-this.state.activeToBackgroundTimeRecordInMs) / 1000),
-                updatedTimerValInMs = this.state.timerValRecordInMs-approxTimeSpentInBackgroundStateInMs;
-
-            if(updatedTimerValInMs < 1000) this._destroyChatroom(this.props.chatRoomRef);
-            else this.setState({timerValInMs: updatedTimerValInMs });
-        }
-    },
-
     componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
-            var _this = this,
-                recipient = this.props.recipient,
+            let chatRoomRef = this.props.chatRoomRef,
                 currentUserData = this.props.currentUserData,
-                firebaseRef = new Firebase('https://ventureappinitial.firebaseio.com/'),
-                chatRoomRef = this.props.chatRoomRef;
+                firebaseRef = this.state.firebaseRef,
+                recipient = this.props.recipient,
+                _this = this;
 
-            chatRoomRef.child('createdAt').once('value', snapshot => {
+                chatRoomRef.child('createdAt').once('value', snapshot => {
 
                 if (snapshot.val() === null) {
                     console.log('Chat created and timer started');
@@ -449,9 +466,7 @@ var TimerBar = React.createClass({
                     chatRoomRef.child('timer/value').on('value', snapshot => {
                         this.setState({timerValInMs: snapshot.val()});
 
-                        if (this.state.timerValInMs < 1000) {
-                            if (_.last(this.props.navigator.getCurrentRoutes()).title === 'Chat') this.props.navigator.pop();
-                        }
+                        if (this.state.timerValInMs < 1000) this._destroyChatroom(chatRoomRef);
 
                     })
                 }
@@ -465,17 +480,60 @@ var TimerBar = React.createClass({
     },
 
     _destroyChatroom(chatRoomRef:string) {
-        if (_.last(this.props.navigator.getCurrentRoutes()).title === 'Chat') this.props.navigator.pop();
-        chatRoomRef.set({null});
-    },
+        let currentUserData = this.props.currentUserData,
+            currentUserIDHashed = currentUserData.ventureId,
+            firebaseRef = this.state.firebaseRef,
+            currentUserMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/match_requests'),
+            recipient = this.props.recipient,
+            targetUserIDHashed = recipient.ventureId,
+            targetUserMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/match_requests');
 
-    componentWillUnmount() {
-        AppStateIOS.removeEventListener('change', this._handleAppStateChange);
+        this.props.safelyNavigateToMainLayout();
+
+        firebaseRef.child(`users/${targetUserIDHashed}/chatCount`).once('value', snapshot => {
+            firebaseRef.child(`users/${targetUserIDHashed}/chatCount`).set(snapshot.val() - 1);
+        });
+
+        firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).once('value', snapshot => {
+            firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).set(snapshot.val() - 1);
+        });
+
+        chatRoomRef.child('timer/value').off();
+        chatRoomRef.set({null});
+
+        targetUserMatchRequestsRef.child(currentUserIDHashed).set(null);
+        currentUserMatchRequestsRef.child(targetUserIDHashed).set(null);
     },
 
     _getTimerValue(numOfMilliseconds:number) {
         var date = new Date(numOfMilliseconds);
         return date.getMinutes() + 'm ' + date.getSeconds() + 's';
+    },
+
+    _handleAppStateChange(currentAppState) {
+        let previousAppState = this.state.currentAppState;
+
+        this.setState({currentAppState, previousAppState});
+
+        // @hmm: Hack for maintaining timer when app goes in background
+        // Background tasks are currently not supported in React Native
+
+        if(currentAppState === 'background') this.setState({
+            activeToBackgroundTimeRecordInMs: (new Date()).getTime()
+        });
+
+        if(previousAppState === 'background' && currentAppState === 'active') {
+            let currentTimeInMs = (new Date()).getTime(),
+                approxTimeSpentInBackgroundStateInMs = 1000 * Math.floor((currentTimeInMs-this.state.activeToBackgroundTimeRecordInMs) / 1000),
+                updatedTimerValInMs = this.state.timerValInMs-approxTimeSpentInBackgroundStateInMs;
+
+            if(updatedTimerValInMs < 1000) this._destroyChatroom(this.props.chatRoomRef);
+            else this.setState({timerValInMs: updatedTimerValInMs });
+        }
+    },
+
+    componentWillUnmount() {
+        AppStateIOS.removeEventListener('change', this._handleAppStateChange);
     },
 
     render() {

@@ -174,7 +174,7 @@ var Hot = React.createClass({
             <View style={styles.header}>
                 <Text
                     style={styles.headerTitle}>
-                    HOT! </Text>
+                    HOT </Text>
                 <Text />
             </View>
         )

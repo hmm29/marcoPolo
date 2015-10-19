@@ -65,18 +65,22 @@ var Filters = React.createClass({
             );
     },
 
-    _safelyNavigateToUsersList() {
+    _safelyNavigateToMainLayout() {
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
-            chatsListRoute = _.findWhere(currentRouteStack, {title: 'Chats'}),
-            usersListRoute = _.findWhere(currentRouteStack, {title: 'Users'});
+        // @hmm navigate back to one of main layout components
+            chatsListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Chats'}),
+            eventsListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Events'}),
+            hotRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Hot'}),
+            profileRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Profile'}),
+            usersListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Users'});
 
-        //TODO: sometimes still routes to profile page
+        if(currentRouteStack.indexOf(chatsListRoute) > -1) this.props.navigator.jumpTo(chatsListRoute);
 
-        if (currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
-        else if (currentRouteStack.indexOf(chatsListRoute) > -1) this.props.navigator.jumpTo(chatsListRoute);
-        //else {
-        //    this.props.navigator.pop();
-        //}
+        if(currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
+        else if(currentRouteStack.indexOf(eventsListRoute) > -1) this.props.navigator.jumpTo(eventsListRoute);
+        else if(currentRouteStack.indexOf(profileRoute) > -1) this.props.navigator.jumpTo(profileRoute);
+        else if(currentRouteStack.indexOf(hotRoute) > -1) this.props.navigator.jumpTo(hotRoute);
+        else this.props.navigator.jumpBack();
     },
 
     saveFilters() {
@@ -104,7 +108,7 @@ var Filters = React.createClass({
 
         this.state.firebaseUserMatchingPreferencesRef.set(filtersChanges);
 
-        this._safelyNavigateToUsersList();
+        this._safelyNavigateToMainLayout();
     },
 
     _setButtonState(field:string, value:string) {
@@ -273,7 +277,7 @@ var Filters = React.createClass({
                     PREFERENCES </Text>
                 <View style={styles.closeIconContainer}>
                     <CloseIcon onPress={() => {
-                        this._safelyNavigateToUsersList();
+                        this._safelyNavigateToMainLayout();
                     }}/>
                 </View>
             </View>

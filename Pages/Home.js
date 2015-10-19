@@ -260,7 +260,7 @@ var Home = React.createClass({
                 placeholder={'What do you want to do?'}
                 placeholderTextColor={'rgba(255,255,255,1.0)'}
                 returnKeyType='done'
-                style={[styles.activityTitleInput, this.state.viewStyle, {marginTop: SCREEN_HEIGHT/2.5}]}
+                style={[styles.activityTitleInput, this.state.viewStyle, {marginTop: SCREEN_HEIGHT/3}]}
                 value={this.state.activityTitleInput}/>
         );
 
@@ -391,7 +391,7 @@ var Home = React.createClass({
             );
 
         tagSelection = (
-            <View style={[styles.tagSelection]}>
+            <View style={styles.tagSelection}>
                 <TextInput
                     onFocus={this._onFocus}
                     onBlur={this._onBlur}
@@ -616,7 +616,7 @@ var styles = StyleSheet.create({
         height: SCREEN_HEIGHT / 6.6,
         paddingTop: 19,
         paddingHorizontal: 25,
-        bottom: 10
+        bottom: 5
     },
     timeSpecificationDatePicker: {
         top: 10,

@@ -127,12 +127,21 @@ var EditProfile = React.createClass({
         this.setState({genderMatches});
     },
 
-    _safelyNavigateToProfile() {
+    _safelyNavigateToMainLayout() {
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
-            profileRoute = _.findWhere(currentRouteStack, {title: 'Profile'});
+        // @hmm navigate back to one of main layout components
+            chatsListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Chats'}),
+            eventsListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Events'}),
+            hotRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Hot'}),
+            profileRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Profile'}),
+            usersListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Users'});
 
-        if (currentRouteStack.indexOf(profileRoute) > -1) this.props.navigator.jumpTo(profileRoute)
-        else this.props.navigator.pop();
+        if(currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
+        else if(currentRouteStack.indexOf(chatsListRoute) > -1) this.props.navigator.jumpTo(chatsListRoute);
+        else if(currentRouteStack.indexOf(eventsListRoute) > -1) this.props.navigator.jumpTo(eventsListRoute);
+        else if(currentRouteStack.indexOf(profileRoute) > -1) this.props.navigator.jumpTo(profileRoute);
+        else if(currentRouteStack.indexOf(hotRoute) > -1) this.props.navigator.jumpTo(hotRoute);
+        else this.props.navigator.jumpBack();
     },
 
     saveData() {
@@ -147,7 +156,7 @@ var EditProfile = React.createClass({
         if (this.state.currentPic !== this.state.originalPic)
             this.state.firebaseRef.child(`users/${ventureId}/picture`).set(this.state.currentPic);
 
-        this._safelyNavigateToProfile();
+        this._safelyNavigateToMainLayout();
     },
 
     _setGender(selectedGender:string) {
@@ -325,13 +334,12 @@ var EditProfile = React.createClass({
     _renderHeader() {
         return (
             <Header containerStyle={{backgroundColor: '#040A19'}}>
-                <TouchableOpacity onPress={() => this._safelyNavigateToProfile()} style={{right: 30}}>
+                <TouchableOpacity onPress={this._safelyNavigateToMainLayout} style={{right: 30}}>
                     <Icon
                         color="#fff"
                         name="ion|ios-arrow-thin-left"
                         size={32}
-                        style={{width: 32, height: 32}}
-                        />
+                        style={{width: 32, height: 32, left: 20}} />
                 </TouchableOpacity>
                 <Text
                     style={styles.headerTitle}>
