@@ -31,12 +31,13 @@ var {
 var _ = require('lodash');
 var Display = require('react-native-device-display');
 var Firebase = require('firebase');
+var Header = require('../Partials/Header');
 var { Icon, } = require('react-native-icons');
 var LinearGradient = require('react-native-linear-gradient');
 var ReactFireMixin = require('reactfire');
 var TimerMixin = require('react-timer-mixin');
 
-var INITIAL_TIMER_VAL_IN_MS = 10000;
+var INITIAL_TIMER_VAL_IN_MS = 300000;
 var SCREEN_HEIGHT = Display.height;
 var SCREEN_WIDTH = Display.width;
 var MESSAGE_TEXT_INPUT_REF = 'messageTextInput';
@@ -104,8 +105,8 @@ var Chat = React.createClass({
 
     _renderHeader() {
         return (
-            <View style={styles.header}>
-                <TouchableOpacity onPress={this._safelyNavigateToMainLayout} style={{right: 30}}>
+            <Header containerStyle={{backgroundColor: '#040A19'}}>
+                <TouchableOpacity onPress={this._safelyNavigateToMainLayout} style={{right: 10, bottom: 5}}>
                     <Icon
                         color="#fff"
                         name="ion|ios-arrow-thin-left"
@@ -117,7 +118,7 @@ var Chat = React.createClass({
                     style={styles.activityPreferenceTitle}>
                     {this.props.passProps.currentUserData.activityPreference.title && this.props.passProps.currentUserData.activityPreference.title.toUpperCase() + '?'} </Text>
                 <Text />
-            </View>
+            </Header>
         );
     },
 
@@ -171,8 +172,7 @@ var Chat = React.createClass({
             usersListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Users'});
 
         if(currentRouteStack.indexOf(chatsListRoute) > -1) this.props.navigator.jumpTo(chatsListRoute);
-
-        if(currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
+        else if(currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
         else if(currentRouteStack.indexOf(eventsListRoute) > -1) this.props.navigator.jumpTo(eventsListRoute);
         else if(currentRouteStack.indexOf(profileRoute) > -1) this.props.navigator.jumpTo(profileRoute);
         else if(currentRouteStack.indexOf(hotRoute) > -1) this.props.navigator.jumpTo(hotRoute);
@@ -573,15 +573,6 @@ var styles = StyleSheet.create({
     container: {
         alignItems: 'center',
         flex: 1
-    },
-    header: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        backgroundColor: 'rgba(255,255,255,0.07)',
-        paddingTop: 30,
-        paddingBottom: 15
     },
     messageList: {
         height: 1000,

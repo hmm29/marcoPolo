@@ -158,7 +158,8 @@ var User = React.createClass({
             currentUserIDHashed = this.props.currentUserIDHashed,
             firebaseRef = this.props.firebaseRef,
             targetUserMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/match_requests'),
-            currentUserMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
+            currentUserMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/match_requests'),
+            _this = this;
 
         if (this.state.status === 'sent') {
 
@@ -184,48 +185,50 @@ var User = React.createClass({
 
         else if (this.state.status === 'matched') {
             let distance = 0.7 + ' mi',
-                _id =  currentUserIDHashed + '_TO_' + targetUserIDHashed;
+                _id;
 
-            let chatRoomRef = firebaseRef.child(`chat_rooms/${_id}`),
-                currentRouteStack = this.props.navigator.getCurrentRoutes(),
-                chatRoomRoute = _.findWhere(currentRouteStack, {title: 'Chat', passProps: {_id}});
+            firebaseRef.child(`chat_rooms/${targetUserIDHashed + '_TO_' + currentUserIDHashed}`).once('value', snapshot => {
+                if(snapshot.val() === null) _id = currentUserIDHashed + '_TO_' + targetUserIDHashed;
+                else _id = targetUserIDHashed + '_TO_' + currentUserIDHashed;
 
-            chatRoomRef.child('_id').set(_id); // @hmm: set unique chat Id
-            chatRoomRef.child('timer').set({value: 300000}); // @hmm: set timer
+                let chatRoomRef = firebaseRef.child(`chat_rooms/${_id}`),
+                    currentRouteStack = this.props.navigator.getCurrentRoutes(),
+                    chatRoomRoute = _.findWhere(currentRouteStack, {title: 'Chat', passProps: {_id}});
 
-            // currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).off();
+                chatRoomRef.child('_id').set(_id); // @hmm: set unique chat Id
+                chatRoomRef.child('timer').set({value: 300000}); // @hmm: set timer
 
-            firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).once('value', snapshot => {
-                if(snapshot.val() === 0) {
-                    this.push({
-                        title: 'Chat',
-                        component: Chat,
-                        passProps: {
-                            _id,
-                            recipient: this.props.data,
-                            distance,
-                            chatRoomRef,
-                            currentUserData: this.props.currentUserData
-                        }
-                    });
-                }
-                else if (chatRoomRoute) this.props.navigator.jumpTo(chatRoomRoute);
-                else {
-                    currentRouteStack.push({
-                        title: 'Chat',
-                        component: Chat,
-                        passProps: {
-                            _id,
-                            recipient: this.props.data,
-                            distance,
-                            chatRoomRef,
-                            currentUserData: this.props.currentUserData
-                        }
-                    });
-                    this.props.navigator.immediatelyResetRouteStack(currentRouteStack);
-                }
-            });
-
+                firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).once('value', snapshot => {
+                    if(snapshot.val() === 0) {
+                        _this.props.navigator.push({
+                            title: 'Chat',
+                            component: Chat,
+                            passProps: {
+                                _id,
+                                recipient: _this.props.data,
+                                distance,
+                                chatRoomRef,
+                                currentUserData: _this.props.currentUserData
+                            }
+                        });
+                    }
+                    else if (chatRoomRoute) _this.props.navigator.jumpTo(chatRoomRoute);
+                    else {
+                        currentRouteStack.push({
+                            title: 'Chat',
+                            component: Chat,
+                            passProps: {
+                                _id,
+                                recipient: _this.props.data,
+                                distance,
+                                chatRoomRef,
+                                currentUserData: _this.props.currentUserData
+                            }
+                        });
+                        _this.props.navigator.immediatelyResetRouteStack(currentRouteStack);
+                    }
+                });
+            })
         }
 
         else {
@@ -419,6 +422,13 @@ var ChatsList = React.createClass({
         });
     },
 
+    componentWillUnmount() {
+        let usersListRef = this.state.firebaseRef.child('/users');
+
+        usersListRef.off();
+        // if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
+    },
+
     _safelyNavigateToHome() {
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
             homeRoute = currentRouteStack[0];
@@ -447,9 +457,10 @@ var ChatsList = React.createClass({
     _renderHeader() {
         return (
             <Header containerStyle={{position: 'relative'}}>
-                <HomeIcon onPress={() => this._safelyNavigateToHome()}/>
+                <HomeIcon onPress={() => this._safelyNavigateToHome()} style={{right: 14, bottom: 5}} />
                 <FilterModalIcon
-                    onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}/>
+                    onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}
+                    style={{left: 14, bottom: 5}} />
             </Header>
         )
     },

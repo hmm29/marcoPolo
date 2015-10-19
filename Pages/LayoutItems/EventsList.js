@@ -84,7 +84,7 @@ var Event = React.createClass({
         let _this = this;
 
         this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-        && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).once('value', snapshot => {
+        && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
             _this.setState({status: snapshot.val() && snapshot.val().status});
         });
     },
@@ -152,14 +152,13 @@ var Event = React.createClass({
     },
 
     handleMatchInteraction() {
-        // @hmm: use hashed targetUserID as key for Firebase database
+        // @hmm: use hashed targetUserID as key for data for user in list
 
         let targetUserIDHashed = this.props.data.ventureId,
             currentUserIDHashed = this.props.currentUserIDHashed,
             firebaseRef = this.props.firebaseRef,
             targetUserMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/match_requests'),
-            currentUserMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/match_requests'),
-            _this = this;
+            currentUserMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
 
         if (this.state.status === 'sent') {
 
@@ -184,29 +183,46 @@ var Event = React.createClass({
         }
 
         else if (this.state.status === 'matched') {
-            let distance = 0.7 + ' mi';
+            let distance = 0.7 + ' mi',
+                _id =  currentUserIDHashed + '_TO_' + targetUserIDHashed;
 
-            let chatRoomRef = firebaseRef.child('chat_rooms/' + currentUserIDHashed + '_TO_' + targetUserIDHashed);
+            let chatRoomRef = firebaseRef.child(`chat_rooms/${_id}`),
+                currentRouteStack = this.props.navigator.getCurrentRoutes(),
+                chatRoomRoute = _.findWhere(currentRouteStack, {title: 'Chat', passProps: {_id}});
 
-            chatRoomRef.child('timer').set({value: 300000}); // set timer
+            chatRoomRef.child('_id').set(_id); // @hmm: set unique chat Id
+            chatRoomRef.child('timer').set({value: 300000}); // @hmm: set timer
 
-            currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).off();
-
-            chatRoomRef.once('value', snapshot => {
-                if(snapshot.val() && _.last(_this.props.navigator.getCurrentRoutes()).title === 'Chat') _this.props.navigator.jumpForward();
-                else {
-                    _this.props.navigator.push({
+            firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).once('value', snapshot => {
+                if(snapshot.val() === 0) {
+                    this.props.navigator.push({
                         title: 'Chat',
                         component: Chat,
                         passProps: {
-                            recipient: _this.props.data,
+                            _id,
+                            recipient: this.props.data,
                             distance,
                             chatRoomRef,
-                            currentUserData: _this.props.currentUserData
+                            currentUserData: this.props.currentUserData
                         }
                     });
                 }
-            })
+                else if (chatRoomRoute) this.props.navigator.jumpTo(chatRoomRoute);
+                else {
+                    currentRouteStack.push({
+                        title: 'Chat',
+                        component: Chat,
+                        passProps: {
+                            _id,
+                            recipient: this.props.data,
+                            distance,
+                            chatRoomRef,
+                            currentUserData: this.props.currentUserData
+                        }
+                    });
+                    this.props.navigator.immediatelyResetRouteStack(currentRouteStack);
+                }
+            });
 
         }
 
@@ -361,42 +377,50 @@ var EventsList = React.createClass({
     },
 
     componentWillMount() {
-        InteractionManager.runAfterInteractions(() => {
-            let usersListRef = this.state.firebaseRef.child('/users'), _this = this;
+        this.updateRows([]);
+        //InteractionManager.runAfterInteractions(() => {
+        //     let usersListRef = this.state.firebaseRef.child('/users'), _this = this;
+        //
+        //    this.bindAsArray(usersListRef, 'userRows');
+        //
+        //    AsyncStorage.getItem('@AsyncStorage:Venture:account')
+        //        .then((account: string) => {
+        //            account = JSON.parse(account);
+        //
+        //            usersListRef.on('value', snapshot => {
+        //                _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${account.ventureId}.status`));
+        //                _this.setState({rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
+        //            });
+        //
+        //            this.setState({currentUserVentureId: account.ventureId})
+        //
+        //            this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {
+        //                _this.setState({currentUserData: snapshot.val()});
+        //            });
+        //        })
+        //        .then(() => {
+        //            InteractionManager.runAfterInteractions(() => {
+        //                navigator.geolocation.getCurrentPosition(
+        //                    (currentPosition) => {
+        //                        _this.setState({currentPosition});
+        //                    },
+        //                    (error) => {
+        //                        console.error(error);
+        //                    },
+        //                    {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
+        //                );
+        //            });
+        //        })
+        //        .catch((error) => console.log(error.message))
+        //        .done();
+        //});
+    },
 
-            this.bindAsArray(usersListRef, 'userRows');
+    componentWillUnmount() {
+        let usersListRef = this.state.firebaseRef.child('/users');
 
-            AsyncStorage.getItem('@AsyncStorage:Venture:account')
-                .then((account: string) => {
-                    account = JSON.parse(account);
-
-                    usersListRef.on('value', snapshot => {
-                        _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${account.ventureId}.status`));
-                        _this.setState({rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
-                    });
-
-                    this.setState({currentUserVentureId: account.ventureId})
-
-                    this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {
-                        _this.setState({currentUserData: snapshot.val()});
-                    });
-                })
-                .then(() => {
-                    InteractionManager.runAfterInteractions(() => {
-                        navigator.geolocation.getCurrentPosition(
-                            (currentPosition) => {
-                                _this.setState({currentPosition});
-                            },
-                            (error) => {
-                                console.error(error);
-                            },
-                            {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
-                        );
-                    });
-                })
-                .catch((error) => console.log(error.message))
-                .done();
-        });
+        usersListRef.off();
+        // if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
     },
 
     _safelyNavigateToHome() {
@@ -427,10 +451,11 @@ var EventsList = React.createClass({
     _renderHeader() {
         return (
             <Header containerStyle={{position: 'relative'}}>
-                <HomeIcon onPress={() => this._safelyNavigateToHome()}/>
+                <HomeIcon onPress={() => this._safelyNavigateToHome()} style={{right: 14, bottom: 5}}/>
                 <Text>EVENTS</Text>
                 <FilterModalIcon
-                    onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}/>
+                    onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}
+                    style={{left: 14, bottom: 5}}/>
             </Header>
         )
     },

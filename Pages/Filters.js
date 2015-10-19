@@ -28,6 +28,7 @@ var {
 var _ = require('lodash');
 var CloseIcon = require('../Partials/Icons/CloseIcon');
 var Display = require('react-native-device-display');
+var Header = require('../Partials/Header');
 var MainLayout = require('../Layouts/MainLayout');
 
 var SCREEN_HEIGHT = Display.height;
@@ -75,8 +76,7 @@ var Filters = React.createClass({
             usersListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Users'});
 
         if(currentRouteStack.indexOf(chatsListRoute) > -1) this.props.navigator.jumpTo(chatsListRoute);
-
-        if(currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
+        else if(currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
         else if(currentRouteStack.indexOf(eventsListRoute) > -1) this.props.navigator.jumpTo(eventsListRoute);
         else if(currentRouteStack.indexOf(profileRoute) > -1) this.props.navigator.jumpTo(profileRoute);
         else if(currentRouteStack.indexOf(hotRoute) > -1) this.props.navigator.jumpTo(hotRoute);
@@ -271,43 +271,28 @@ var Filters = React.createClass({
 
     _renderHeader() {
         return (
-            <View style={styles.header}>
+            <Header containerStyle={{backgroundColor: '#040A19'}}>
+                <Text />
                 <Text
                     style={styles.pageTitle}>SEARCH
                     PREFERENCES </Text>
-                <View style={styles.closeIconContainer}>
                     <CloseIcon onPress={() => {
                         this._safelyNavigateToMainLayout();
-                    }}/>
-                </View>
-            </View>
+                    }}
+                        />
+            </Header>
         );
     }
 
 });
 
 var styles = StyleSheet.create({
-    closeIconContainer: {
-        position: 'absolute',
-        top: 25,
-        left: 320,
-        right: 0
-    },
     container: {
         flexDirection: 'column',
         justifyContent: 'center',
         padding: 20,
         backgroundColor: '#FFF5EA',
         height: SCREEN_HEIGHT - 80
-    },
-    header: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#040A19',
-        paddingTop: 30,
-        paddingBottom: 15
     },
     pageTitle: {
         color: '#fff',

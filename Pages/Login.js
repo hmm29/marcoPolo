@@ -200,7 +200,6 @@ var Login = React.createClass({
                                   AsyncStorage.setItem('@AsyncStorage:Venture:isOnline', 'true')
                                     .then(() => {
                                         _this._updateUserLoginStatus(true);
-
                                         _this._navigateToNextPage();
                                     })
                                     .then(() => console.log('Logged in!'))

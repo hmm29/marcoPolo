@@ -80,7 +80,6 @@ var Profile = React.createClass({
     _createAccount() {
         let user = this.state.user,
             ventureId = this.state.ventureId,
-            pixelRatioCalc = PixelRatio.getPixelSizeForLayoutSize(200),
             api = `https://graph.facebook.com/v2.3/${user && user.userId}?fields=name,email,gender,age_range&access_token=${user.token}`;
 
         fetch(api)
@@ -93,7 +92,7 @@ var Profile = React.createClass({
                     firstName: responseData.name.split(' ')[0],
                     lastName: responseData.name.split(' ')[1],
                     activityPreference: {
-                        title: 'explore',
+                        title: 'EXPLORE?',
                         status: 'now',
                         start: {
                             time: '',
@@ -104,7 +103,7 @@ var Profile = React.createClass({
                         created: new Date(),
                         updated: new Date()
                     },
-                    picture: `https://res.cloudinary.com/dwnyawluh/image/facebook/w_${pixelRatioCalc},h_${pixelRatioCalc}/${this.state.user.userId}.jpg`,
+                    picture: `https://res.cloudinary.com/dwnyawluh/image/facebook/w_${PixelRatio.getPixelSizeForLayoutSize(200)},h_${PixelRatio.getPixelSizeForLayoutSize(300)}/${this.state.user.userId}.jpg`,
                     gender: responseData.gender,
                     bio: 'New to Venture!',
                     email: responseData.email,
@@ -282,12 +281,12 @@ var Profile = React.createClass({
     renderHeader() {
         return (
             <Header containerStyle={{backgroundColor: '#040A19'}}>
-                <View style={{left: 20}}>
+                <View style={{right: 14, bottom: 5}}>
                     <HomeIcon onPress={() => {
                         this._safelyNavigateToHome();
                     }}/>
                 </View>
-                <View style={{right: 20}}>
+                <View style={{left: 14, bottom: 5}}>
                     <EditProfilePageIcon
                         onPress={() => {
                           this._safelyNavigateForward({title: 'EditProfile',component: EditProfile,  passProps: {ventureId: this.state.ventureId}});

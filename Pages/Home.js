@@ -445,19 +445,18 @@ var Home = React.createClass({
                     source={require('image!HomeBackground')}
                     style={styles.backdrop}>
                     <Header>
-                        <ProfilePageIcon style={{opacity: 0.4}}
+                        <ProfilePageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/25, right: 20}}
                                          onPress={() => {
                                             this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
                                             if (!this.state.isLoggedIn) this._safelyNavigateToLogin()
                                             else this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {selected: 'profile', ventureId: this.state.ventureId}})
-                                         }}/>
-                        <ChatsListPageIcon style={{opacity: 0.4}}
+                                         }} />
+                        <ChatsListPageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/25, left: 20}}
                                            onPress={() => {
                                             this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
                                             if (!this.state.isLoggedIn) this._safelyNavigateToLogin()
                                             this._safelyNavigateForward({title: 'Chats', component: MainLayout, passProps: {selected: 'chats', ventureId: this.state.ventureId}})
-                                           }}
-                            />
+                                           }} />
                     </Header>
                     <Logo
                         logoContainerStyle={styles.logoContainerStyle}
@@ -465,7 +464,7 @@ var Home = React.createClass({
                     {this.state.showTextInput ? activityTitleInput : <View />}
                     {this.state.showNextButton ? nextButton : <View />}
                     {this.state.showAddInfoButton && !this.state.showTimeSpecificationOptions && this.state.activityTitleInput ? addInfoButton : <View />}
-                    {this.state.showAddInfoBox ? addInfoBox : <View/>}
+                    {this.state.showAddInfoBox && this.state.activityTitleInput ? addInfoBox : <View/>}
                     {this.state.showTrendingItems && !this.state.showAddInfoBox ? trendingItemsCarousel : <View/>}
                 </Image>
             </View>

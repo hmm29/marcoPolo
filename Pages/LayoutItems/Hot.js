@@ -24,6 +24,7 @@ var {
     } = React;
 
 var Display = require('react-native-device-display');
+var Header = require('../../Partials/Header');
 var HomeIcon = require('../../Partials/Icons/HomeIcon');
 var { Icon, } = require('react-native-icons');
 var ReactFireMixin = require('reactfire');
@@ -171,12 +172,11 @@ var Hot = React.createClass({
 
     _renderHeader() {
         return (
-            <View style={styles.header}>
-                <Text
-                    style={styles.headerTitle}>
-                    HOT </Text>
-                <Text />
-            </View>
+            <Header containerStyle={{backgroundColor: '#040A19'}}>
+                <HomeIcon onPress={() => this._safelyNavigateToHome()} style={{right: 14, bottom: 5}}/>
+                <Text>HOT</Text>
+                <Text/>
+            </Header>
         )
     }
 });

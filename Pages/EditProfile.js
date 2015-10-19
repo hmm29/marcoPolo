@@ -136,10 +136,10 @@ var EditProfile = React.createClass({
             profileRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Profile'}),
             usersListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Users'});
 
-        if(currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
+        if(currentRouteStack.indexOf(profileRoute) > -1) this.props.navigator.jumpTo(profileRoute);
+        else if(currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
         else if(currentRouteStack.indexOf(chatsListRoute) > -1) this.props.navigator.jumpTo(chatsListRoute);
         else if(currentRouteStack.indexOf(eventsListRoute) > -1) this.props.navigator.jumpTo(eventsListRoute);
-        else if(currentRouteStack.indexOf(profileRoute) > -1) this.props.navigator.jumpTo(profileRoute);
         else if(currentRouteStack.indexOf(hotRoute) > -1) this.props.navigator.jumpTo(hotRoute);
         else this.props.navigator.jumpBack();
     },
@@ -228,7 +228,9 @@ var EditProfile = React.createClass({
 
         let editPhoto = (
             <View>
-                <TouchableOpacity onPress={this._showActionSheet}>
+                <TouchableOpacity
+                    // onPress={this._showActionSheet}
+                    >
                     <Image source={{isStatic: true, uri: this.state.currentPic}} style={styles.currentPic}/>
                 </TouchableOpacity>
             </View>
@@ -334,7 +336,7 @@ var EditProfile = React.createClass({
     _renderHeader() {
         return (
             <Header containerStyle={{backgroundColor: '#040A19'}}>
-                <TouchableOpacity onPress={this._safelyNavigateToMainLayout} style={{right: 30}}>
+                <TouchableOpacity onPress={this._safelyNavigateToMainLayout} style={{right: 40, bottom: 5}}>
                     <Icon
                         color="#fff"
                         name="ion|ios-arrow-thin-left"
@@ -418,22 +420,6 @@ var styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         margin: 10
-    },
-    header: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        backgroundColor: '#040A19',
-        paddingTop: 20,
-        paddingBottom: 5
-    },
-    headerTitle: {
-        color: '#fff',
-        right: 10,
-        fontSize: 22,
-        paddingVertical: 10,
-        fontFamily: 'AvenirNextCondensed-Medium'
     },
     label: {
         color: 'white',
