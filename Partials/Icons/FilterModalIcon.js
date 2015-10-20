@@ -24,7 +24,7 @@ var {
 
 var { Icon, } = require('react-native-icons');
 
-var SIZE = 32;
+var SIZE = 28;
 
 var FilterModalIcon = React.createClass({
     propTypes: {

@@ -23,7 +23,7 @@ var {
 
 var { Icon, } = require('react-native-icons');
 
-var SIZE = 32;
+var SIZE = 28;
 
 // @hmm no InteractionManager here because it slows the popToTop transition
 

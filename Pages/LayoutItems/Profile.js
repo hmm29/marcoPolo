@@ -355,7 +355,7 @@ var Info = React.createClass({
     },
 
     componentWillUnmount() {
-      this.state.firebaseUserData.off();
+      this.state.firebaseUserData && this.state.firebaseUserData.off();
     },
 
     render() {

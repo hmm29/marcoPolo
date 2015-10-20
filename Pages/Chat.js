@@ -164,18 +164,12 @@ var Chat = React.createClass({
 
     _safelyNavigateToMainLayout() {
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
-            // @hmm navigate back to one of main layout components
-            chatsListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Chats'}),
-            eventsListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Events'}),
-            hotRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Hot'}),
-            profileRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Profile'}),
-            usersListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Users'});
+        // @hmm navigate back to main layout component
+            mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
+                return route && route.passProps && !! route.passProps.selected;
+            });
 
-        if(currentRouteStack.indexOf(chatsListRoute) > -1) this.props.navigator.jumpTo(chatsListRoute);
-        else if(currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
-        else if(currentRouteStack.indexOf(eventsListRoute) > -1) this.props.navigator.jumpTo(eventsListRoute);
-        else if(currentRouteStack.indexOf(profileRoute) > -1) this.props.navigator.jumpTo(profileRoute);
-        else if(currentRouteStack.indexOf(hotRoute) > -1) this.props.navigator.jumpTo(hotRoute);
+        if(mainLayoutRoute) this.props.navigator.jumpTo(mainLayoutRoute)
         else this.props.navigator.jumpBack();
     },
 
@@ -480,7 +474,8 @@ var TimerBar = React.createClass({
     },
 
     _destroyChatroom(chatRoomRef:string) {
-        let currentUserData = this.props.currentUserData,
+        let currentChatroomRoute = _.last(this.props.navigator.getCurrentRoutes()),
+            currentUserData = this.props.currentUserData,
             currentUserIDHashed = currentUserData.ventureId,
             firebaseRef = this.state.firebaseRef,
             currentUserMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/match_requests'),
@@ -488,7 +483,9 @@ var TimerBar = React.createClass({
             targetUserIDHashed = recipient.ventureId,
             targetUserMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/match_requests');
 
-        this.props.safelyNavigateToMainLayout();
+        // only navigate if still on chat page! :D
+
+        if(currentChatroomRoute.title === 'Chat' && currentChatroomRoute.passProps._id === this.props._id) this.props.safelyNavigateToMainLayout();
 
         firebaseRef.child(`users/${targetUserIDHashed}/chatCount`).once('value', snapshot => {
             firebaseRef.child(`users/${targetUserIDHashed}/chatCount`).set(snapshot.val() - 1);

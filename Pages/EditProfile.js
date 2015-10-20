@@ -130,17 +130,11 @@ var EditProfile = React.createClass({
     _safelyNavigateToMainLayout() {
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
         // @hmm navigate back to one of main layout components
-            chatsListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Chats'}),
-            eventsListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Events'}),
-            hotRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Hot'}),
-            profileRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Profile'}),
-            usersListRoute = _.findWhere(this.props.navigator.getCurrentRoutes(), {title: 'Users'});
+            mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
+                return route && route.passProps && !! route.passProps.selected;
+            });
 
-        if(currentRouteStack.indexOf(profileRoute) > -1) this.props.navigator.jumpTo(profileRoute);
-        else if(currentRouteStack.indexOf(usersListRoute) > -1) this.props.navigator.jumpTo(usersListRoute);
-        else if(currentRouteStack.indexOf(chatsListRoute) > -1) this.props.navigator.jumpTo(chatsListRoute);
-        else if(currentRouteStack.indexOf(eventsListRoute) > -1) this.props.navigator.jumpTo(eventsListRoute);
-        else if(currentRouteStack.indexOf(hotRoute) > -1) this.props.navigator.jumpTo(hotRoute);
+        if(mainLayoutRoute) this.props.navigator.jumpTo(mainLayoutRoute)
         else this.props.navigator.jumpBack();
     },
 

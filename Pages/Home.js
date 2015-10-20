@@ -82,7 +82,6 @@ var Home = React.createClass({
             hasIshSelected: false,
             hasKeyboardSpace: false,
             hasSpecifiedTime: false,
-            isLoggedIn: true,
             showAddInfoBox: false,
             showAddInfoButton: true,
             showNextButton: false,
@@ -110,7 +109,7 @@ var Home = React.createClass({
                         account = JSON.parse(account);
 
                         if (account === null) {
-                            this.setState({isLoggedIn: false})
+                            this.setTimeout(() => this.props.navigator.push({title: 'Login', component: Login}), 200)
                             return;
                         }
 
@@ -118,7 +117,7 @@ var Home = React.createClass({
                     })
                     .catch((error) => console.log(error.message))
                     .done();
-            }, 800);
+            }, 1000);
         });
     },
 
@@ -164,9 +163,7 @@ var Home = React.createClass({
             .then((account: string) => {
                 account = JSON.parse(account);
                 firebaseRef.child(`users/${account.ventureId}/activityPreference`).set(activityPreferenceChange)
-
-                if (!this.state.isLoggedIn) this._safelyNavigateToLogin()
-                else this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {selected: 'users', ventureId: account.ventureId}})
+                this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {selected: 'users', ventureId: account.ventureId}});
             })
             .catch((error) => console.log(error.message))
             .done();
@@ -254,6 +251,7 @@ var Home = React.createClass({
                 maxLength={15}
                 onChangeText={(text) => {
                         LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+                        if(!text) this.setState({showTimeSpecificationOptions: false});
                         this.setState({activityTitleInput: text.toUpperCase(), showNextButton: !!text});
                         this.animateViewLayout(text);
                     }}
@@ -448,13 +446,11 @@ var Home = React.createClass({
                         <ProfilePageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/25, right: 20}}
                                          onPress={() => {
                                             this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
-                                            if (!this.state.isLoggedIn) this._safelyNavigateToLogin()
-                                            else this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {selected: 'profile', ventureId: this.state.ventureId}})
+                                            this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {selected: 'profile', ventureId: this.state.ventureId}})
                                          }} />
                         <ChatsListPageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/25, left: 20}}
                                            onPress={() => {
                                             this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
-                                            if (!this.state.isLoggedIn) this._safelyNavigateToLogin()
                                             this._safelyNavigateForward({title: 'Chats', component: MainLayout, passProps: {selected: 'chats', ventureId: this.state.ventureId}})
                                            }} />
                     </Header>
