@@ -53,7 +53,10 @@ var SCREEN_HEIGHT = Display.height;
 var SCREEN_WIDTH = Display.width;
 var TAG_TEXT_INPUT_PADDING = 3;
 
-var YALIES = [`http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_56,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206258/Harrison%20Miller.png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_52,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206076/Noah%20Cho.png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Sophie%20Dillon.png`];
+var YALIES = [
+    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_56,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206258/Harrison%20Miller.png`,
+    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_52,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206076/Noah%20Cho.png`,
+    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Sophie%20Dillon.png`];
 var EVENTS = [
     `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Frozen%20Four%20(Center%20-%20Big%20Text).png`,
     `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_48,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442894669/Event%20-%20Freshman%20Screw%20(Center%20-%20Big%20Text).png`,
@@ -436,8 +439,6 @@ var Home = React.createClass({
         let MainLayout = require('../Layouts/MainLayout');
 
         return (
-            // @hmm: passProps ventureId is for MainLayout and not for profile or chat
-
             <View style={styles.container}>
                 <Image
                     source={require('image!HomeBackground')}
@@ -451,6 +452,7 @@ var Home = React.createClass({
                         <ChatsListPageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/25, left: 20}}
                                            onPress={() => {
                                             this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
+                                            // @hmm: pass ventureId to MainLayout
                                             this._safelyNavigateForward({title: 'Chats', component: MainLayout, passProps: {selected: 'chats', ventureId: this.state.ventureId}})
                                            }} />
                     </Header>

@@ -68,8 +68,10 @@ String.prototype.capitalize = function () {
 
 var User = React.createClass({
     propTypes: {
-        isCurrentUser: React.PropTypes.boolean,
-        data: React.PropTypes.object
+        currentPosition: React.PropTypes.object,
+        currentUserData: React.PropTypes.object,
+        data: React.PropTypes.object,
+        isCurrentUser: React.PropTypes.boolean
     },
 
     getInitialState() {
@@ -197,6 +199,8 @@ var User = React.createClass({
 
                 chatRoomRef.child('_id').set(_id); // @hmm: set unique chat Id
                 chatRoomRef.child('timer').set({value: 300000}); // @hmm: set timer
+                chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set(this.props.currentUserData.activityPreference.title);
+                chatRoomRef.child('user_activity_preference_titles').child(targetUserIDHashed).set(this.props.data.activityPreference.title);
 
                 firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).once('value', snapshot => {
                     if(snapshot.val() === 0) {
@@ -458,10 +462,11 @@ var ChatsList = React.createClass({
     _renderHeader() {
         return (
             <Header containerStyle={{position: 'relative'}}>
-                <HomeIcon onPress={() => this._safelyNavigateToHome()} style={{right: 14, bottom: 5}} />
+                <HomeIcon onPress={() => this._safelyNavigateToHome()} style={{right: 14}} />
+                <Text>MY CHATS</Text>
                 <FilterModalIcon
                     onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}
-                    style={{left: 14, bottom: 5}} />
+                    style={{left: 14}} />
             </Header>
         )
     },

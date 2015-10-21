@@ -280,17 +280,14 @@ var Profile = React.createClass({
     renderHeader() {
         return (
             <Header containerStyle={{backgroundColor: '#040A19'}}>
-                <View style={{right: 14, bottom: 5}}>
                     <HomeIcon onPress={() => {
                         this._safelyNavigateToHome();
-                    }}/>
-                </View>
-                <View style={{left: 14, bottom: 5}}>
+                    }} style={{right: 14}}/>
+                <Text>MY PROFILE</Text>
                     <EditProfilePageIcon
                         onPress={() => {
                           this._safelyNavigateForward({title: 'EditProfile',component: EditProfile,  passProps: {ventureId: this.state.ventureId}});
-                    }} />
-                </View>
+                    }} style={{left: 14}}/>
             </Header>
         )
     }
@@ -411,6 +408,9 @@ var styles = StyleSheet.create({
         color: 'white',
         fontSize: 18,
         fontFamily: 'AvenirNextCondensed-Medium'
+    },
+    infoTextNameAge: {
+        fontSize: 24
     },
     loadingViewActivityIndicatorIOS: {
         height: 80,

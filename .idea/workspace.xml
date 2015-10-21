@@ -2,14 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2376615d-cff6-4ff3-89a0-7e7afb473618" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ios/VentureApp/AppDelegate.m" afterPath="$PROJECT_DIR$/ios/VentureApp/AppDelegate.m" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/Chat.js" afterPath="$PROJECT_DIR$/Pages/Chat.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js" afterPath="$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Partials/Icons/ChevronIcon.js" afterPath="$PROJECT_DIR$/Partials/Icons/ChevronIcon.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/EditProfile.js" afterPath="$PROJECT_DIR$/Pages/EditProfile.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Partials/Icons/EditProfilePageIcon.js" afterPath="$PROJECT_DIR$/Partials/Icons/EditProfilePageIcon.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/LayoutItems/EventsList.js" afterPath="$PROJECT_DIR$/Pages/LayoutItems/EventsList.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/Home.js" afterPath="$PROJECT_DIR$/Pages/Home.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/LayoutItems/Hot.js" afterPath="$PROJECT_DIR$/Pages/LayoutItems/Hot.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Partials/Icons/MatchedIcon.js" afterPath="$PROJECT_DIR$/Partials/Icons/MatchedIcon.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/LayoutItems/Profile.js" afterPath="$PROJECT_DIR$/Pages/LayoutItems/Profile.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" afterPath="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
@@ -36,18 +34,38 @@
       <file leaf-file-name="UsersList.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/UsersList.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.3333335">
-              <caret line="497" column="26" selection-start-line="497" selection-start-column="26" selection-end-line="497" selection-end-column="26" />
+            <state vertical-scroll-proportion="57.48148">
+              <caret line="73" column="7" selection-start-line="73" selection-start-column="7" selection-end-line="76" selection-end-column="46" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ChatsList.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js">
+      <file leaf-file-name="Chat.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Pages/Chat.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-18.74074">
-              <caret line="291" column="16" selection-start-line="291" selection-start-column="16" selection-end-line="291" selection-end-column="16" />
+            <state vertical-scroll-proportion="0.73770493">
+              <caret line="505" column="32" selection-start-line="505" selection-start-column="32" selection-end-line="505" selection-end-column="32" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Filters.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Pages/Filters.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-5.259259">
+              <caret line="265" column="17" selection-start-line="265" selection-start-column="11" selection-end-line="265" selection-end-column="17" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AppDelegate.m" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ios/VentureApp/AppDelegate.m">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-7.7777777">
+              <caret line="35" column="112" selection-start-line="35" selection-start-column="112" selection-end-line="35" selection-end-column="112" />
               <folding />
             </state>
           </provider>
@@ -56,38 +74,18 @@
       <file leaf-file-name="Home.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Pages/Home.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.962963">
-              <caret line="601" column="36" selection-start-line="601" selection-start-column="36" selection-end-line="601" selection-end-column="36" />
+            <state vertical-scroll-proportion="-5.259259">
+              <caret line="257" column="75" selection-start-line="257" selection-start-column="64" selection-end-line="257" selection-end-column="75" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HomeIcon.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Partials/Icons/HomeIcon.js">
+      <file leaf-file-name="Login.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Pages/Login.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="25" column="13" selection-start-line="25" selection-start-column="13" selection-end-line="25" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="EventsList.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/EventsList.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="453" column="88" selection-start-line="453" selection-start-column="88" selection-end-line="453" selection-end-column="88" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MatchedIcon.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Partials/Icons/MatchedIcon.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="68" column="6" selection-start-line="68" selection-start-column="6" selection-end-line="68" selection-end-column="6" />
+              <caret line="221" column="29" selection-start-line="221" selection-start-column="29" selection-end-line="221" selection-end-column="29" />
               <folding />
             </state>
           </provider>
@@ -96,38 +94,38 @@
       <file leaf-file-name="Profile.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/Profile.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="13.407408">
-              <caret line="59" column="62" selection-start-line="59" selection-start-column="62" selection-end-line="59" selection-end-column="62" />
+            <state vertical-scroll-proportion="-6.296296">
+              <caret line="290" column="21" selection-start-line="290" selection-start-column="21" selection-end-line="290" selection-end-column="21" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="EditProfilePageIcon.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Partials/Icons/EditProfilePageIcon.js">
+      <file leaf-file-name="Header.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Partials/Header.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="67" column="26" selection-start-line="67" selection-start-column="26" selection-end-line="67" selection-end-column="26" />
+              <caret line="92" column="33" selection-start-line="92" selection-start-column="33" selection-end-line="92" selection-end-column="33" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Hot.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/Hot.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="186" column="30" selection-start-line="186" selection-start-column="30" selection-end-line="186" selection-end-column="30" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="EditProfile.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="EditProfile.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Pages/EditProfile.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.4964871">
-              <caret line="309" column="52" selection-start-line="309" selection-start-column="52" selection-end-line="309" selection-end-column="52" />
+            <state vertical-scroll-proportion="-7.851852">
+              <caret line="337" column="36" selection-start-line="337" selection-start-column="36" selection-end-line="337" selection-end-column="36" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ChatsList.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="74" column="6" selection-start-line="74" selection-start-column="6" selection-end-line="74" selection-end-column="6" />
               <folding />
             </state>
           </provider>
@@ -180,19 +178,19 @@
         <option value="$PROJECT_DIR$/Partials/Icons/ProfilePageIcon.js" />
         <option value="$PROJECT_DIR$/Partials/Icons/ChatsListPageIcon.js" />
         <option value="$PROJECT_DIR$/Partials/Icons/FilterModalIcon.js" />
-        <option value="$PROJECT_DIR$/ios/VentureApp/AppDelegate.m" />
-        <option value="$PROJECT_DIR$/Pages/Chat.js" />
         <option value="$PROJECT_DIR$/Partials/Icons/ChevronIcon.js" />
         <option value="$PROJECT_DIR$/Partials/Icons/MatchedIcon.js" />
         <option value="$PROJECT_DIR$/Layouts/MainLayout.js" />
-        <option value="$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js" />
         <option value="$PROJECT_DIR$/Pages/LayoutItems/EventsList.js" />
-        <option value="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" />
         <option value="$PROJECT_DIR$/Partials/Icons/EditProfilePageIcon.js" />
-        <option value="$PROJECT_DIR$/Pages/LayoutItems/Profile.js" />
-        <option value="$PROJECT_DIR$/Pages/LayoutItems/Hot.js" />
         <option value="$PROJECT_DIR$/Pages/Home.js" />
+        <option value="$PROJECT_DIR$/ios/VentureApp/AppDelegate.m" />
+        <option value="$PROJECT_DIR$/Pages/LayoutItems/Hot.js" />
         <option value="$PROJECT_DIR$/Pages/EditProfile.js" />
+        <option value="$PROJECT_DIR$/Pages/LayoutItems/Profile.js" />
+        <option value="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" />
+        <option value="$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js" />
+        <option value="$PROJECT_DIR$/Pages/Chat.js" />
       </list>
     </option>
   </component>
@@ -521,7 +519,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1" y="23" width="1280" height="773" extended-state="6" />
+    <frame x="-1" y="23" width="1280" height="773" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15011914" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -809,14 +807,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Partials/Header.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.52422905">
-          <caret line="92" column="33" selection-start-line="92" selection-start-column="33" selection-end-line="92" selection-end-column="33" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ios/VentureApp/AppDelegate.h">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.34198472">
@@ -825,34 +815,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/Login.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="202" column="54" selection-start-line="202" selection-start-column="54" selection-end-line="202" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/Filters.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.29508197">
-          <caret line="69" column="7" selection-start-line="69" selection-start-column="7" selection-end-line="76" selection-end-column="45" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Partials/Icons/CloseIcon.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.09251101">
           <caret line="26" column="13" selection-start-line="26" selection-start-column="13" selection-end-line="26" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ios/VentureApp/AppDelegate.m">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3325527">
-          <caret line="41" column="4" selection-start-line="41" selection-start-column="4" selection-end-line="41" selection-end-column="4" />
           <folding />
         </state>
       </provider>
@@ -889,14 +855,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/Chat.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.259259">
-          <caret line="200" column="22" selection-start-line="200" selection-start-column="22" selection-end-line="200" selection-end-column="71" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Layouts/MainLayout.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -913,30 +871,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-18.74074">
-          <caret line="291" column="16" selection-start-line="291" selection-start-column="16" selection-end-line="291" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/EventsList.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="453" column="88" selection-start-line="453" selection-start-column="88" selection-end-line="453" selection-end-column="88" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/UsersList.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.3333335">
-          <caret line="497" column="26" selection-start-line="497" selection-start-column="26" selection-end-line="497" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Partials/Icons/HomeIcon.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -945,9 +879,65 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Partials/Icons/EditProfilePageIcon.js">
+    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/EventsList.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.2222223">
+          <caret line="442" column="6" selection-start-line="442" selection-start-column="6" selection-end-line="442" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/Hot.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.814815">
+          <caret line="175" column="88" selection-start-line="175" selection-start-column="88" selection-end-line="175" selection-end-column="88" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/EditProfile.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.851852">
+          <caret line="337" column="36" selection-start-line="337" selection-start-column="36" selection-end-line="337" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/Filters.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.259259">
+          <caret line="265" column="17" selection-start-line="265" selection-start-column="11" selection-end-line="265" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/Login.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
+          <caret line="221" column="29" selection-start-line="221" selection-start-column="29" selection-end-line="221" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ios/VentureApp/AppDelegate.m">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.7777777">
+          <caret line="35" column="112" selection-start-line="35" selection-start-column="112" selection-end-line="35" selection-end-column="112" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Header.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="92" column="33" selection-start-line="92" selection-start-column="33" selection-end-line="92" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Icons/EditProfilePageIcon.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.9118943">
           <caret line="67" column="26" selection-start-line="67" selection-start-column="26" selection-end-line="67" selection-end-column="26" />
           <folding />
         </state>
@@ -955,32 +945,40 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/Profile.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="13.407408">
-          <caret line="59" column="62" selection-start-line="59" selection-start-column="62" selection-end-line="59" selection-end-column="62" />
+        <state vertical-scroll-proportion="-6.296296">
+          <caret line="290" column="21" selection-start-line="290" selection-start-column="21" selection-end-line="290" selection-end-column="21" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/Hot.js">
+    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="186" column="30" selection-start-line="186" selection-start-column="30" selection-end-line="186" selection-end-column="30" />
+          <caret line="74" column="6" selection-start-line="74" selection-start-column="6" selection-end-line="74" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/UsersList.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="57.48148">
+          <caret line="73" column="7" selection-start-line="73" selection-start-column="7" selection-end-line="76" selection-end-column="46" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Pages/Home.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.962963">
-          <caret line="601" column="36" selection-start-line="601" selection-start-column="36" selection-end-line="601" selection-end-column="36" />
+        <state vertical-scroll-proportion="-5.259259">
+          <caret line="257" column="75" selection-start-line="257" selection-start-column="64" selection-end-line="257" selection-end-column="75" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/EditProfile.js">
+    <entry file="file://$PROJECT_DIR$/Pages/Chat.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4964871">
-          <caret line="309" column="52" selection-start-line="309" selection-start-column="52" selection-end-line="309" selection-end-column="52" />
+        <state vertical-scroll-proportion="0.73770493">
+          <caret line="505" column="32" selection-start-line="505" selection-start-column="32" selection-end-line="505" selection-end-column="32" />
           <folding />
         </state>
       </provider>

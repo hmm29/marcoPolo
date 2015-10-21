@@ -42,6 +42,7 @@ var CAMERA_ICON_SIZE = 48;
 var CAMERA_REF = 'camera';
 var CAMERA_ROLL_OPTION = 'Camera Roll';
 var EDIT_GENDER_AUTOCOMPLETE_REF = 'editGenderAutocomplete';
+var EDIT_GENDER_ICON_SIZE = 22;
 var TAKE_PHOTO_OPTION = 'Take Photo';
 
 var BUTTONS = [
@@ -240,8 +241,8 @@ var EditProfile = React.createClass({
                     <Icon
                         color="rgba(255,255,255,0.7)"
                         name="ion|edit"
-                        size={22}
-                        style={{width: 18, height: 18}}
+                        size={EDIT_GENDER_ICON_SIZE}
+                        style={{width: EDIT_GENDER_ICON_SIZE * 1.4, height: EDIT_GENDER_ICON_SIZE * 1.4}}
                         />
                 </TouchableOpacity>
             </View>
@@ -259,7 +260,7 @@ var EditProfile = React.createClass({
                     onBlur={this._onBlurGender}
                     onFocus={this._onFocusGender}
                     clearTextOnFocus={true}
-                    placeholder='Edit gender'
+                    placeholder='How do you identify?'
                     autoCompleteFontSize={15}
                     autoCompleteRegularFontName='AvenirNextCondensed-Regular'
                     autoCompleteBoldFontName='AvenirNextCondensed-Medium'
@@ -332,7 +333,7 @@ var EditProfile = React.createClass({
     _renderHeader() {
         return (
             <Header containerStyle={{backgroundColor: '#040A19'}}>
-                <TouchableOpacity onPress={this._safelyNavigateToMainLayout} style={{right: 40, bottom: 5}}>
+                <TouchableOpacity onPress={this._safelyNavigateToMainLayout} style={{right: 40}}>
                     <Icon
                         color="#fff"
                         name="ion|ios-arrow-thin-left"

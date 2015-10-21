@@ -106,7 +106,7 @@ var Chat = React.createClass({
     _renderHeader() {
         return (
             <Header containerStyle={{backgroundColor: '#040A19'}}>
-                <TouchableOpacity onPress={this._safelyNavigateToMainLayout} style={{right: 10, bottom: 5}}>
+                <TouchableOpacity onPress={this._safelyNavigateToMainLayout} style={{right: 10}}>
                     <Icon
                         color="#fff"
                         name="ion|ios-arrow-thin-left"
@@ -262,8 +262,8 @@ var RecipientInfoBar = React.createClass({
 
     getInitialState() {
         return {
-            activity: this.props.recipientData.currentUserData.activityPreference.title,
             age: _.random(19, 23),
+            currentUserActivityPreferenceTitle: this.props.recipientData.currentUserData.activityPreference.title,
             dir: 'row',
             hasKeyboardSpace: false,
             infoContent: 'recipient',
@@ -271,8 +271,15 @@ var RecipientInfoBar = React.createClass({
         }
     },
 
-    componentDidMount() {
-        console.log('Mounted Chat Info Bar');
+    componentWillMount(){
+        let _this = this;
+
+        this.props.chatRoomRef && this.props.recipientData && this.props.recipientData.currentUserData && this.props.recipientData.currentUserData.ventureId && this.props.recipientData.recipient && this.props.recipientData.recipient.ventureId && this.props.chatRoomRef.child('user_activity_preference_titles').on('value', snapshot => {
+            _this.setState({
+                currentUserActivityPreferenceTitle: snapshot.val() && snapshot.val()[this.props.recipientData.currentUserData.ventureId],
+                targetUserActivityPreferenceTitle: snapshot.val() && snapshot.val()[this.props.recipientData.recipient.ventureId]
+            })
+        })
     },
 
     render(){
@@ -291,7 +298,7 @@ var RecipientInfoBar = React.createClass({
                     {user.firstName}, {user.ageRange && user.ageRange.exactVal} {'\t'} |{'\t'}
                     <Text style={{fontFamily: 'AvenirNextCondensed-Medium'}}>
                         <Text
-                            style={{fontSize: 20}}>{user === currentUserData ? this.state.activity && this.state.activity : user.activityPreference && user.activityPreference.title && user.activityPreference.title.capitalize().slice(0, -1)}</Text>: {user.activityPreference && (user.activityPreference.start.time || user.activityPreference.status)}
+                            style={{fontSize: 20}}>{user === currentUserData ? this.state.currentUserActivityPreferenceTitle : this.state.targetUserActivityPreferenceTitle}</Text>: {user.activityPreference && (user.activityPreference.start.time || user.activityPreference.status)}
                         {'\n'}
                     </Text>
                 </Text>
@@ -307,12 +314,16 @@ var RecipientInfoBar = React.createClass({
                     autoCapitalize='none'
                     autoCorrect={false}
                     onChangeText={(text) => {
-                            this.setState({activity: text});
+                            let currentUserIDHashed = this.props.recipientData.currentUserData.ventureId,
+                                upperCaseText = text.toUpperCase();
+
+                            this.setState({currentUserActivityPreferenceTitle: upperCaseText});
+                            this.props.chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set(upperCaseText);
                         }}
                     maxLength={15}
                     returnKeyType='default'
                     style={styles.textInput}
-                    value={this.state.activity}/> : <TextInput />}
+                    value={this.state.currentUserActivityPreferenceTitle}/> : <TextInput />}
                 <View style={[styles.tagBar, {bottom: 10}]}>
                     <Text style={styles.tagsTitle}>TAGS: </Text>
                     {tags && tags.map((tag) => (
@@ -342,8 +353,7 @@ var RecipientInfoBar = React.createClass({
                     var config = layoutAnimationConfigs[0];
                     LayoutAnimation.configureNext(config);
                    this.setState({infoContent: 'currentUser', dir: (this.state.dir === 'column' && this.state.infoContent === 'currentUser' ? 'row' : 'column')})
-                }} navigator={this.props.navigator} currentUserActivityPreference={this.state.activity}
-                                     currentUserData={currentUserData} style={{marginRight: 20}}/>
+                }} navigator={this.props.navigator} currentUserData={currentUserData} style={{marginRight: 20}}/>
                 </View>
                 <TimerBar chatRoomRef={this.props.chatRoomRef}
                           currentUserData={currentUserData}
@@ -368,7 +378,6 @@ var RecipientAvatar = React.createClass({
     propTypes: {
         onPress: React.PropTypes.func,
         currentUserData: React.PropTypes.object,
-        currentUserActivityPreference: React.PropTypes.string,
         recipient: React.PropTypes.object,
         safelyNavigateToMainLayout: React.PropTypes.func.isRequired
     },
@@ -439,9 +448,6 @@ var TimerBar = React.createClass({
                         if (this.state.timerValInMs <= 1000) {
                             _this.clearInterval(_this.handle);
 
-                            //TODO: give each chat and its route a globally unique ID
-                            // Find in route stack, delete, and reset the route stack
-
                             this._destroyChatroom(chatRoomRef);
                         }
                     }, 1000);
@@ -496,6 +502,7 @@ var TimerBar = React.createClass({
         });
 
         chatRoomRef.child('timer/value').off();
+        chatRoomRef.off();
         chatRoomRef.set({null});
 
         targetUserMatchRequestsRef.child(currentUserIDHashed).set(null);
@@ -565,7 +572,8 @@ var styles = StyleSheet.create({
         fontWeight: 'normal'
     },
     baseText: {
-        fontFamily: 'AvenirNext-Regular'
+        fontFamily: 'AvenirNext-Regular',
+        width: SCREEN_WIDTH/1.6
     },
     container: {
         alignItems: 'center',
