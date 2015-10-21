@@ -451,11 +451,11 @@ var EventsList = React.createClass({
     _renderHeader() {
         return (
             <Header containerStyle={{position: 'relative'}}>
-                <HomeIcon onPress={() => this._safelyNavigateToHome()} style={{right: 14, bottom: 5}}/>
+                <HomeIcon onPress={() => this._safelyNavigateToHome()} style={{right: 14}}/>
                 <Text>EVENTS</Text>
                 <FilterModalIcon
                     onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}
-                    style={{left: 14, bottom: 5}}/>
+                    style={{left: 14}}/>
             </Header>
         )
     },

@@ -56,8 +56,8 @@ var getInitialAgeRangeLimits = (ageVal:number, lim:string) => {
 var hash = (msg:string) => sha256(sha256(sha256(msg)));
 
 var prepAgeRangeVal = (ageRangeObj:Object):{max:number, min: number, exactVal: number} => {
-    if (!ageRangeObj.max) _.assign(ageRangeObj, {max: ageRangeObj.min, exactVal: ageRangeObj.min});
-    return ageRangeObj;
+    if (!ageRangeObj.max) _.assign(ageRangeObj, {max: ageRangeObj.min});
+    return _.assign(ageRangeObj, {exactVal: ageRangeObj.min});
 };
 
 var Profile = React.createClass({
@@ -344,7 +344,7 @@ var Info = React.createClass({
                     firebaseUserData,
                     renderLoadingView: false,
                     info: {
-                        name: snapshot.val() && snapshot.val().name,
+                        firstName: snapshot.val() && snapshot.val().firstName,
                         gender: snapshot.val() && snapshot.val().gender,
                         ageRange: snapshot.val() && snapshot.val().ageRange,
                         bio: snapshot.val() && snapshot.val().bio
@@ -367,7 +367,7 @@ var Info = React.createClass({
         return (
             <View style={styles.infoContent}>
                 <Text
-                    style={[styles.infoText, styles.infoTextNameAge]}>{ info && (info.name + ', ') } { info && info.ageRange && info.ageRange.min }</Text>
+                    style={[styles.infoText, styles.infoTextNameAge]}>{ info && (info.firstName + ', ') } { info && info.ageRange && info.ageRange.min }</Text>
                 <Text
                     style={[styles.infoText, styles.infoTextGender]}>{ info && info.gender && info.gender.capitalize() }</Text>
                 <Text style={[styles.infoText, styles.infoTextBio]}>{ info && info.bio }</Text>

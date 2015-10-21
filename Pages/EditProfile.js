@@ -41,6 +41,7 @@ var Profile = require('../Pages/LayoutItems/Profile');
 var CAMERA_ICON_SIZE = 48;
 var CAMERA_REF = 'camera';
 var CAMERA_ROLL_OPTION = 'Camera Roll';
+var EDIT_GENDER_AUTOCOMPLETE_REF = 'editGenderAutocomplete';
 var TAKE_PHOTO_OPTION = 'Take Photo';
 
 var BUTTONS = [
@@ -79,10 +80,10 @@ var EditProfile = React.createClass({
         this.state.firebaseRef.child(`users/${ventureId}`).once('value', snapshot => {
 
             this.setState({
-                currentAge: snapshot.val() && snapshot.val().ageRange && snapshot.val().ageRange.exactVal,
+                currentAge: snapshot.val() && snapshot.val().ageRange && snapshot.val().ageRange.min,
                 currentBio: snapshot.val() && snapshot.val().bio,
                 currentGender: snapshot.val() && snapshot.val().gender,
-                currentName: snapshot.val() && snapshot.val().name,
+                currentFirstName: snapshot.val() && snapshot.val().firstName,
                 currentPic: snapshot.val() && snapshot.val().picture,
                 originalBio: snapshot.val() && snapshot.val().bio,
                 originalGender: snapshot.val() && snapshot.val().gender,
@@ -234,7 +235,6 @@ var EditProfile = React.createClass({
             <View style={styles.genderField}>
                 <Text style={styles.label}>{this.state.selectedGender && this.state.selectedGender.capitalize()}</Text>
                 <TouchableOpacity onPress={() => {
-                    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
                     this.setState({isEditingGenderField: true, showAutocomplete: true})
                 }}>
                     <Icon
@@ -250,10 +250,16 @@ var EditProfile = React.createClass({
         let genderAutocomplete = (
             <View style={styles.genderAutocomplete}>
                 <AutoComplete
+                    ref={EDIT_GENDER_AUTOCOMPLETE_REF}
+                    autoCompleteTableCellTextColor={'#fff'}
+                    autoCompleteTableOriginOffset={0}
+                    autoCompleteTableViewHidden={false}
+                    showTextFieldDropShadowWhenAutoCompleteTableIsOpen={false}
+                    autoCompleteRowHeight={34}
                     onBlur={this._onBlurGender}
                     onFocus={this._onFocusGender}
                     clearTextOnFocus={true}
-                    placeholder='  Edit gender'
+                    placeholder='Edit gender'
                     autoCompleteFontSize={15}
                     autoCompleteRegularFontName='AvenirNextCondensed-Regular'
                     autoCompleteBoldFontName='AvenirNextCondensed-Medium'
@@ -261,12 +267,8 @@ var EditProfile = React.createClass({
                     onSelect={this._setGender}
                     onTyping={this._onTyping}
                     suggestions={this.state.genderMatches}
-                    autoCompleteTableCellTextColor={'#fff'}
-                    autoCompleteTableOriginOffset={0}
-                    autoCompleteTableViewHidden={false}
-                    showTextFieldDropShadowWhenAutoCompleteTableIsOpen={false}
-                    autoCompleteRowHeight={34}
-                    style={[styles.autocomplete, {height: (this.state.isEditingGenderField ? SCREEN_WIDTH / 9 : 40), marginRight: (this.state.showBioField ? 0 : 90), paddingBottom: (this.state.showBioField ? 0 : 60) }]}
+                    textAlign='center'
+                    style={[styles.autocomplete, {height: 40, marginRight: (this.state.showBioField ? 0 : 90)}]}
                     />
             </View>
         );
@@ -310,7 +312,7 @@ var EditProfile = React.createClass({
                         {editPhoto}
 
                         <Text
-                            style={[styles.label, {fontSize: 22}]}>{this.state.currentName} {this.state.currentName ? ',' : ''} {this.state.currentAge}</Text>
+                            style={[styles.label, {fontSize: 22}]}>{this.state.currentFirstName} {this.state.currentFirstName ? ',' : ''} {this.state.currentAge}</Text>
 
                         <View style={styles.editableTextFields}>
                             {this.state.isEditingGenderField && this.state.showAutocomplete ? genderAutocomplete : genderField}
@@ -352,7 +354,6 @@ var styles = StyleSheet.create({
         color: '#fff',
         width: SCREEN_WIDTH / 2,
         borderRadius: 10,
-        paddingLeft: SCREEN_WIDTH / 25,
         marginBottom: SCREEN_HEIGHT / 22,
         left: 60,
         alignSelf: 'stretch'

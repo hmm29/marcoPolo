@@ -43,7 +43,7 @@ var MainLayout = require('../Layouts/MainLayout');
 var ProfilePageIcon = require('../Partials/Icons/ProfilePageIcon');
 var TimerMixin = require('react-timer-mixin');
 
-var ADD_INFO_BUTTON_SIZE = 32;
+var ADD_INFO_BUTTON_SIZE = 28;
 var ACTIVITY_TEXT_INPUT_PADDING = 5;
 var ACTIVITY_TITLE_INPUT_REF = 'activityTitleInput'
 var LOGO_WIDTH = 200;
@@ -263,7 +263,7 @@ var Home = React.createClass({
         );
 
         let addInfoButton = (
-            <View style={[styles.addInfoButtonContainer, {bottom: (this.state.showNextButton ? 30 : 0)}]}>
+            <View style={[styles.addInfoButtonContainer, {bottom: (this.state.showNextButton && this.state.showAddInfoBox ? SCREEN_HEIGHT/20 : SCREEN_HEIGHT/32 )}]}>
                 <TouchableOpacity
                     activeOpacity={0.4}
                     onPress={() => {
@@ -427,7 +427,7 @@ var Home = React.createClass({
         let addInfoBox = (
             <View
                 style={[styles.addInfoBox, {bottom: (this.state.hasKeyboardSpace ? SCREEN_HEIGHT/3 : SCREEN_HEIGHT / 35)}]}>
-                <Title>WHEN?</Title>
+                <View style={{top: 5}}><Title>WHEN?</Title></View>
                 {content}
                 {tagSelection}
             </View>
@@ -599,7 +599,7 @@ var styles = StyleSheet.create({
         flex: 1,
         padding: TAG_TEXT_INPUT_PADDING,
         height: SCREEN_HEIGHT / 158,
-        fontSize: SCREEN_HEIGHT / 45,
+        fontSize: SCREEN_HEIGHT / 52,
         color: '#000',
         textAlign: 'center',
         fontFamily: 'AvenirNextCondensed-Regular',

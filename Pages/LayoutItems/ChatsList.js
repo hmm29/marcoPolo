@@ -94,7 +94,7 @@ var User = React.createClass({
         let _this = this;
 
         this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-        && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+        && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).once('value', snapshot => {
             _this.setState({status: snapshot.val() && snapshot.val().status});
         });
     },
@@ -281,15 +281,16 @@ var User = React.createClass({
         if (!this.props.currentUser && this.props.currentPosition) distance = 0.7 + 'mi';
         //this.calculateDistance(this.props.currentPosition.coords, this.props.data.location.coordinates) + ' mi'
 
-        if (!this.props.isCurrentUser)
-            swipeoutBtns = [
-                {
-                    text: 'Report', backgroundColor: '#4f535e'
-                },
-                {
-                    text: 'Block', backgroundColor: '#1d222f', color: '#fff'
-                }
-            ];
+        // if (!this.props.isCurrentUser) {
+        //    swipeoutBtns = [
+        //        {
+        //            text: 'Report', backgroundColor: '#4f535e'
+        //        },
+        //        {
+        //            text: 'Block', backgroundColor: '#1d222f', color: '#fff'
+        //        }
+        //    ];
+        //    }
 
         profileModal = (
             <View style={styles.profileModalContainer}>

@@ -24,7 +24,7 @@ var {
 
 var { Icon, } = require('react-native-icons');
 
-var SIZE = 28;
+var SIZE = 24;
 
 var EditProfilePageIcon = React.createClass({
     propTypes: {
@@ -66,8 +66,8 @@ var styles = StyleSheet.create({
         fontWeight: '500'
     },
     editProfilePageIcon: {
-        width: SIZE,
-        height: SIZE
+        width: SIZE * 1.5,
+        height: SIZE * 1.5
     }
 });
 

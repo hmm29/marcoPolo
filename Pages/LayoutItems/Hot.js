@@ -184,7 +184,7 @@ var Hot = React.createClass({
 var styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFF5EA'
+        backgroundColor: '#000'
     },
     header: {
         flexDirection: 'row',
