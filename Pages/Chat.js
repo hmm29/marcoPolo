@@ -76,7 +76,7 @@ var Chat = React.createClass({
 
             this.bindAsObject(chatRoomMessagesRef, 'messageList');
 
-            chatRoomMessagesRef.once('value', (snapshot) => {
+            chatRoomMessagesRef.on('value', (snapshot) => {
                 _this.setState({
                     contentOffsetYValue: 0,
                     message: '',
@@ -458,7 +458,7 @@ var TimerBar = React.createClass({
 
                 } else {
                     chatRoomRef.child('timer/value').on('value', snapshot => {
-                        this.setState({timerValInMs: snapshot.val()});
+                        this.setState({timerValInMs: snapshot.val() - 1});
 
                         if (this.state.timerValInMs < 1000) this._destroyChatroom(chatRoomRef);
 

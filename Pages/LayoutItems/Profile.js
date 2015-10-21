@@ -20,7 +20,6 @@ var {
     Image,
     LayoutAnimation,
     Navigator,
-    PixelRatio,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -103,7 +102,7 @@ var Profile = React.createClass({
                         created: new Date(),
                         updated: new Date()
                     },
-                    picture: `https://res.cloudinary.com/dwnyawluh/image/facebook/w_${PixelRatio.getPixelSizeForLayoutSize(200)},h_${PixelRatio.getPixelSizeForLayoutSize(300)}/${this.state.user.userId}.jpg`,
+                    picture: `https://res.cloudinary.com/dwnyawluh/image/facebook/${this.state.user.userId}.jpg`,
                     gender: responseData.gender,
                     bio: 'New to Venture!',
                     email: responseData.email,
@@ -315,7 +314,7 @@ var Photo = React.createClass({
                       bottom: 20
                     }
                   }
-                        source={{uri: `https://res.cloudinary.com/dwnyawluh/image/facebook/w_600,h_600/${this.props.user.userId}.jpg`}}
+                        source={{uri: `https://res.cloudinary.com/dwnyawluh/image/facebook/${this.props.user.userId}.jpg`}}
                         />
                 </View>
             );
