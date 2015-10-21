@@ -33,6 +33,7 @@ var Display = require('react-native-device-display');
 var Firebase = require('firebase');
 var Header = require('../Partials/Header');
 var { Icon, } = require('react-native-icons');
+var InvertibleScrollView = require('react-native-invertible-scroll-view');
 var LinearGradient = require('react-native-linear-gradient');
 var ReactFireMixin = require('reactfire');
 var TimerMixin = require('react-timer-mixin');
@@ -41,6 +42,7 @@ var INITIAL_TIMER_VAL_IN_MS = 300000;
 var SCREEN_HEIGHT = Display.height;
 var SCREEN_WIDTH = Display.width;
 var MESSAGE_TEXT_INPUT_REF = 'messageTextInput';
+var MESSAGES_LIST_REF = 'messagesList';
 
 let compoundStyles = () => {
     let res = {};
@@ -116,7 +118,7 @@ var Chat = React.createClass({
                 </TouchableOpacity>
                 <Text
                     style={styles.activityPreferenceTitle}>
-                    {this.props.passProps.currentUserData.activityPreference.title && this.props.passProps.currentUserData.activityPreference.title.toUpperCase() + '?'} </Text>
+                    {this.props.passProps.chatRoomActivityPreferenceTitle && this.props.passProps.chatRoomActivityPreferenceTitle.toUpperCase() + '?'} </Text>
                 <Text />
             </Header>
         );
@@ -193,6 +195,26 @@ var Chat = React.createClass({
     },
 
     render() {
+        let messageTextInput = (
+            <TextInput
+                ref={MESSAGE_TEXT_INPUT_REF}
+                onBlur={() => {
+                    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+                    this.setState({hasKeyboardSpace: false, closeDropdownProfile: false})
+                    }}
+                onFocus={() => {
+                    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+                    this.setState({hasKeyboardSpace: true, closeDropdownProfile: true})
+                    }}
+                multiline={true}
+                style={styles.messageTextInput}
+                onChangeText={(text) => this.setState({message: text})}
+                value={this.state.message}
+                returnKeyType='default'
+                keyboardType='default'
+                />
+        );
+
         return (
             <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.96)'}}>
                 <View>
@@ -204,44 +226,31 @@ var Chat = React.createClass({
                                       _id={this.props.passProps._id}
                                       navigator={this.props.navigator}
                                       recipientData={this.props.passProps}
-                                      safelyNavigateToMainLayout={this._safelyNavigateToMainLayout}
-                        />
+                                      safelyNavigateToMainLayout={this._safelyNavigateToMainLayout}/>
                     <ListView
+                        ref={MESSAGES_LIST_REF}
                         contentOffset={{x: 0, y: this.state.contentOffsetYValue}}
                         dataSource={this.state.dataSource}
                         renderRow={this._renderMessage}
+                        renderScrollComponent={props => <InvertibleScrollView {...props} />}
                         initialListSize={15}
                         pageSize={15}
                         scrollsToTop={false}
                         automaticallyAdjustContentInsets={false}
                         style={{backgroundColor: 'rgba(0,0,0,0.01)', width: SCREEN_WIDTH}}
                         />
-                    <View>
+                    <View style={{height: SCREEN_WIDTH / 8}} />
+                    <View style={{position: 'absolute', bottom: 0}}>
                         <View
                             style={[styles.textBoxContainer, {marginBottom: this.state.hasKeyboardSpace ? SCREEN_HEIGHT/3.1 : 0}]}>
-                            <TextInput
-                                ref={MESSAGE_TEXT_INPUT_REF}
-                                onBlur={() => {
-                    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-                    this.setState({hasKeyboardSpace: false, closeDropdownProfile: false})
-                    }}
-                                onFocus={() => {
-                    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-                    this.setState({hasKeyboardSpace: true, closeDropdownProfile: true})
-                    }}
-                                multiline={true}
-                                style={{width: SCREEN_WIDTH/1.2, backgroundColor: 'rgba(255,255,255,0.75)', height: 30, paddingLeft: 10, borderColor: 'gray', borderRadius: 10, fontFamily: 'AvenirNext-Regular', color: '#111', borderWidth: 1, margin: SCREEN_WIDTH/35}}
-                                onChangeText={(text) => this.setState({message: text})}
-                                value={this.state.message}
-                                returnKeyType='default'
-                                keyboardType='default'
-                                />
+                            {messageTextInput}
                             <TouchableOpacity onPress={() => {
                         if(this.state.message.length) this._sendMessage();
                         else this.refs[MESSAGE_TEXT_INPUT_REF].blur();
                     }}>
                                 <Text
-                                    style={{color: 'white', fontFamily: 'AvenirNextCondensed-Regular', marginHorizontal: 20, backgroundColor: 'rgba(255,255,255,0.3)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 3}}>Send</Text></TouchableOpacity>
+                                    style={{color: 'white', fontFamily: 'AvenirNextCondensed-Regular', marginHorizontal: 20, backgroundColor: 'rgba(255,255,255,0.3)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 3}}>Send</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </View>
@@ -264,6 +273,7 @@ var RecipientInfoBar = React.createClass({
         return {
             age: _.random(19, 23),
             currentUserActivityPreferenceTitle: this.props.recipientData.currentUserData.activityPreference.title,
+            currentUserBio: this.props.recipientData.currentUserData.bio,
             dir: 'row',
             hasKeyboardSpace: false,
             infoContent: 'recipient',
@@ -292,13 +302,14 @@ var RecipientInfoBar = React.createClass({
             <View
                 style={{paddingVertical: (user === recipient ? SCREEN_HEIGHT/40 : SCREEN_HEIGHT/97), bottom: (this.state.hasKeyboardSpace ? SCREEN_HEIGHT/3.5 : 0), backgroundColor: '#eee', flexDirection: 'column', justifyContent: 'center'}}>
                 <Image source={{uri: user.picture}}
-                       style={{width: SCREEN_WIDTH/1.8, height: SCREEN_WIDTH/1.8, borderRadius: SCREEN_WIDTH/3.6, alignSelf: 'center', marginVertical: SCREEN_WIDTH/18}}/>
+                       style={{width: SCREEN_WIDTH/2, height: SCREEN_WIDTH/2, borderRadius: SCREEN_WIDTH/3.6, alignSelf: 'center', marginVertical: SCREEN_WIDTH/18}}/>
                 <Text
                     style={{color: '#222', fontSize: 20, fontFamily: 'AvenirNextCondensed-Medium', textAlign: 'center'}}>
                     {user.firstName}, {user.ageRange && user.ageRange.exactVal} {'\t'} |{'\t'}
                     <Text style={{fontFamily: 'AvenirNextCondensed-Medium'}}>
                         <Text
-                            style={{fontSize: 20}}>{user === currentUserData ? this.state.currentUserActivityPreferenceTitle : this.state.targetUserActivityPreferenceTitle}</Text>: {user.activityPreference && (user.activityPreference.start.time || user.activityPreference.status)}
+                            style={{fontSize: 20}}>{user === currentUserData ? this.state.currentUserActivityPreferenceTitle && this.state.currentUserActivityPreferenceTitle.replace(/[^\w\s]|_/g, '').replace(/\s+/g, ' ') :
+                        this.state.targetUserActivityPreferenceTitle && this.state.targetUserActivityPreferenceTitle.replace(/[^\w\s]|_/g, '').replace(/\s+/g, ' ')}</Text>: {user.activityPreference && (user.activityPreference.start.time || user.activityPreference.status)}
                         {'\n'}
                     </Text>
                 </Text>
@@ -333,7 +344,7 @@ var RecipientInfoBar = React.createClass({
                     }
                 </View>
                 <Text
-                    style={{color: '#222', fontFamily: 'AvenirNextCondensed-Medium', textAlign: 'center', fontSize: 16, marginTop: 15}}>{user.bio || 'Yale \'16'}</Text>
+                    style={styles.bio}>{user.bio}</Text>
             </View>
         );
 
@@ -491,7 +502,7 @@ var TimerBar = React.createClass({
 
         // only navigate if still on chat page! :D
 
-        if(currentChatroomRoute.title === 'Chat' && currentChatroomRoute.passProps._id === this.props._id) this.props.safelyNavigateToMainLayout();
+        if((currentChatroomRoute.title === 'Chat' && currentChatroomRoute.passProps._id === this.props._id) || this.state.timerValInMs < 1000) this.props.safelyNavigateToMainLayout();
 
         firebaseRef.child(`users/${targetUserIDHashed}/chatCount`).once('value', snapshot => {
             firebaseRef.child(`users/${targetUserIDHashed}/chatCount`).set(snapshot.val() - 1);
@@ -575,6 +586,13 @@ var styles = StyleSheet.create({
         fontFamily: 'AvenirNext-Regular',
         width: SCREEN_WIDTH/1.6
     },
+    bio: {
+        color: '#222',
+        fontFamily: 'AvenirNextCondensed-Medium',
+        textAlign: 'center',
+        fontSize: 16,
+        marginTop: 15
+    },
     container: {
         alignItems: 'center',
         flex: 1
@@ -584,6 +602,18 @@ var styles = StyleSheet.create({
         flex: 0.8,
         flexDirection: 'column',
         alignItems: 'center'
+    },
+    messageTextInput: {
+        width: SCREEN_WIDTH/1.2,
+        backgroundColor: 'rgba(255,255,255,0.75)',
+        height: 30,
+        paddingLeft: 10,
+        borderColor: 'gray',
+        borderRadius: 10,
+        fontFamily: 'AvenirNext-Regular',
+        color: '#111',
+        borderWidth: 1,
+        margin: SCREEN_WIDTH/35
     },
     recipientActivity: {
         fontFamily: 'AvenirNextCondensed-Medium',
@@ -644,6 +674,10 @@ var styles = StyleSheet.create({
         padding: 10,
         marginRight: 20
     },
+    receivedMessageText: {
+        color: 'black',
+        fontSize: 16
+    },
     sentMessageText: {
         color: 'white',
         fontSize: 16
@@ -683,16 +717,12 @@ var styles = StyleSheet.create({
         alignSelf: 'center',
         fontFamily: 'AvenirNextCondensed-Regular'
     },
-    receivedMessageText: {
-        color: 'black',
-        fontSize: 16
-    },
     textBoxContainer: {
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.2)',
+        backgroundColor: 'rgba(0,0,0,0.98)',
         width: SCREEN_WIDTH
     },
     timer: {

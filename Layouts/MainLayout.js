@@ -75,9 +75,9 @@ var IOSLayout = React.createClass({
             case 'events':
                 return <EventsList navigator={this.props.navigator} />;
             case 'users':
-                return <UsersList navigator={this.props.navigator} />;
+                return <UsersList navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'chats':
-                return <ChatsList navigator={this.props.navigator} />;
+                return <ChatsList navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'profile':
                 return <Profile navigator={this.props.navigator} />;
         }
