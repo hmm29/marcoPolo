@@ -15,6 +15,7 @@
 var React = require('react-native');
 
 var {
+    AppStateIOS,
     AsyncStorage,
     DatePickerIOS,
     Image,
@@ -80,6 +81,7 @@ var Home = React.createClass({
             activeTimeOption: 'now',
             activityTitleInput: '',
             contentOffsetXVal: 0,
+            currentAppState: AppStateIOS.currentState,
             date: new Date(),
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             hasIshSelected: false,
@@ -112,16 +114,42 @@ var Home = React.createClass({
                         account = JSON.parse(account);
 
                         if (account === null) {
-                            this.setTimeout(() => this.props.navigator.push({title: 'Login', component: Login}), 200)
+                            this.setTimeout(this._safelyNavigateToLogin, 200)
                             return;
                         }
 
+                        AppStateIOS.addEventListener('change', this._handleAppStateChange);
+
                         this.setState({ventureId: account.ventureId});
+                        return account.ventureId;
+                    })
+                    .then((ventureId) => {
+                        let currentUserRef = this.state.firebaseRef.child(`users/${ventureId}`);
+                        //@hmm: get current user location & save to firebase object
+                        navigator.geolocation.getCurrentPosition(
+                            (currentPosition) => {
+                                currentUserRef.child(`location/coordinates`).set(currentPosition.coords);
+                                this.setState({currentUserLocationCoords: [currentPosition.coords.latitude, currentPosition.coords.longitude], currentUserRef});
+                            },
+                            (error) => {
+                                console.error(error);
+                            },
+                            {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
+                        );
                     })
                     .catch((error) => console.log(error.message))
                     .done();
+
+                AsyncStorage.getItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL')
+                    .then((friendsAPICallURL) => this.setState({friendsAPICallURL}))
+                    .catch(error => console.log(error.message))
+                    .done();
             }, 1000);
         });
+    },
+
+    componentWillUnmount() {
+        AppStateIOS.removeEventListener('change', this._handleAppStateChange);
     },
 
     animateViewLayout(text:string) {
@@ -138,38 +166,6 @@ var Home = React.createClass({
         return (
             <TrendingItem type={type} key={i} uri={uri}/>
         )
-
-    },
-
-    onSubmitActivity() {
-        let activityTitleInputWithoutPunctuation = (this.state.activityTitleInput).replace(/[^\w\s]|_/g, '').replace(/\s+/g, ' '),
-            activityPreferenceChange = {
-                title: activityTitleInputWithoutPunctuation + '?',
-                tags: this.state.tagsArr,
-                status: this.state.activeTimeOption.toUpperCase(),
-                start: {
-                    time: (this.state.activeTimeOption === 'specify' ? this._getTimeString(this.state.date) : ''),
-                    dateTime: this.state.date,
-                    timeZoneOffsetInHours: this.state.timeZoneOffsetInHours
-                },
-                createdAt: new Date(),
-                updatedAt: new Date()
-            },
-            firebaseRef = this.state.firebaseRef;
-
-        // @hmm: have to manually blur the text input,
-        // since were not using navigator.push()
-
-        this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
-
-        AsyncStorage.getItem('@AsyncStorage:Venture:account')
-            .then((account: string) => {
-                account = JSON.parse(account);
-                firebaseRef.child(`users/${account.ventureId}/activityPreference`).set(activityPreferenceChange)
-                this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {selected: 'users', ventureId: account.ventureId}});
-            })
-            .catch((error) => console.log(error.message))
-            .done();
 
     },
 
@@ -198,6 +194,26 @@ var Home = React.createClass({
         return t;
     },
 
+
+    _handleAppStateChange(currentAppState) {
+        let previousAppState = this.state.currentAppState;
+
+        this.setState({currentAppState, previousAppState});
+
+        if(previousAppState === 'background' && currentAppState === 'active') {
+            navigator.geolocation.getCurrentPosition(
+                (currentPosition) => {
+                    this.state.currentUserRef && this.state.currentUserRef.child(`location/coordinates`).set(currentPosition.coords);
+                    this.setState({currentUserLocationCoords: [currentPosition.coords.latitude, currentPosition.coords.longitude]});
+                },
+                (error) => {
+                    console.error(error);
+                },
+                {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
+            );
+        }
+    },
+
     handleScroll: function(event: Object) {
         if(event.nativeEvent.contentOffset.x < 0) {}
         else if(event.nativeEvent.contentOffset.x > 200 && event.nativeEvent.contentOffset.x < 300) this.setState({trendingContent: 'YALIES'})
@@ -216,6 +232,38 @@ var Home = React.createClass({
     _onFocus() {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.spring)
         this.setState({hasKeyboardSpace: true, showAddInfoButton: false, showNextButton: false, showTextInput: false});
+    },
+
+    onSubmitActivity() {
+        let activityTitleInputWithoutPunctuation = (this.state.activityTitleInput).replace(/[^\w\s]|_/g, '').replace(/\s+/g, ' '),
+            activityPreferenceChange = {
+                title: activityTitleInputWithoutPunctuation + '?',
+                tags: this.state.tagsArr,
+                status: this.state.activeTimeOption.toUpperCase(),
+                start: {
+                    time: (this.state.activeTimeOption === 'specify' ? this._getTimeString(this.state.date) : ''),
+                    dateTime: this.state.date,
+                    timeZoneOffsetInHours: this.state.timeZoneOffsetInHours
+                },
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            firebaseRef = this.state.firebaseRef;
+
+        // @hmm: have to manually blur the text input,
+        // since were not using navigator.push()
+
+        this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
+
+        AsyncStorage.getItem('@AsyncStorage:Venture:account')
+            .then((account: string) => {
+                account = JSON.parse(account);
+                firebaseRef.child(`users/${account.ventureId}/activityPreference`).set(activityPreferenceChange)
+                this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {currentUserLocationCoords: this.state.currentUserLocationCoords, friendsAPICallURL: this.state.friendsAPICallURL, selected: 'users', ventureId: account.ventureId}});
+            })
+            .catch((error) => console.log(error.message))
+            .done();
+
     },
 
     _roundDateDownToNearestXMinutes(date, num) {
@@ -447,13 +495,13 @@ var Home = React.createClass({
                         <ProfilePageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/25, right: 20}}
                                          onPress={() => {
                                             this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
-                                            this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {selected: 'profile', ventureId: this.state.ventureId}})
+                                            this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {currentUserLocationCoords: this.state.currentUserLocationCoords, friendsAPICallURL: this.state.friendsAPICallURL, selected: 'profile', ventureId: this.state.ventureId}})
                                          }} />
                         <ChatsListPageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/25, left: 20}}
                                            onPress={() => {
                                             this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
                                             // @hmm: pass ventureId to MainLayout
-                                            this._safelyNavigateForward({title: 'Chats', component: MainLayout, passProps: {selected: 'chats', ventureId: this.state.ventureId}})
+                                            this._safelyNavigateForward({title: 'Chats', component: MainLayout, passProps: {currentUserLocationCoords: this.state.currentUserLocationCoords, friendsAPICallURL: this.state.friendsAPICallURL, selected: 'chats', ventureId: this.state.ventureId}})
                                            }} />
                     </Header>
                     <Logo

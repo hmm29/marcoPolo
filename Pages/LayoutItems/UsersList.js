@@ -37,6 +37,7 @@ var Display = require('react-native-device-display');
 var FilterModalIcon = require('../../Partials/Icons/FilterModalIcon');
 var Filters = require('../Filters');
 var Firebase = require('firebase');
+var GeoFire = require('geofire');
 var Header = require('../../Partials/Header');
 var HomeIcon = require('../../Partials/Icons/HomeIcon');
 var LinearGradient = require('react-native-linear-gradient');
@@ -74,7 +75,8 @@ var User = React.createClass({
         currentPosition: React.PropTypes.object,
         currentUserData: React.PropTypes.object,
         data: React.PropTypes.object,
-        isCurrentUser: React.PropTypes.boolean
+        isCurrentUser: React.PropTypes.boolean,
+        navigator: React.PropTypes.object
     },
 
     getInitialState() {
@@ -188,11 +190,10 @@ var User = React.createClass({
 
             currentUserMatchRequestsRef.child(targetUserIDHashed).once('value', snapshot => {
 
-                if(snapshot.val() && snapshot.val().role === 'sender') {
+                if (snapshot.val() && snapshot.val().role === 'sender') {
                     _id = targetUserIDHashed + '_TO_' + currentUserIDHashed;
                     chatRoomActivityPreferenceTitle = this.props.currentUserData.activityPreference.title
-                }
-                else {
+                } else {
                     _id = currentUserIDHashed + '_TO_' + targetUserIDHashed;
                     chatRoomActivityPreferenceTitle = this.props.currentUserData.activityPreference.title
                 }
@@ -291,23 +292,22 @@ var User = React.createClass({
         }
     },
 
-    render()
-{
-    let distance, profileModal, swipeoutBtns;
+    render() {
+        let distance, profileModal, swipeoutBtns;
 
-    if (!this.props.currentUser && this.props.currentPosition) distance = 0.7 + 'mi';
-    //this.calculateDistance(this.props.currentPosition.coords, this.props.data.location.coordinates) + ' mi'
+        if (!this.props.currentUser && this.props.currentPosition) distance = 0.7;
+        //this.calculateDistance(this.props.currentPosition.coords, this.props.data.location.coordinates) + ' mi'
 
-    // if (!this.props.isCurrentUser) {
-    //    swipeoutBtns = [
-    //        {
-    //            text: 'Report', backgroundColor: '#4f535e'
-    //        },
-    //        {
-    //            text: 'Block', backgroundColor: '#1d222f', color: '#fff'
-    //        }
-    //    ];
-    //    }
+        // if (!this.props.isCurrentUser) {
+        //    swipeoutBtns = [
+        //        {
+        //            text: 'Report', backgroundColor: '#4f535e'
+        //        },
+        //        {
+        //            text: 'Block', backgroundColor: '#1d222f', color: '#fff'
+        //        }
+        //    ];
+        //    }
 
         profileModal = (
             <View style={styles.profileModalContainer}>
@@ -360,7 +360,7 @@ var User = React.createClass({
                                 source={{uri: this.props.data && this.props.data.picture}}
                                 style={[styles.thumbnail, (this.state.isFacebookFriend ? {borderWidth: 3, borderColor: '#4E598C'} : {})]}/>
                             <View style={styles.rightContainer}>
-                                <Text style={styles.distance}>{distance}</Text>
+                                <Text style={styles.distance}>{distance ? distance + ' mi' : ''}</Text>
                                 <Text style={styles.activityPreference}>
                                     {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title}
                                 </Text>
@@ -415,13 +415,69 @@ var UsersList = React.createClass({
 
     componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
-            let usersListRef = this.state.firebaseRef.child('/users'), _this = this;
+            let currentUserRef = this.props.ventureId && this.state.firebaseRef.child(`users/${this.props.ventureId}`),
+                usersListRef = this.state.firebaseRef.child('/users'),
+                _this = this;
 
             // @hmm: show users based on filter settings
 
-            usersListRef.orderByChild('gender').equalTo('male').on('value', snapshot => {
-                _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
-                _this.setState({rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
+            currentUserRef && currentUserRef.child('matchingPreferences').on('value', snapshot => {
+                InteractionManager.runAfterInteractions(() => {
+
+                    let matchingPreferences = snapshot.val(),
+                        filteredUsersArray = [];
+
+                    fetch(this.props.friendsAPICallURL)
+                        .then(response => response.json())
+                        .then(responseData => {
+                            this.setState({currentUserFriends: responseData.data});
+                        })
+                        .done();
+
+                    _this.setState({maxSearchDistance: matchingPreferences.maxSearchDistance});
+
+                    usersListRef.once('value', snapshot => {
+
+                        snapshot.val() && _.each(snapshot.val(), (user) => {
+
+                            // @hmm: because of cumulative privacy selection, only have to check for friends+ for both 'friends+' and 'all'
+                            if (matchingPreferences.privacy.indexOf('friends+') > -1) {
+                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) < this.state.maxSearchDistance * 1.609) {
+                                    if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
+                                    if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
+                                }
+                            } else if (matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
+                                fetch(this.props.friendsAPICallURL)
+                                    .then(response => response.json())
+                                    .then(responseData => {
+                                        InteractionManager.runAfterInteractions(() => {
+
+                                            if (responseData.data && _.findWhere(responseData.data, {name: user.name})) {
+                                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) < this.state.maxSearchDistance * 1.609) {
+                                                    if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
+                                                    if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
+                                                }
+                                            }
+
+                                            _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
+                                            _this.setState({
+                                                rows: _.cloneDeep(_.values(filteredUsersArray)),
+                                                currentUserRef,
+                                                usersListRef
+                                            });
+                                        });
+
+                                    })
+                                    .done();
+                            }
+
+                        });
+                        _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
+                        _this.setState({rows: _.cloneDeep(_.values(filteredUsersArray)), currentUserRef, usersListRef});
+                    });
+
+                });
+
             });
 
             this.bindAsArray(usersListRef, 'rows');
@@ -455,10 +511,9 @@ var UsersList = React.createClass({
     },
 
     componentWillUnmount() {
-        let usersListRef = this.state.firebaseRef.child('/users');
-
-        usersListRef.off();
-       // if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
+        this.state.currentUserRef.off();
+        this.state.usersListRef.off();
+        // if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
     },
 
     _safelyNavigateToHome() {
@@ -516,7 +571,7 @@ var UsersList = React.createClass({
     _renderHeader() {
         return (
             <Header>
-                <HomeIcon onPress={() => this._safelyNavigateToHome()} style={{right: 14}} />
+                <HomeIcon onPress={() => this._safelyNavigateToHome()} style={{right: 14}}/>
                 <TextInput
                     ref={SEARCH_TEXT_INPUT_REF}
                     autoCapitalize='none'
@@ -529,7 +584,7 @@ var UsersList = React.createClass({
                     style={styles.searchTextInput}/>
                 <FilterModalIcon
                     onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}
-                    style={{left: 14}} />
+                    style={{left: 14}}/>
                 <Text />
             </Header>
         )

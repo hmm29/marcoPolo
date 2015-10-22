@@ -147,7 +147,7 @@ var EditProfile = React.createClass({
         this.state.firebaseRef.child(`users/${ventureId}/bio`).set(this.state.currentBio);
 
         if (this.state.selectedGender !== this.state.originalGender)
-            this.state.firebaseRef.child(`users/${ventureId}/gender`).set(this.state.selectedGender);
+            this.state.firebaseRef.child(`users/${ventureId}/gender`).set(this.state.selectedGender.toLowerCase());
 
         if (this.state.currentPic !== this.state.originalPic)
             this.state.firebaseRef.child(`users/${ventureId}/picture`).set(this.state.currentPic);

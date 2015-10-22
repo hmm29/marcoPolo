@@ -108,7 +108,7 @@ var Chat = React.createClass({
     _renderHeader() {
         return (
             <Header containerStyle={{backgroundColor: '#040A19'}}>
-                <TouchableOpacity onPress={this._safelyNavigateToMainLayout} style={{right: 10}}>
+                <TouchableOpacity onPress={this._safelyNavigateToMainLayout} style={{right: 10, bottom: 5}}>
                     <Icon
                         color="#fff"
                         name="ion|ios-arrow-thin-left"
@@ -300,9 +300,9 @@ var RecipientInfoBar = React.createClass({
 
         let infoContent = (
             <View
-                style={{paddingVertical: (user === recipient ? SCREEN_HEIGHT/40 : SCREEN_HEIGHT/97), bottom: (this.state.hasKeyboardSpace ? SCREEN_HEIGHT/3.5 : 0), backgroundColor: '#eee', flexDirection: 'column', justifyContent: 'center'}}>
+                style={{paddingVertical: (user === recipient ? SCREEN_HEIGHT/30 : SCREEN_HEIGHT/97), bottom: (this.state.hasKeyboardSpace ? SCREEN_HEIGHT/3.5 : 0), backgroundColor: '#eee', flexDirection: 'column', justifyContent: 'center'}}>
                 <Image source={{uri: user.picture}}
-                       style={{width: SCREEN_WIDTH/2, height: SCREEN_WIDTH/2, borderRadius: SCREEN_WIDTH/3.6, alignSelf: 'center', marginVertical: SCREEN_WIDTH/18}}/>
+                       style={{width: SCREEN_WIDTH/2, height: SCREEN_WIDTH/2, borderRadius: SCREEN_WIDTH/4, alignSelf: 'center', marginVertical: SCREEN_WIDTH/18}}/>
                 <Text
                     style={{color: '#222', fontSize: 20, fontFamily: 'AvenirNextCondensed-Medium', textAlign: 'center'}}>
                     {user.firstName}, {user.ageRange && user.ageRange.exactVal} {'\t'} |{'\t'}

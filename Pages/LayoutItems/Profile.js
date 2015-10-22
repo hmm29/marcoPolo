@@ -125,7 +125,8 @@ var Profile = React.createClass({
                         isOnline: true
                     },
                     match_requests: {},
-                    events: []
+                    events: [],
+                    event_invite_match_requests: {}
                 };
 
                 this.state.firebaseRef.child(`users/${ventureId}`).set(newUserData);
@@ -240,6 +241,9 @@ var Profile = React.createClass({
                                     .catch((error) => console.log(error.message))
                                     .done();
 
+                                  AsyncStorage.setItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL', 'null')
+                                    .catch(error => console.log(error.message))
+                                    .done();
                                 }}
 
                                  onLoginFound={function(data){
@@ -348,6 +352,14 @@ var Info = React.createClass({
                     }
                 })
         );
+    },
+
+    componentDidMount() {
+        let api = `https://graph.facebook.com/v2.3/${this.props.user && this.props.user.userId}/friends?access_token=${this.props.user && this.props.user.token}`;
+
+        AsyncStorage.setItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL', api)
+            .catch(error => console.log(error.message))
+            .done();
     },
 
     componentWillUnmount() {
