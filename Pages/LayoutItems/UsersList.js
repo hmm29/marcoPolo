@@ -73,7 +73,7 @@ String.prototype.capitalize = function () {
 var User = React.createClass({
 
     propTypes: {
-        currentPosition: React.PropTypes.object,
+        currentUserLocationCoords: React.PropTypes.array,
         currentUserData: React.PropTypes.object,
         data: React.PropTypes.object,
         isCurrentUser: React.PropTypes.boolean,
@@ -98,7 +98,8 @@ var User = React.createClass({
             _this.setState({
                 distance,
                 status: snapshot.val() && snapshot.val().status,
-                timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)});
+                timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)
+            });
         });
     },
 
@@ -108,24 +109,24 @@ var User = React.createClass({
 
         this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
         && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
-            _this.setState({distance, status: snapshot.val() && snapshot.val().status, timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)});
+            _this.setState({
+                distance,
+                status: snapshot.val() && snapshot.val().status,
+                timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)
+            });
         });
     },
 
-    calculateDistance(pt1:Object, pt2:Object) {
-        if (!pt1) {
-            return '';
-        }
-        var lon1 = Number(pt1[1]),
-            lat1 = Number(pt1[0]),
-            lon2 = pt2[1],
-            lat2 = pt2[0];
-        var dLat = this.numberToRadius(lat2 - lat1),
-            dLon = this.numberToRadius(lon2 - lon1),
-            a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(this.numberToRadius(lat1))
-                * Math.cos(this.numberToRadius(lat2)) * Math.pow(Math.sin(dLon / 2), 2);
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return ((6371 * c) * 1000 * 0.000621371).toFixed(1); // returns miles
+    componentWillUnmount() {
+        let currentUserIDHashed = this.props.currentUserIDHashed,
+            firebaseRef = this.props.firebaseRef,
+            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
+
+        currentUserMatchRequestsRef && currentUserMatchRequestsRef.off();
+    },
+
+    calculateDistance(location1:Array, location2:Array) {
+        return location1 && location2 && (GeoFire.distance(location1, location2) * 0.621371).toFixed(1);
     },
 
     _getSecondaryStatusColor() {
@@ -369,9 +370,10 @@ var User = React.createClass({
                                 source={{uri: this.props.data && this.props.data.picture}}
                                 style={[styles.thumbnail, (this.state.isFacebookFriend ? {borderWidth: 3, borderColor: '#4E598C'} : {}), (this.state.timerVal ? {opacity: 0.6, justifyContent: 'center', alignItems: 'center'} : {})]}>
                                 <Text style={styles.timerValText}>{this.state.timerVal}</Text>
-                                </Image>
+                            </Image>
                             <View style={styles.rightContainer}>
-                                <Text style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
+                                <Text
+                                    style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
                                 <Text style={styles.activityPreference}>
                                     {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title}
                                 </Text>
@@ -453,10 +455,10 @@ var UsersList = React.createClass({
 
                             // @hmm: because of cumulative privacy selection, only have to check for friends+ for both 'friends+' and 'all'
                             if (matchingPreferences.privacy.indexOf('friends+') > -1) {
-                                // if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) < this.state.maxSearchDistance * 1.609) {
+                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) < this.state.maxSearchDistance * 1.609) {
                                     if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
                                     if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
-                                // }
+                                }
                             } else if (matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
                                 fetch(this.props.friendsAPICallURL)
                                     .then(response => response.json())
@@ -464,10 +466,10 @@ var UsersList = React.createClass({
                                         InteractionManager.runAfterInteractions(() => {
 
                                             if (responseData.data && _.findWhere(responseData.data, {name: user.name})) {
-                                                //if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) < this.state.maxSearchDistance * 1.609) {
+                                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) < this.state.maxSearchDistance * 1.609) {
                                                     if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
                                                     if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
-                                                // }
+                                                }
                                             }
 
                                             _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
@@ -511,7 +513,6 @@ var UsersList = React.createClass({
     componentWillUnmount() {
         this.state.currentUserRef.off();
         this.state.usersListRef.off();
-        // if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
     },
 
     _safelyNavigateToHome() {
@@ -777,7 +778,7 @@ var styles = StyleSheet.create({
     thumbnail: {
         width: THUMBNAIL_SIZE,
         height: THUMBNAIL_SIZE,
-        borderRadius: THUMBNAIL_SIZE/2,
+        borderRadius: THUMBNAIL_SIZE / 2,
         marginVertical: 7,
         marginLeft: 10
     },
