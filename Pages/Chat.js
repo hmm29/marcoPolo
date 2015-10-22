@@ -456,6 +456,10 @@ var TimerBar = React.createClass({
                         _this.setState({timerValInMs: this.state.timerValInMs - 1000});
                         chatRoomRef.child('timer').set({value: this.state.timerValInMs});
 
+                        // @hmm: update in match_request objects so it can be referenced in users list for timer overlays
+                        firebaseRef.child(`users/${currentUserData.ventureId}/match_requests/${recipient.ventureId}`).update({timerVal: this.state.timerValInMs});
+                        firebaseRef.child(`users/${recipient.ventureId}/match_requests/${currentUserData.ventureId}`).update({timerVal: this.state.timerValInMs});
+
                         if (this.state.timerValInMs <= 1000) {
                             _this.clearInterval(_this.handle);
 

@@ -56,7 +56,8 @@ var LOGO_HEIGHT = 120;
 var PAGE_SIZE = 10;
 var SCREEN_WIDTH = Display.width;
 var SCREEN_HEIGHT = Display.height;
-var SEARCH_TEXT_INPUT_REF = 'searchTextInput'
+var SEARCH_TEXT_INPUT_REF = 'searchTextInput';
+var THUMBNAIL_SIZE = 50;
 
 var YELLOW_HEX_CODE = '#ffe770';
 var BLUE_HEX_CODE = '#40cbfb';
@@ -83,25 +84,31 @@ var User = React.createClass({
         return {
             dir: 'row',
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
-            status: ''
+            status: '',
+            timerVal: ''
         }
     },
 
     componentWillMount() {
-        let _this = this;
+        let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
+            _this = this;
 
         this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
         && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
-            _this.setState({status: snapshot.val() && snapshot.val().status});
+            _this.setState({
+                distance,
+                status: snapshot.val() && snapshot.val().status,
+                timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)});
         });
     },
 
     componentWillReceiveProps(nextProps) {
-        let _this = this;
+        let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
+            _this = this;
 
         this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
         && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
-            _this.setState({status: snapshot.val() && snapshot.val().status});
+            _this.setState({distance, status: snapshot.val() && snapshot.val().status, timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)});
         });
     },
 
@@ -109,10 +116,10 @@ var User = React.createClass({
         if (!pt1) {
             return '';
         }
-        var lon1 = Number(pt1.longitude),
-            lat1 = Number(pt1.latitude),
-            lon2 = pt2[0],
-            lat2 = pt2[1];
+        var lon1 = Number(pt1[1]),
+            lat1 = Number(pt1[0]),
+            lon2 = pt2[1],
+            lat2 = pt2[0];
         var dLat = this.numberToRadius(lat2 - lat1),
             dLon = this.numberToRadius(lon2 - lon1),
             a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(this.numberToRadius(lat1))
@@ -147,6 +154,11 @@ var User = React.createClass({
             default:
                 return WHITE_HEX_CODE;
         }
+    },
+
+    _getTimerValue(numOfMilliseconds:number) {
+        var date = new Date(numOfMilliseconds);
+        return date.getMinutes() + 'm ' + date.getSeconds() + 's';
     },
 
     handleMatchInteraction() {
@@ -293,10 +305,7 @@ var User = React.createClass({
     },
 
     render() {
-        let distance, profileModal, swipeoutBtns;
-
-        if (!this.props.currentUser && this.props.currentPosition) distance = 0.7;
-        //this.calculateDistance(this.props.currentPosition.coords, this.props.data.location.coordinates) + ' mi'
+        let profileModal, swipeoutBtns;
 
         // if (!this.props.isCurrentUser) {
         //    swipeoutBtns = [
@@ -358,9 +367,11 @@ var User = React.createClass({
                             <Image
                                 onPress={this._onPressItem}
                                 source={{uri: this.props.data && this.props.data.picture}}
-                                style={[styles.thumbnail, (this.state.isFacebookFriend ? {borderWidth: 3, borderColor: '#4E598C'} : {})]}/>
+                                style={[styles.thumbnail, (this.state.isFacebookFriend ? {borderWidth: 3, borderColor: '#4E598C'} : {}), (this.state.timerVal ? {opacity: 0.6, justifyContent: 'center', alignItems: 'center'} : {})]}>
+                                <Text style={styles.timerValText}>{this.state.timerVal}</Text>
+                                </Image>
                             <View style={styles.rightContainer}>
-                                <Text style={styles.distance}>{distance ? distance + ' mi' : ''}</Text>
+                                <Text style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
                                 <Text style={styles.activityPreference}>
                                     {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title}
                                 </Text>
@@ -442,10 +453,10 @@ var UsersList = React.createClass({
 
                             // @hmm: because of cumulative privacy selection, only have to check for friends+ for both 'friends+' and 'all'
                             if (matchingPreferences.privacy.indexOf('friends+') > -1) {
-                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) < this.state.maxSearchDistance * 1.609) {
+                                // if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) < this.state.maxSearchDistance * 1.609) {
                                     if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
                                     if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
-                                }
+                                // }
                             } else if (matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
                                 fetch(this.props.friendsAPICallURL)
                                     .then(response => response.json())
@@ -453,10 +464,10 @@ var UsersList = React.createClass({
                                         InteractionManager.runAfterInteractions(() => {
 
                                             if (responseData.data && _.findWhere(responseData.data, {name: user.name})) {
-                                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) < this.state.maxSearchDistance * 1.609) {
+                                                //if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) < this.state.maxSearchDistance * 1.609) {
                                                     if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
                                                     if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
-                                                }
+                                                // }
                                             }
 
                                             _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
@@ -490,19 +501,6 @@ var UsersList = React.createClass({
 
                     this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {
                         _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
-                    });
-                })
-                .then(() => {
-                    InteractionManager.runAfterInteractions(() => {
-                        navigator.geolocation.getCurrentPosition(
-                            (currentPosition) => {
-                                _this.setState({currentPosition});
-                            },
-                            (error) => {
-                                console.error(error);
-                            },
-                            {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
-                        );
                     });
                 })
                 .catch((error) => console.log(error.message))
@@ -596,7 +594,7 @@ var UsersList = React.createClass({
 
         return <User currentUserData={this.state.currentUserData}
                      currentUserIDHashed={this.state.currentUserVentureId}
-                     currentPosition={this.state.currentPosition}
+                     currentUserLocationCoords={this.props.currentUserLocationCoords}
                      data={user}
                      firebaseRef={this.state.firebaseRef}
                      navigator={this.props.navigator}/>;
@@ -777,9 +775,9 @@ var styles = StyleSheet.create({
         fontFamily: 'AvenirNextCondensed-Medium'
     },
     thumbnail: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
+        width: THUMBNAIL_SIZE,
+        height: THUMBNAIL_SIZE,
+        borderRadius: THUMBNAIL_SIZE/2,
         marginVertical: 7,
         marginLeft: 10
     },
@@ -831,6 +829,12 @@ var styles = StyleSheet.create({
     filterPageButton: {
         width: 30,
         height: 30
+    },
+    timerValText: {
+        opacity: 1.0,
+        color: '#fff',
+        fontFamily: 'AvenirNextCondensed-Medium',
+        backgroundColor: 'rgba(0,0,0,0.15)'
     }
 });
 
