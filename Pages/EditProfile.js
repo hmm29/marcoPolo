@@ -333,7 +333,7 @@ var EditProfile = React.createClass({
     _renderHeader() {
         return (
             <Header containerStyle={{backgroundColor: '#040A19'}}>
-                <TouchableOpacity onPress={this._safelyNavigateToMainLayout} style={{right: 40}}>
+                <TouchableOpacity onPress={this._safelyNavigateToMainLayout} style={{right: 40, bottom: 2}}>
                     <Icon
                         color="#fff"
                         name="ion|ios-arrow-thin-left"
