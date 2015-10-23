@@ -49,6 +49,7 @@ var ACTIVITY_TEXT_INPUT_PADDING = 5;
 var ACTIVITY_TITLE_INPUT_REF = 'activityTitleInput'
 var LOGO_WIDTH = 200;
 var LOGO_HEIGHT = 120;
+var MAX_TEXT_INPUT_VAL_LENGTH = 15;
 var NEXT_BUTTON_SIZE = 28;
 var SCREEN_HEIGHT = Display.height;
 var SCREEN_WIDTH = Display.width;
@@ -105,7 +106,7 @@ var Home = React.createClass({
         }
     },
 
-    componentDidMount() {
+    componentWillMount() {
         //@hmm: wait for async storage account to update on login
         InteractionManager.runAfterInteractions(() => {
             this.setTimeout(() => {
@@ -120,12 +121,9 @@ var Home = React.createClass({
 
                         AppStateIOS.addEventListener('change', this._handleAppStateChange);
 
-                        this.setState({ventureId: account.ventureId});
-                        return account.ventureId;
-                    })
-                    .then((ventureId) => {
-                        let currentUserRef = this.state.firebaseRef.child(`users/${ventureId}`);
+                        let currentUserRef = this.state.firebaseRef.child(`users/${account.ventureId}`);
                         //@hmm: get current user location & save to firebase object
+                        // make sure this fires before navigating away!
                         navigator.geolocation.getCurrentPosition(
                             (currentPosition) => {
                                 currentUserRef.child(`location/coordinates`).set(currentPosition.coords);
@@ -136,6 +134,8 @@ var Home = React.createClass({
                             },
                             {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
                         );
+
+                        this.setState({ventureId: account.ventureId});
                     })
                     .catch((error) => console.log(error.message))
                     .done();
@@ -144,7 +144,7 @@ var Home = React.createClass({
                     .then((friendsAPICallURL) => this.setState({friendsAPICallURL}))
                     .catch(error => console.log(error.message))
                     .done();
-            }, 1000);
+            }, 900);
         });
     },
 
@@ -446,9 +446,12 @@ var Home = React.createClass({
                     onBlur={this._onBlur}
                     autoCapitalize='none'
                     autoCorrect={false}
-                    maxLength={15}
+                    maxLength={MAX_TEXT_INPUT_VAL_LENGTH}
                     onChangeText={(text) => {
+                        // @hmm: make sure emojis don't cause error - each emoji counts for 3 characters
+                        if(!text.match(/^[a-zA-Z]+$/) && text.length >= MAX_TEXT_INPUT_VAL_LENGTH - 1) return;
                         this.setState({tagInput: text});
+
                         if(text[text.length-1] === ',') {
                         let tagsArr = this.state.tagsArr;
 
@@ -492,12 +495,12 @@ var Home = React.createClass({
                     source={require('image!HomeBackground')}
                     style={styles.backdrop}>
                     <Header>
-                        <ProfilePageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/25, right: 20}}
+                        <ProfilePageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/34, right: 20}}
                                          onPress={() => {
                                             this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
                                             this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {currentUserLocationCoords: this.state.currentUserLocationCoords, friendsAPICallURL: this.state.friendsAPICallURL, selected: 'profile', ventureId: this.state.ventureId}})
                                          }} />
-                        <ChatsListPageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/25, left: 20}}
+                        <ChatsListPageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/34, left: 20}}
                                            onPress={() => {
                                             this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
                                             // @hmm: pass ventureId to MainLayout

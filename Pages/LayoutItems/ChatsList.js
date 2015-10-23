@@ -362,8 +362,10 @@ var User = React.createClass({
                             <Image
                                 onPress={this._onPressItem}
                                 source={{uri: this.props.data && this.props.data.picture}}
-                                style={[styles.thumbnail, (this.state.isFacebookFriend ? {borderWidth: 3, borderColor: '#4E598C'} : {}), (this.state.timerVal ? {opacity: 0.6, justifyContent: 'center', alignItems: 'center'} : {})]}>
-                                <Text style={styles.timerValText}>{this.state.timerVal}</Text>
+                                style={[styles.thumbnail]}>
+                                <View style={(this.state.timerVal ? styles.timerValOverlay : {})}>
+                                    <Text style={[styles.timerValText, (this.state.timerVal && this.state.timerVal[0] === '1' ? {color: '#FFF484'} : {}), (this.state.timerVal && this.state.timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{this.state.timerVal}</Text>
+                                </View>
                             </Image>
                             <View style={styles.rightContainer}>
                                 <Text style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
@@ -400,6 +402,7 @@ var ChatsList = React.createClass({
             firebaseRef,
             userRows: [],
             searchText: '',
+            showFunFact: true,
             showLoadingModal: true,
             usersListRef
         };
@@ -415,14 +418,15 @@ var ChatsList = React.createClass({
                 .then((account: string) => {
                     account = JSON.parse(account);
 
-                    // @hmm: sweet! order alphabetically to sort with priority ('matched' --> 'received' --> 'sent')
-
                     usersListRef.on('value', snapshot => {
-                        _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${account.ventureId}.status`));
-                        _this.setState({rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
-                    });
+                        // @hmm: sweet! order alphabetically to sort with priority ('matched' --> 'received' --> 'sent')
 
-                    this.setState({currentUserVentureId: account.ventureId})
+                        _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${account.ventureId}.status`));
+                        _this.setState({currentUserVentureId: account.ventureId, rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
+
+                        if(!_.isEmpty(snapshot.val()[account.ventureId].match_requests)) this.setState({showFunFact: false});
+                        else this.setState({showFunFact: true});
+                    });
 
                     this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {
                         _this.setState({currentUserData: snapshot.val()});
@@ -458,12 +462,11 @@ var ChatsList = React.createClass({
             this.props.navigator.immediatelyResetRouteStack(currentRouteStack)
         }
     },
-
     updateRows(userRows:Array) {
         this.setState({dataSource: this.state.dataSource.cloneWithRows(userRows)});
         InteractionManager.runAfterInteractions(() => {
             this.setState({showLoadingModal: false});
-        })
+        });
     },
     _renderHeader() {
         return (
@@ -489,6 +492,17 @@ var ChatsList = React.createClass({
     },
 
     render() {
+        let funFact = (
+            <View style={{alignSelf: 'center', bottom: SCREEN_HEIGHT/2.5}}>
+                <TouchableOpacity>
+                    <Text
+                        style={{color: '#fff', fontFamily: 'AvenirNextCondensed-Medium', textAlign: 'center', fontSize: 18}}>
+                        <Text style={{fontSize: Display.height/30, top: 15}}>Did You Know ?</Text> {'\n\n'} 1 in every 16 Yale students {'\n'}
+                        is a section asshole.</Text>
+                </TouchableOpacity>
+            </View>
+        );
+
         return (
             <View style={styles.usersListBaseContainer}>
                 <View>
@@ -501,6 +515,7 @@ var ChatsList = React.createClass({
                     pageSize={PAGE_SIZE}
                     automaticallyAdjustContentInsets={false}
                     scrollRenderAheadDistance={200}/>
+                {this.state.showFunFact ? funFact : <View />}
                 <View style={{height: 48}}></View>
                 <Modal
                     height={SCREEN_HEIGHT}
@@ -717,7 +732,14 @@ var styles = StyleSheet.create({
         opacity: 1.0,
         color: '#fff',
         fontFamily: 'AvenirNextCondensed-Medium',
-        backgroundColor: 'rgba(0,0,0,0.15)'
+    },
+    timerValOverlay: {
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        width: THUMBNAIL_SIZE,
+        height: THUMBNAIL_SIZE,
+        borderRadius: THUMBNAIL_SIZE / 2,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });
 

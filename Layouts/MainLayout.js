@@ -36,11 +36,11 @@ var MainLayout = React.createClass({
     },
 
     render() {
-        let currentUserLocationCoords = this.props.passProps.currentUserLocationCoords,
-            friendsAPICallURL = this.props.passProps.friendsAPICallURL,
-            navigator = this.props.navigator,
-            selected = this.props.passProps.selected,
-            ventureId = this.props.passProps.ventureId;
+        let currentUserLocationCoords = this.props.passProps && this.props.passProps.currentUserLocationCoords,
+            friendsAPICallURL = this.props.passProps && this.props.passProps.friendsAPICallURL,
+            navigator = this.props.passProps && this.props.navigator,
+            selected = this.props.passProps && this.props.passProps.selected,
+            ventureId = this.props.passProps && this.props.passProps.ventureId;
 
         if (Platform.OS === 'android') {
             return <AndroidLayout

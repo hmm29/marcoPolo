@@ -40,9 +40,7 @@ var CloseIcon = React.createClass({
             <View style={styles.container}>
                 <TouchableOpacity
                     activeOpacity={0.4}
-                    onPress={() =>  InteractionManager.runAfterInteractions(() => {
-                        this.props.onPress();
-                    })}
+                    onPress={this.props.onPress}
                     style={this.props.style}>
                     <Icon
                         color={this.props.color || "#fff"}

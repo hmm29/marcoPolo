@@ -43,6 +43,7 @@ var CAMERA_REF = 'camera';
 var CAMERA_ROLL_OPTION = 'Camera Roll';
 var EDIT_GENDER_AUTOCOMPLETE_REF = 'editGenderAutocomplete';
 var EDIT_GENDER_ICON_SIZE = 22;
+var MAX_TEXT_INPUT_VAL_LENGTH = 15;
 var TAKE_PHOTO_OPTION = 'Take Photo';
 
 var BUTTONS = [
@@ -214,8 +215,12 @@ var EditProfile = React.createClass({
                     onFocus={this._onFocusBio}
                     autoCapitalize='none'
                     autoCorrect={false}
-                    onChangeText={(text) => this.setState({currentBio: text})}
-                    maxLength={15}
+                    onChangeText={(text) => {
+                        // @hmm: make sure emojis don't cause error - each emoji counts for 3 characters
+                        if(!text.match(/^[a-zA-Z]+$/) || text.length >= MAX_TEXT_INPUT_VAL_LENGTH - 1) return;
+                        this.setState({currentBio: text})
+                    }}
+                    maxLength={MAX_TEXT_INPUT_VAL_LENGTH}
                     returnKeyType='done'
                     style={styles.bio}
                     value={this.state.currentBio}/>

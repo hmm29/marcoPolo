@@ -201,7 +201,7 @@ var Profile = React.createClass({
     render() {
         let _this = this,
             user = this.state.user,
-            ventureId = this.state.ventureId
+            ventureId = this.state.ventureId;
 
         return (
             <View style={styles.container}>

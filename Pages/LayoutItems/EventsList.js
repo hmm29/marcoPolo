@@ -34,8 +34,6 @@ var AwaitingResponseIcon = require('../../Partials/Icons/AwaitingResponseIcon');
 var Chat = require('../Chat');
 var ChevronIcon = require('../../Partials/Icons/ChevronIcon');
 var Display = require('react-native-device-display');
-var FilterModalIcon = require('../../Partials/Icons/FilterModalIcon');
-var Filters = require('../Filters');
 var Firebase = require('firebase');
 var Header = require('../../Partials/Header');
 var HomeIcon = require('../../Partials/Icons/HomeIcon');
@@ -361,6 +359,7 @@ var EventsList = React.createClass({
 
     getInitialState() {
         let firebaseRef = new Firebase('https://ventureappinitial.firebaseio.com/'),
+            eventsListRef = firebaseRef && firebaseRef.child('events'),
             usersListRef = firebaseRef && firebaseRef.child('users');
 
         return {
@@ -368,59 +367,51 @@ var EventsList = React.createClass({
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
             }),
+            eventsListRef,
             firebaseRef,
-            userRows: [],
+            eventRows: [],
             searchText: '',
             showLoadingModal: true,
+            userRows: [],
             usersListRef
         };
     },
 
     componentWillMount() {
-        this.updateRows([]);
-        //InteractionManager.runAfterInteractions(() => {
-        //     let usersListRef = this.state.firebaseRef.child('/users'), _this = this;
-        //
-        //    this.bindAsArray(usersListRef, 'userRows');
-        //
-        //    AsyncStorage.getItem('@AsyncStorage:Venture:account')
-        //        .then((account: string) => {
-        //            account = JSON.parse(account);
-        //
-        //            usersListRef.on('value', snapshot => {
-        //                _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${account.ventureId}.status`));
-        //                _this.setState({rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
-        //            });
-        //
-        //            this.setState({currentUserVentureId: account.ventureId})
-        //
-        //            this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {
-        //                _this.setState({currentUserData: snapshot.val()});
-        //            });
-        //        })
-        //        .then(() => {
-        //            InteractionManager.runAfterInteractions(() => {
-        //                navigator.geolocation.getCurrentPosition(
-        //                    (currentPosition) => {
-        //                        _this.setState({currentPosition});
-        //                    },
-        //                    (error) => {
-        //                        console.error(error);
-        //                    },
-        //                    {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
-        //                );
-        //            });
-        //        })
-        //        .catch((error) => console.log(error.message))
-        //        .done();
-        //});
+        InteractionManager.runAfterInteractions(() => {
+             let eventsListRef = this.state.eventsListRef,
+                 usersListRef = this.state.usersListRef,
+                 _this = this;
+
+            this.bindAsArray(usersListRef, 'userRows');
+            this.bindAsArray(eventsListRef, 'eventRows');
+
+            AsyncStorage.getItem('@AsyncStorage:Venture:account')
+                .then((account: string) => {
+                    account = JSON.parse(account);
+
+                    eventsListRef.on('value', snapshot => {
+                        _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
+                        _this.setState({rows: _.cloneDeep(_.values(snapshot.val())), eventsListRef, usersListRef});
+                    });
+
+                    this.setState({currentUserVentureId: account.ventureId})
+
+                    this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {
+                        _this.setState({currentUserData: snapshot.val()});
+                    });
+                })
+                .catch((error) => console.log(error.message))
+                .done();
+        });
     },
 
     componentWillUnmount() {
-        let usersListRef = this.state.firebaseRef.child('/users');
+        let eventsListRef = this.state.eventsListRef,
+            usersListRef = this.state.usersListRef;
 
+        eventsListRef.off();
         usersListRef.off();
-        // if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
     },
 
     _safelyNavigateToHome() {
@@ -428,18 +419,6 @@ var EventsList = React.createClass({
             homeRoute = currentRouteStack[0];
 
         if(currentRouteStack.indexOf(homeRoute) > -1) this.props.navigator.jumpTo(homeRoute);
-    },
-
-    _safelyNavigateForward(route:{title:string, component:ReactClass<any,any,any>, passProps?:Object}) {
-        let abbrevRoute = _.omit(route, 'component'),
-            currentRouteStack = this.props.navigator.getCurrentRoutes();
-
-        if(currentRouteStack.indexOf(abbrevRoute) > -1) this.props.navigator.jumpTo(abbrevRoute);
-
-        else {
-            currentRouteStack.push(route);
-            this.props.navigator.immediatelyResetRouteStack(currentRouteStack)
-        }
     },
 
     updateRows(userRows:Array) {
@@ -453,9 +432,7 @@ var EventsList = React.createClass({
             <Header containerStyle={{position: 'relative'}}>
                 <HomeIcon onPress={() => this._safelyNavigateToHome()} style={{right: 14}}/>
                 <Text>EVENTS</Text>
-                <FilterModalIcon
-                    onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}
-                    style={{left: 14}}/>
+                <View />
             </Header>
         )
     },

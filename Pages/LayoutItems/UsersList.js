@@ -272,10 +272,6 @@ var User = React.createClass({
         }
     },
 
-    numberToRadius(number:number) {
-        return number * Math.PI / 180;
-    },
-
     _onPressItem() {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
         this.setState({dir: this.state.dir === 'row' ? 'column' : 'row'});
@@ -301,7 +297,7 @@ var User = React.createClass({
                     direction='right'
                     onPress={() => this.handleMatchInteraction()}
                     size={18}
-                    style={{left: 18}}/>
+                    style={{left: 8}}/>
         }
     },
 
@@ -368,8 +364,10 @@ var User = React.createClass({
                             <Image
                                 onPress={this._onPressItem}
                                 source={{uri: this.props.data && this.props.data.picture}}
-                                style={[styles.thumbnail, (this.state.isFacebookFriend ? {borderWidth: 3, borderColor: '#4E598C'} : {}), (this.state.timerVal ? {opacity: 0.6, justifyContent: 'center', alignItems: 'center'} : {})]}>
-                                <Text style={styles.timerValText}>{this.state.timerVal}</Text>
+                                style={[styles.thumbnail]}>
+                                <View style={(this.state.timerVal ? styles.timerValOverlay : {})}>
+                                    <Text style={[styles.timerValText, (this.state.timerVal && this.state.timerVal[0] === '1' ? {color: '#FFF484'} : {}), (this.state.timerVal && this.state.timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{this.state.timerVal}</Text>
+                                </View>
                             </Image>
                             <View style={styles.rightContainer}>
                                 <Text
@@ -782,6 +780,14 @@ var styles = StyleSheet.create({
         marginVertical: 7,
         marginLeft: 10
     },
+    timerValOverlay: {
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        width: THUMBNAIL_SIZE,
+        height: THUMBNAIL_SIZE,
+        borderRadius: THUMBNAIL_SIZE / 2,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
     userContentWrapper: {
         top: 0,
         bottom: 0,
@@ -834,8 +840,7 @@ var styles = StyleSheet.create({
     timerValText: {
         opacity: 1.0,
         color: '#fff',
-        fontFamily: 'AvenirNextCondensed-Medium',
-        backgroundColor: 'rgba(0,0,0,0.15)'
+        fontFamily: 'AvenirNextCondensed-Medium'
     }
 });
 
