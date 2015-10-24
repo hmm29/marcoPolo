@@ -18,7 +18,6 @@ var {
     ActivityIndicatorIOS,
     AsyncStorage,
     Image,
-    LayoutAnimation,
     Navigator,
     StyleSheet,
     Text,

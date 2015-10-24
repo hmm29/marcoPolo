@@ -84,7 +84,6 @@ var User = React.createClass({
     getInitialState() {
         return {
             dir: 'row',
-            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             status: '',
             timerVal: ''
         }
@@ -94,8 +93,8 @@ var User = React.createClass({
         let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
             _this = this;
 
-        this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-        && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+        this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+        && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
             _this.setState({
                 distance,
                 status: snapshot.val() && snapshot.val().status,
@@ -108,8 +107,8 @@ var User = React.createClass({
         let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
             _this = this;
 
-        this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-        && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+        this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+        && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
             _this.setState({
                 distance,
                 status: snapshot.val() && snapshot.val().status,
@@ -169,16 +168,16 @@ var User = React.createClass({
         let targetUserIDHashed = this.props.data.ventureId,
             currentUserIDHashed = this.props.currentUserIDHashed,
             firebaseRef = this.props.firebaseRef,
-            targetUserMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/match_requests'),
-            currentUserMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/match_requests'),
+            targetUserEventInviteMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/event_invite_match_requests'),
+            currentUserEventInviteMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/event_invite_match_requests'),
             _this = this;
 
         if (this.state.status === 'sent') {
 
             // @hmm: delete the request
 
-            targetUserMatchRequestsRef.child(currentUserIDHashed).set(null);
-            currentUserMatchRequestsRef.child(targetUserIDHashed).set(null);
+            targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).set(null);
+            currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).set(null);
         }
 
         else if (this.state.status === 'received') {
@@ -186,30 +185,28 @@ var User = React.createClass({
             // @hmm: accept the request
             // chatroom reference uses id of the user who accepts the received matchInteraction
 
-            targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+            targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
                 status: 'matched',
                 role: 'recipient'
             }, 100);
 
-            currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+            currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
                 status: 'matched',
                 role: 'sender'
             }, 100);
         }
 
         else if (this.state.status === 'matched') {
-            let chatRoomActivityPreferenceTitle,
-                distance = 0.7 + ' mi',
+            let chatRoomEventTitle = 'YSO Halloween Show',
+                distance = this.state.distance + ' mi',
                 _id;
 
-            currentUserMatchRequestsRef.child(targetUserIDHashed).once('value', snapshot => {
+            currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).once('value', snapshot => {
 
                 if (snapshot.val() && snapshot.val().role === 'sender') {
-                    _id = targetUserIDHashed + '_TO_' + currentUserIDHashed;
-                    chatRoomActivityPreferenceTitle = this.props.currentUserData.activityPreference.title
+                    _id = 'EVENT_INVITE_' + targetUserIDHashed + '_TO_' + currentUserIDHashed;
                 } else {
-                    _id = currentUserIDHashed + '_TO_' + targetUserIDHashed;
-                    chatRoomActivityPreferenceTitle = this.props.currentUserData.activityPreference.title
+                    _id = 'EVENT_INVITE_' + currentUserIDHashed + '_TO_' + targetUserIDHashed;
                 }
 
                 firebaseRef.child(`chat_rooms/${_id}`).once('value', snapshot => {
@@ -222,8 +219,8 @@ var User = React.createClass({
 
                         chatRoomRef.child('_id').set(_id); // @hmm: set unique chat Id
                         chatRoomRef.child('timer').set({value: 300000}); // @hmm: set timer
-                        chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set(this.props.currentUserData.activityPreference.title);
-                        chatRoomRef.child('user_activity_preference_titles').child(targetUserIDHashed).set(this.props.data.activityPreference.title);
+                        chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set('YSO Halloween Show');
+                        chatRoomRef.child('user_activity_preference_titles').child(targetUserIDHashed).set('YSO Halloween Show');
 
                     }
 
@@ -236,7 +233,7 @@ var User = React.createClass({
                                     _id,
                                     recipient: _this.props.data,
                                     distance,
-                                    chatRoomActivityPreferenceTitle,
+                                    chatRoomEventTitle,
                                     chatRoomRef,
                                     currentUserData: _this.props.currentUserData
                                 }
@@ -251,7 +248,7 @@ var User = React.createClass({
                                     _id,
                                     recipient: _this.props.data,
                                     distance,
-                                    chatRoomActivityPreferenceTitle,
+                                    chatRoomEventTitle,
                                     chatRoomRef,
                                     currentUserData: _this.props.currentUserData
                                 }
@@ -264,10 +261,10 @@ var User = React.createClass({
         }
 
         else {
-            targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+            targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
                 status: 'received'
             }, 200);
-            currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+            currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
                 status: 'sent'
             }, 300);
         }
@@ -283,20 +280,20 @@ var User = React.createClass({
             case 'sent':
                 return <AwaitingResponseIcon
                     color='rgba(0,0,0,0.2)'
-                    onPress={() => this.handleMatchInteraction()}/>
+                    onPress={this.handleMatchInteraction}/>
             case 'received':
                 return <ReceivedResponseIcon
                     color='rgba(0,0,0,0.2)'
-                    onPress={() => this.handleMatchInteraction()}/>
+                    onPress={this.handleMatchInteraction}/>
             case 'matched':
                 return <MatchedIcon
                     color='rgba(0,0,0,0.2)'
-                    onPress={() => this.handleMatchInteraction()}/>
+                    onPress={this.handleMatchInteraction}/>
             default:
                 return <ChevronIcon
                     color='rgba(0,0,0,0.2)'
                     direction='right'
-                    onPress={() => this.handleMatchInteraction()}
+                    onPress={this.handleMatchInteraction}
                     size={18}
                     style={{left: 8}}/>
         }
@@ -375,7 +372,6 @@ var GuestList = React.createClass({
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
             }),
-            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             rows: []
         };
     },
@@ -384,7 +380,7 @@ var GuestList = React.createClass({
         InteractionManager.runAfterInteractions(() => {
             let attendeesListRef = this.props.eventsListRef && this.props.eventId
                     && this.props.eventsListRef.child(`${this.props.eventId}/attendees`),
-                usersListRef = this.state.firebaseRef && this.state.firebaseRef.child('users'),
+                usersListRef = this.props.firebaseRef && this.props.firebaseRef.child('users'),
                 _this = this;
 
             attendeesListRef.on('value', snapshot => {
@@ -397,7 +393,7 @@ var GuestList = React.createClass({
 
             this.bindAsArray(usersListRef, 'rows');
 
-            this.state.firebaseRef.child(`/users/${this.props.ventureId}`).once('value', snapshot => {
+            this.props.firebaseRef.child(`/users/${this.props.ventureId}`).once('value', snapshot => {
                 _this.setState({currentUserData: snapshot.val()});
             });
 
@@ -417,7 +413,7 @@ var GuestList = React.createClass({
         return (
             <Header>
                 <View />
-                <Text>WHO'S GOING TO: <Text style={{color: '#F06449'}}>YSO HALLOWEEN SHOW</Text></Text>
+                <Text>WHO'S GOING TO : <Text style={{color: '#F06449'}}>YSO HALLOWEEN SHOW</Text></Text>
                 <CloseIcon style={{bottom: SCREEN_HEIGHT / 15, left: SCREEN_WIDTH / 18}} size={38} onPress={this.props.closeGuestListModal} />
             </Header>
         )
@@ -425,13 +421,13 @@ var GuestList = React.createClass({
 
 
     _renderUser(user:Object, sectionID:number, rowID:number) {
-        // if (user.ventureId === this.props.ventureId) return <View />;
+        if (user.ventureId === this.props.ventureId) return <View />;
 
         return <User currentUserData={this.state.currentUserData}
                      currentUserIDHashed={this.props.ventureId}
                      currentUserLocationCoords={this.props.currentUserLocationCoords}
                      data={user}
-                     firebaseRef={this.state.firebaseRef}
+                     firebaseRef={this.props.firebaseRef}
                      navigator={this.props.navigator}/>;
     },
 
@@ -564,7 +560,7 @@ var Event = React.createClass({
                     <Text style={styles.profileModalSectionTitle}>EVENT DESCRIPTION:</Text>
                     <Text style={[styles.profileModalBio, {width: SCREEN_WIDTH / 1.4}]}>{this.props.data && this.props.data.description} {'\n'}</Text>
                     <Text style={styles.profileModalSectionTitle}>EVENT DESCRIPTION: {'\n'}</Text>
-                    <TouchableOpacity onPress={this.props.openGuestListModal}><Text style={{color: '#3F7CFF'}}>WHO'S GOING?</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={this.props.openGuestListModal} style={{backgroundColor: 'rgba(0,0,0,0.001)'}}><Text style={{color: '#3F7CFF', fontFamily: 'AvenirNextCondensed-Medium', fontSize: 20, paddingHorizontal: 40}}>WHO'S GOING?</Text></TouchableOpacity>
 
                 </View>
             </View>
@@ -764,8 +760,10 @@ var EventsList = React.createClass({
                     <View>
                        <GuestList
                            closeGuestListModal={this._closeGuestListModal}
+                           currentUserLocationCoords={this.props.currentUserLocationCoords}
                            eventId={hash('YSO Halloween Show')}
                            eventsListRef={this.state.eventsListRef}
+                           firebaseRef={this.state.firebaseRef}
                            navigator={this.props.navigator}
                            ventureId={this.props.ventureId} />
                     </View>
@@ -953,6 +951,7 @@ var styles = StyleSheet.create({
     },
     distance: {
         width: 75,
+        right: 10,
         textAlign: 'center',
         fontSize: 16,
         marginHorizontal: 25,
@@ -969,39 +968,5 @@ var styles = StyleSheet.create({
         fontFamily: 'AvenirNextCondensed-Medium'
     }
 });
-
-var animations = {
-    layout: {
-        spring: {
-            duration: 750,
-            create: {
-                duration: 300,
-                type: LayoutAnimation.Types.easeInEaseOut,
-                property: LayoutAnimation.Properties.opacity
-            },
-            update: {
-                type: LayoutAnimation.Types.spring,
-                springDamping: 0.6
-            }
-        },
-        easeInEaseOut: {
-            duration: 300,
-            create: {
-                type: LayoutAnimation.Types.easeInEaseOut,
-                property: LayoutAnimation.Properties.scaleXY
-            },
-            update: {
-                delay: 100,
-                type: LayoutAnimation.Types.easeInEaseOut
-            }
-        }
-    }
-};
-
-var layoutAnimationConfigs = [
-    animations.layout.spring,
-    animations.layout.easeInEaseOut
-];
-
 
 module.exports = EventsList;

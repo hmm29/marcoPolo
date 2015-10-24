@@ -82,7 +82,6 @@ var User = React.createClass({
     getInitialState() {
         return {
             dir: 'row',
-            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             status: '',
             timerVal: ''
         }
@@ -92,8 +91,8 @@ var User = React.createClass({
         let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
             _this = this;
 
-        this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-        && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+        this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+        && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
             _this.setState({
                 distance,
                 status: snapshot.val() && snapshot.val().status,
@@ -106,8 +105,8 @@ var User = React.createClass({
         let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
             _this = this;
 
-        this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-        && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+        this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+        && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
             _this.setState({
                 distance,
                 status: snapshot.val() && snapshot.val().status,
@@ -820,39 +819,5 @@ var styles = StyleSheet.create({
         fontFamily: 'AvenirNextCondensed-Medium'
     }
 });
-
-var animations = {
-    layout: {
-        spring: {
-            duration: 750,
-            create: {
-                duration: 300,
-                type: LayoutAnimation.Types.easeInEaseOut,
-                property: LayoutAnimation.Properties.opacity
-            },
-            update: {
-                type: LayoutAnimation.Types.spring,
-                springDamping: 0.6
-            }
-        },
-        easeInEaseOut: {
-            duration: 300,
-            create: {
-                type: LayoutAnimation.Types.easeInEaseOut,
-                property: LayoutAnimation.Properties.scaleXY
-            },
-            update: {
-                delay: 100,
-                type: LayoutAnimation.Types.easeInEaseOut
-            }
-        }
-    }
-};
-
-var layoutAnimationConfigs = [
-    animations.layout.spring,
-    animations.layout.easeInEaseOut
-];
-
 
 module.exports = UsersList;
