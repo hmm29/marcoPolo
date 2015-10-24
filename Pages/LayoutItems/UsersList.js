@@ -404,7 +404,9 @@ var UsersList = React.createClass({
         };
     },
 
-    componentDidMount() {
+    //@hmm: IMPORTANT: must be componentWillMount or will get equalPriority error
+
+    componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
             let currentUserRef = this.props.ventureId && this.state.firebaseRef.child(`users/${this.props.ventureId}`),
                 usersListRef = this.state.firebaseRef.child('/users'),
@@ -412,7 +414,7 @@ var UsersList = React.createClass({
 
             // @hmm: show users based on filter settings
 
-            currentUserRef && currentUserRef.child('matchingPreferences') && currentUserRef.child('matchingPreferences').on('value', snapshot => {
+            currentUserRef && currentUserRef.child('matchingPreferences').on('value', snapshot => {
                 InteractionManager.runAfterInteractions(() => {
 
                     let matchingPreferences = snapshot.val(),
@@ -428,7 +430,6 @@ var UsersList = React.createClass({
                     _this.setState({maxSearchDistance: matchingPreferences.maxSearchDistance});
 
                     usersListRef.once('value', snapshot => {
-
                         snapshot.val() && _.each(snapshot.val(), (user) => {
 
                             // @hmm: because of cumulative privacy selection, only have to check for friends+ for both 'friends+' and 'all'
@@ -461,7 +462,6 @@ var UsersList = React.createClass({
                                     })
                                     .done();
                             }
-
                         });
                         _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
                         _this.setState({rows: _.cloneDeep(_.values(filteredUsersArray)), currentUserRef, filteredUsersArray, usersListRef});
