@@ -32,11 +32,12 @@ var {
 var _ = require('lodash');
 var AwaitingResponseIcon = require('../../Partials/Icons/AwaitingResponseIcon');
 var Chat = require('../Chat');
+var CheckboxIcon = require('../../Partials/Icons/CheckboxIcon');
 var ChevronIcon = require('../../Partials/Icons/ChevronIcon');
+var CloseIcon = require('../../Partials/Icons/CloseIcon');
 var Display = require('react-native-device-display');
-var FilterModalIcon = require('../../Partials/Icons/FilterModalIcon');
-var Filters = require('../Filters');
 var Firebase = require('firebase');
+var GeoFire = require('geofire');
 var Header = require('../../Partials/Header');
 var HomeIcon = require('../../Partials/Icons/HomeIcon');
 var LinearGradient = require('react-native-linear-gradient');
@@ -45,7 +46,8 @@ var MatchedIcon = require('../../Partials/Icons/MatchedIcon');
 var Modal = require('react-native-swipeable-modal');
 var ReactFireMixin = require('reactfire');
 var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
-var Swipeout = require('react-native-swipeout');
+var sha256 = require('sha256');
+var TimerMixin = require('react-timer-mixin');
 
 var INITIAL_LIST_SIZE = 8;
 var LOGO_WIDTH = 200;
@@ -59,6 +61,7 @@ var YELLOW_HEX_CODE = '#ffe770';
 var BLUE_HEX_CODE = '#40cbfb';
 var GREEN_HEX_CODE = '#84FF9B';
 var WHITE_HEX_CODE = '#fff';
+var THUMBNAIL_SIZE = 50;
 
 String.prototype.capitalize = function () {
     return this.replace(/(?:^|\s)\S/g, function (a) {
@@ -66,66 +69,66 @@ String.prototype.capitalize = function () {
     });
 };
 
-var Event = React.createClass({
+var hash = (msg:string) => sha256(msg);
+
+var User = React.createClass({
+
     propTypes: {
-        isCurrentUser: React.PropTypes.boolean,
-        data: React.PropTypes.object
+        currentUserLocationCoords: React.PropTypes.array,
+        currentUserData: React.PropTypes.object,
+        data: React.PropTypes.object,
+        navigator: React.PropTypes.object
     },
 
     getInitialState() {
         return {
             dir: 'row',
-            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
-            status: ''
+            status: '',
+            timerVal: ''
         }
     },
 
     componentWillMount() {
-        let _this = this;
+        let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
+            _this = this;
 
-        this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-        && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).once('value', snapshot => {
-            _this.setState({status: snapshot.val() && snapshot.val().status});
+        this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId)
+        && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+            _this.setState({
+                distance,
+                status: snapshot.val() && snapshot.val().status,
+                timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)
+            });
         });
     },
 
     componentWillReceiveProps(nextProps) {
+        let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
+            _this = this;
 
-        let _this = this;
-
-        this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-        && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).once('value', snapshot => {
-            _this.setState({status: snapshot.val() && snapshot.val().status});
+        this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId)
+        && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+            _this.setState({
+                distance,
+                status: snapshot.val() && snapshot.val().status,
+                timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)
+            });
         });
     },
 
     componentWillUnmount() {
         let currentUserIDHashed = this.props.currentUserIDHashed,
             firebaseRef = this.props.firebaseRef,
-            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
+            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/event_invite_match_requests');
 
         currentUserMatchRequestsRef && currentUserMatchRequestsRef.off();
     },
 
-    calculateDistance(pt1:Object, pt2:Object) {
-        if (!pt1) {
-            return '';
-        }
-        var lon1 = Number(pt1.longitude),
-            lat1 = Number(pt1.latitude),
-            lon2 = pt2[0],
-            lat2 = pt2[1];
-        var dLat = this.numberToRadius(lat2 - lat1),
-            dLon = this.numberToRadius(lon2 - lon1),
-            a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(this.numberToRadius(lat1))
-                * Math.cos(this.numberToRadius(lat2)) * Math.pow(Math.sin(dLon / 2), 2);
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return ((6371 * c) * 1000 * 0.000621371).toFixed(1); // returns miles
+    calculateDistance(location1:Array, location2:Array) {
+        return location1 && location2 && (GeoFire.distance(location1, location2) * 0.621371).toFixed(1);
     },
 
     _getSecondaryStatusColor() {
-        if(this.props.isCurrentUser) return '#FBFBF1';
-
         switch (this.state.status) {
             case 'sent':
                 return '#FFF9B9';
@@ -151,22 +154,27 @@ var Event = React.createClass({
         }
     },
 
+    _getTimerValue(numOfMilliseconds:number) {
+        var date = new Date(numOfMilliseconds);
+        return date.getMinutes() + 'm ' + date.getSeconds() + 's';
+    },
+
     handleMatchInteraction() {
-        // @hmm: use hashed targetUserID as key for Firebase database
+        // @hmm: use hashed targetUserID as key for data for user in list
 
         let targetUserIDHashed = this.props.data.ventureId,
             currentUserIDHashed = this.props.currentUserIDHashed,
             firebaseRef = this.props.firebaseRef,
-            targetUserMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/match_requests'),
-            currentUserMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/match_requests'),
+            targetUserEventInviteMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/event_invite_match_requests'),
+            currentUserEventInviteMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/event_invite_match_requests'),
             _this = this;
 
         if (this.state.status === 'sent') {
 
             // @hmm: delete the request
 
-            targetUserMatchRequestsRef.child(currentUserIDHashed).set(null);
-            currentUserMatchRequestsRef.child(targetUserIDHashed).set(null);
+            targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).set(null);
+            currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).set(null);
         }
 
         else if (this.state.status === 'received') {
@@ -174,54 +182,101 @@ var Event = React.createClass({
             // @hmm: accept the request
             // chatroom reference uses id of the user who accepts the received matchInteraction
 
-            targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+            targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+                account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'firstName', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                eventId: this.props.eventId,
+                eventTitle: this.props.eventTitle,
                 status: 'matched',
+                role: 'recipient'
             }, 100);
 
-            currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+            currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+                account: this.props.data && _.assign(_.pick(this.props.data, 'firstName', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                eventId: this.props.eventId,
+                eventTitle: this.props.eventTitle,
                 status: 'matched',
+                role: 'sender'
             }, 100);
         }
 
         else if (this.state.status === 'matched') {
-            let distance = 0.7 + ' mi';
+            let chatRoomEventTitle = 'YSO Halloween Show',
+                distance = this.state.distance + ' mi',
+                _id;
 
-            let chatRoomRef = firebaseRef.child('chat_rooms/' + currentUserIDHashed + '_TO_' + targetUserIDHashed);
+            currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).once('value', snapshot => {
 
-            chatRoomRef.child('timer').set({value: 300000}); // set timer
+                if (snapshot.val() && snapshot.val().role === 'sender') {
+                    _id = 'EVENT_INVITE_' + targetUserIDHashed + '_TO_' + currentUserIDHashed;
+                } else {
+                    _id = 'EVENT_INVITE_' + currentUserIDHashed + '_TO_' + targetUserIDHashed;
+                }
 
-            currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).off();
+                firebaseRef.child(`chat_rooms/${_id}`).once('value', snapshot => {
 
-            chatRoomRef.once('value', snapshot => {
-                if(snapshot.val() && _.last(_this.props.navigator.getCurrentRoutes()).title === 'Chat') _this.props.navigator.jumpForward();
-                else {
-                    _this.props.navigator.push({
-                        title: 'Chat',
-                        component: Chat,
-                        passProps: {
-                            recipient: _this.props.data,
-                            distance,
-                            chatRoomRef,
-                            currentUserData: _this.props.currentUserData
+                    let chatRoomRef = firebaseRef.child(`chat_rooms/${_id}`),
+                        currentRouteStack = this.props.navigator.getCurrentRoutes(),
+                        chatRoomRoute = _.findWhere(currentRouteStack, {title: 'Chat', passProps: {_id}});
+
+                    if (snapshot.val() === null) {
+
+                        chatRoomRef.child('_id').set(_id); // @hmm: set unique chat Id
+                        chatRoomRef.child('timer').set({value: 300000}); // @hmm: set timer
+                        chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set('YSO Halloween Show');
+                        chatRoomRef.child('user_activity_preference_titles').child(targetUserIDHashed).set('YSO Halloween Show');
+
+                    }
+
+                    firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).once('value', snapshot => {
+                        if (snapshot.val() === 0) {
+                            _this.props.navigator.push({
+                                title: 'Chat',
+                                component: Chat,
+                                passProps: {
+                                    _id,
+                                    recipient: _this.props.data,
+                                    distance,
+                                    chatRoomEventTitle,
+                                    chatRoomRef,
+                                    currentUserData: _this.props.currentUserData
+                                }
+                            });
+                        }
+                        else if (chatRoomRoute) _this.props.navigator.jumpTo(chatRoomRoute);
+                        else {
+                            currentRouteStack.push({
+                                title: 'Chat',
+                                component: Chat,
+                                passProps: {
+                                    _id,
+                                    recipient: _this.props.data,
+                                    distance,
+                                    chatRoomEventTitle,
+                                    chatRoomRef,
+                                    currentUserData: _this.props.currentUserData
+                                }
+                            });
+                            _this.props.navigator.immediatelyResetRouteStack(currentRouteStack);
                         }
                     });
-                }
-            })
-
+                })
+            });
         }
 
         else {
-            targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+            targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+                account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'firstName', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                eventId: this.props.eventId,
+                eventTitle: this.props.eventTitle,
                 status: 'received'
             }, 200);
-            currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+            currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+                account: this.props.data && _.assign(_.pick(this.props.data, 'firstName', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                eventId: this.props.eventId,
+                eventTitle: this.props.eventTitle,
                 status: 'sent'
             }, 300);
         }
-    },
-
-    numberToRadius(number:number) {
-        return number * Math.PI / 180;
     },
 
     _onPressItem() {
@@ -234,43 +289,27 @@ var Event = React.createClass({
             case 'sent':
                 return <AwaitingResponseIcon
                     color='rgba(0,0,0,0.2)'
-                    onPress={() => this.handleMatchInteraction()}/>
+                    onPress={this.handleMatchInteraction}/>
             case 'received':
                 return <ReceivedResponseIcon
                     color='rgba(0,0,0,0.2)'
-                    onPress={() => this.handleMatchInteraction()}/>
+                    onPress={this.handleMatchInteraction}/>
             case 'matched':
                 return <MatchedIcon
                     color='rgba(0,0,0,0.2)'
-                    onPress={() => this.handleMatchInteraction()}/>
+                    onPress={this.handleMatchInteraction}/>
             default:
                 return <ChevronIcon
                     color='rgba(0,0,0,0.2)'
                     direction='right'
-                    onPress={() => this.handleMatchInteraction()}
-                    size={22} />
+                    onPress={this.handleMatchInteraction}
+                    size={18}
+                    style={{left: 8}}/>
         }
     },
 
     render() {
-        if(this.state.status === null) return <View />;
-
-        let distance, profileModal, swipeoutBtns;
-
-        if (!this.props.currentUser && this.props.currentPosition) distance = 0.7 + 'mi';
-        //this.calculateDistance(this.props.currentPosition.coords, this.props.data.location.coordinates) + ' mi'
-
-        if (!this.props.isCurrentUser)
-            swipeoutBtns = [
-                {
-                    text: 'Report', backgroundColor: '#4f535e'
-                },
-                {
-                    text: 'Block', backgroundColor: '#1d222f', color: '#fff'
-                }
-            ];
-
-        profileModal = (
+        let profileModal = (
             <View style={styles.profileModalContainer}>
                 <View
                     style={[styles.profileModal, {backgroundColor: this._getSecondaryStatusColor()}]}>
@@ -278,22 +317,14 @@ var Event = React.createClass({
                         source={{uri: this.props.data && this.props.data.picture}}
                         style={styles.profileModalUserPicture}/>
                     <Text
-                        style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'} | {'\t'}
+                        style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'}
+                        | {'\t'}
                         <Text style={styles.profileModalActivityInfo}>
                             <Text
-                                style={styles.profileModalActivityPreference}>{this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title && this.props.data.activityPreference.title.slice(0,-1)} </Text>:
+                                style={styles.profileModalActivityPreference}>YSO Halloween Show</Text>
                             {'\t'} {this.props.data && this.props.data.activityPreference && (this.props.data.activityPreference.start.time || this.props.data.activityPreference.status)} {'\n'}
                         </Text>
                     </Text>
-                    <View style={[styles.tagBar, {bottom: 10}]}>
-                        <Text
-                            style={styles.profileModalSectionTitle}>TAGS: </Text>
-                        {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.tags && this.props.data.activityPreference.tags.map((tag, i) => (
-                            <TouchableOpacity key={i} style={styles.tag}><Text
-                                style={styles.tagText}>{tag}</Text></TouchableOpacity>
-                        ))
-                        }
-                    </View>
                     <Text
                         style={styles.profileModalBio}>{this.props.data && this.props.data.bio}</Text>
                 </View>
@@ -301,7 +332,6 @@ var Event = React.createClass({
         );
 
         return (
-            <Swipeout right={swipeoutBtns}>
                 <TouchableHighlight
                     underlayColor={WHITE_HEX_CODE}
                     activeOpacity={0.3}
@@ -318,22 +348,262 @@ var Event = React.createClass({
                             <Image
                                 onPress={this._onPressItem}
                                 source={{uri: this.props.data && this.props.data.picture}}
-                                style={styles.thumbnail}/>
-                            <View style={styles.rightContainer}>
-                                <Text style={styles.distance}>{distance}</Text>
-                                <Text style={styles.activityPreference}>
-                                    {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title}
-                                </Text>
-                                <View>
-                                    {!this.props.isCurrentUser ?
-                                        <View style={{top: 10}}>{this._renderStatusIcon()}</View> : <View />}
+                                style={[styles.thumbnail]}>
+                                <View style={(this.state.timerVal ? styles.timerValOverlay : {})}>
+                                    <Text style={[styles.timerValText, (this.state.timerVal && this.state.timerVal[0] === '1' ? {color: '#FFF484'} : {}), (this.state.timerVal && this.state.timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{this.state.timerVal}</Text>
                                 </View>
+                            </Image>
+                            <View style={styles.rightContainer}>
+                                <Text
+                                    style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
+                                <Text style={styles.eventTitle}>
+                                    YSO HALLOWEEN SHOW?
+                                </Text>
+                               <View style={{top: 10, right: 10}}>{this._renderStatusIcon()}</View>
                             </View>
+                        </LinearGradient>
+                        {this.state.dir === 'column' ? profileModal : <View />}
+                    </View>
+                </TouchableHighlight>
+        );
+    }
+});
+
+
+var GuestList = React.createClass({
+    mixins: [TimerMixin, ReactFireMixin],
+
+    getInitialState() {
+        return {
+            dataSource: new ListView.DataSource({
+                rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
+            }),
+            rows: []
+        };
+    },
+
+    componentWillMount() {
+        InteractionManager.runAfterInteractions(() => {
+            let attendeesListRef = this.props.eventsListRef && this.props.eventId
+                    && this.props.eventsListRef.child(`${this.props.eventId}/attendees`),
+                usersListRef = this.props.firebaseRef && this.props.firebaseRef.child('users'),
+                _this = this;
+
+            attendeesListRef.on('value', snapshot => {
+                InteractionManager.runAfterInteractions(() => {
+                    _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
+                    _this.setState({rows: _.cloneDeep(_.values(snapshot.val())), attendeesListRef, usersListRef});
+                });
+
+            });
+
+            this.bindAsArray(usersListRef, 'rows');
+
+            this.props.firebaseRef.child(`/users/${this.props.ventureId}`).once('value', snapshot => {
+                _this.setState({currentUserData: snapshot.val()});
+            });
+
+        });
+    },
+
+    componentWillUnmount() {
+        this.state.currentUserRef.off();
+        this.state.usersListRef.off();
+    },
+
+    updateRows(rows) {
+        this.setState({dataSource: this.state.dataSource.cloneWithRows(rows)});
+    },
+
+    _renderHeader() {
+        return (
+            <Header>
+                <View />
+                <Text>WHO'S GOING TO : <Text style={{color: '#F06449'}}>YSO HALLOWEEN SHOW</Text></Text>
+                <CloseIcon style={{bottom: SCREEN_HEIGHT / 15, left: SCREEN_WIDTH / 18}} size={38} onPress={this.props.closeGuestListModal} />
+            </Header>
+        )
+    },
+
+
+    _renderUser(user:Object, sectionID:number, rowID:number) {
+        if (user.ventureId === this.props.ventureId) return <View />;
+
+        return <User currentUserData={this.state.currentUserData}
+                     currentUserIDHashed={this.props.ventureId}
+                     currentUserLocationCoords={this.props.currentUserLocationCoords}
+                     data={user}
+                     eventId={this.props.eventId}
+                     eventTitle={this.props.eventTitle}
+                     firebaseRef={this.props.firebaseRef}
+                     navigator={this.props.navigator}/>;
+    },
+
+    render() {
+        return (
+            <View style={styles.guestListBaseContainer}>
+                    {this._renderHeader()}
+                <ListView
+                    dataSource={this.state.dataSource}
+                    renderRow={this._renderUser}
+                    initialListSize={INITIAL_LIST_SIZE}
+                    pageSize={PAGE_SIZE}
+                    automaticallyAdjustContentInsets={false}
+                    scrollRenderAheadDistance={600} />
+            </View>
+        )
+    }
+});
+
+var Event = React.createClass({
+    getInitialState() {
+        return {
+            dir: 'row',
+            status: 'notAttending'
+        }
+    },
+
+    componentWillMount() {
+        let _this = this;
+
+        this.props.eventsListRef && this.props.data && this.props.currentUserData
+        && this.props.currentUserIDHashed && this.props.data.id
+        && this.props.eventsListRef.child(`${this.props.data.id}/attendees/${this.props.currentUserIDHashed}`).once('value', snapshot => {
+           if(snapshot.val()) _this.setState({status: 'attending'});
+           else _this.setState({status: 'notAttending'});
+        });
+
+    },
+
+    componentWillReceiveProps(nextProps) {
+
+        let _this = this;
+
+        this.props.eventsListRef && this.props.data && this.props.currentUserData
+        && this.props.currentUserIDHashed && this.props.data.id
+        && this.props.eventsListRef.child(`${this.props.data.id}/attendees/${this.props.currentUserIDHashed}`).once('value', snapshot => {
+            if(snapshot.val()) _this.setState({status: 'attending'});
+            else _this.setState({status: 'notAttending'});
+        });
+
+    },
+
+    componentWillUnmount() {
+        let currentUserIDHashed = this.props.currentUserIDHashed,
+            firebaseRef = this.props.firebaseRef,
+            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/event_invite_match_requests');
+
+        currentUserMatchRequestsRef && currentUserMatchRequestsRef.off();
+    },
+
+    _getSecondaryStatusColor() {
+        switch (this.state.status) {
+            case 'attending':
+                return '#AAFFA9';
+            default:
+                return '#FBFBF1';
+        }
+    },
+
+    getStatusColor() {
+        switch (this.state.status) {
+            case 'attending':
+                return GREEN_HEX_CODE;
+            default:
+                return WHITE_HEX_CODE;
+        }
+    },
+
+    handleEventInteraction() {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+
+        if (this.state.status === 'notAttending') {
+            this.setState({status: 'attending'});
+            this.props.eventsListRef && this.props.data && this.props.currentUserData && this.props.currentUserIDHashed && this.props.data.id && this.props.eventsListRef.child(`${this.props.data.id}/attendees/${this.props.currentUserIDHashed}`).set(_.pick(this.props.currentUserData, 'firstName', 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'))
+            this.props.usersListRef && this.props.data && this.props.currentUserIDHashed && this.props.data.id && this.props.usersListRef.child(`${this.props.currentUserIDHashed}/events/${this.props.data.id}`).set(_.pick(this.props.data, 'id', 'title', 'description', 'location', 'start'));
+
+        }
+        else {
+            this.setState({status: 'notAttending'});
+            this.props.eventsListRef && this.props.data && this.props.currentUserData && this.props.currentUserIDHashed && this.props.data.id && this.props.eventsListRef.child(`${this.props.data.id}/attendees/${this.props.currentUserIDHashed}`).set(null);
+            this.props.usersListRef && this.props.data && this.props.currentUserIDHashed && this.props.data.id && this.props.usersListRef.child(`${this.props.currentUserIDHashed}/events/${this.props.data.id}`).set(null);
+        }
+    },
+
+    _onPressItem() {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+        this.setState({dir: this.state.dir === 'row' ? 'column' : 'row'});
+    },
+
+    _renderStatusIcon() {
+        switch (this.state.status) {
+            case 'attending':
+                return <CheckboxIcon
+                    active={true}
+                    onPress={this.handleEventInteraction}
+                    size={36}
+                    style={{borderRadius: 28, top: SCREEN_HEIGHT / 85, right: SCREEN_HEIGHT / 90}}
+                    />;
+            default:
+                return <ChevronIcon
+                    color='rgba(0,0,0,0.8)'
+                    direction='right'
+                    onPress={this.handleEventInteraction}
+                    size={22}
+                    style={{backgroundColor: 'rgba(255,255,255,0.9)', marginHorizontal: 20, borderRadius: 14, top: SCREEN_HEIGHT / 85, left: SCREEN_HEIGHT / 90}}
+                    />
+        }
+    },
+
+    render() {
+
+        let profileModal = (
+            <View style={[styles.profileModalContainer, {flexDirection: 'column', alignItems: 'center'}]}>
+                <View
+                    style={[styles.profileModal, {backgroundColor: this._getSecondaryStatusColor(), alignSelf: 'stretch', alignItems: 'center'}]}>
+                    <Text style={styles.profileModalNameAgeInfo}>WHEN: {this.props.data && this.props.data.start && this.props.data.start.date}, {this.props.data && this.props.data.start && this.props.data.start.dateTime} {'\n'}
+                    </Text>
+                    <Text style={styles.profileModalNameAgeInfo}>WHERE: {this.props.data && this.props.data.location} {'\n'}
+                    </Text>
+                    <Text style={styles.profileModalSectionTitle}>EVENT DESCRIPTION:</Text>
+                    <Text style={[styles.profileModalBio, {width: SCREEN_WIDTH / 1.4}]}>{this.props.data && this.props.data.description} {'\n'}</Text>
+                    <Text style={styles.profileModalSectionTitle}>EVENT DESCRIPTION: {'\n'}</Text>
+                    <TouchableOpacity onPress={this.props.openGuestListModal} style={{backgroundColor: 'rgba(0,0,0,0.001)'}}><Text style={{color: '#3F7CFF', fontFamily: 'AvenirNextCondensed-Medium', fontSize: 20, paddingHorizontal: 40, paddingVertical: 10}}>WHO'S GOING?</Text></TouchableOpacity>
+
+                </View>
+            </View>
+        );
+
+        return (
+                <TouchableHighlight
+                    underlayColor={WHITE_HEX_CODE}
+                    activeOpacity={0.3}
+                    onPress={this._onPressItem}
+                    style={styles.userRow}>
+                    <View
+                        style={[styles.userContentWrapper, {flexDirection: this.state.dir}]}>
+                        <LinearGradient
+                            colors={(this.props.backgroundColor && [this.props.backgroundColor, this.props.backgroundColor]) || [this.getStatusColor(), this._getSecondaryStatusColor(), WHITE_HEX_CODE, 'transparent']}
+                            start={[0,1]}
+                            end={[1,1]}
+                            locations={[0.3,0.99,1.0]}
+                            style={styles.container}>
+                            <Image
+                                source={{uri: this.props.data && this.props.data.event_img}}
+                                style={{resizeMode: 'cover', flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                            <View
+                                onPress={this._onPressItem}
+                                style={[styles.eventThumbnail, {backgroundColor: 'rgba(0,0,0,0.9)', justifyContent: 'center', alignItems: 'center'}]}>
+                                    <Text style={{color: '#fff'}}>Y S O</Text>
+                                </View>
+                            <View style={[styles.rightContainer, {flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}]}>
+                                        {this._renderStatusIcon()}
+                            </View>
+                                </Image>
                         </LinearGradient>
                         {this.state.dir === 'column' ? profileModal: <View />}
                     </View>
                 </TouchableHighlight>
-            </Swipeout>
         );
     }
 });
@@ -345,6 +615,7 @@ var EventsList = React.createClass({
 
     getInitialState() {
         let firebaseRef = new Firebase('https://ventureappinitial.firebaseio.com/'),
+            eventsListRef = firebaseRef && firebaseRef.child('events'),
             usersListRef = firebaseRef && firebaseRef.child('users');
 
         return {
@@ -352,51 +623,54 @@ var EventsList = React.createClass({
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
             }),
+            eventsListRef,
             firebaseRef,
-            userRows: [],
+            eventsRows: [],
             searchText: '',
+            showGuestListModal: false,
             showLoadingModal: true,
+            userRows: [],
             usersListRef
         };
     },
 
     componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
-            let usersListRef = this.state.firebaseRef.child('/users'), _this = this;
+             let eventsListRef = this.state.eventsListRef,
+                 usersListRef = this.state.usersListRef,
+                 _this = this;
 
             this.bindAsArray(usersListRef, 'userRows');
+            this.bindAsArray(eventsListRef, 'eventsRows');
 
-            AsyncStorage.getItem('@AsyncStorage:Venture:account')
-                .then((account: string) => {
-                    account = JSON.parse(account);
+            eventsListRef.on('value', snapshot => {
+                _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
+                _this.setState({eventsRows: _.cloneDeep(_.values(snapshot.val())), eventsListRef, usersListRef});
+            });
 
-                    usersListRef.on('value', snapshot => {
-                        _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${account.ventureId}.status`));
-                        _this.setState({rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
-                    });
+            this.setState({currentUserVentureId: this.props.ventureId})
 
-                    this.setState({currentUserVentureId: account.ventureId})
+            this.state.firebaseRef.child(`/users/${this.props.ventureId}`).once('value', snapshot => {
+                _this.setState({currentUserData: snapshot.val()});
+            });
 
-                    this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {
-                        _this.setState({currentUserData: snapshot.val()});
-                    });
-                })
-                .then(() => {
-                    InteractionManager.runAfterInteractions(() => {
-                        navigator.geolocation.getCurrentPosition(
-                            (currentPosition) => {
-                                _this.setState({currentPosition});
-                            },
-                            (error) => {
-                                console.error(error);
-                            },
-                            {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
-                        );
-                    });
-                })
-                .catch((error) => console.log(error.message))
-                .done();
         });
+    },
+
+    componentWillUnmount() {
+        let eventsListRef = this.state.eventsListRef,
+            usersListRef = this.state.usersListRef;
+
+        eventsListRef.off();
+        usersListRef.off();
+    },
+
+    _openGuestListModal() {
+      this.setState({showGuestListModal: true});
+    },
+
+    _closeGuestListModal() {
+        this.setState({showGuestListModal: false});
     },
 
     _safelyNavigateToHome() {
@@ -406,20 +680,8 @@ var EventsList = React.createClass({
         if(currentRouteStack.indexOf(homeRoute) > -1) this.props.navigator.jumpTo(homeRoute);
     },
 
-    _safelyNavigateForward(route:{title:string, component:ReactClass<any,any,any>, passProps?:Object}) {
-        let abbrevRoute = _.omit(route, 'component'),
-            currentRouteStack = this.props.navigator.getCurrentRoutes();
-
-        if(currentRouteStack.indexOf(abbrevRoute) > -1) this.props.navigator.jumpTo(abbrevRoute);
-
-        else {
-            currentRouteStack.push(route);
-            this.props.navigator.immediatelyResetRouteStack(currentRouteStack)
-        }
-    },
-
-    updateRows(userRows:Array) {
-        this.setState({dataSource: this.state.dataSource.cloneWithRows(userRows)});
+    updateRows(eventsRows:Array) {
+        this.setState({dataSource: this.state.dataSource.cloneWithRows(eventsRows)});
         InteractionManager.runAfterInteractions(() => {
             this.setState({showLoadingModal: false});
         })
@@ -427,30 +689,30 @@ var EventsList = React.createClass({
     _renderHeader() {
         return (
             <Header containerStyle={{position: 'relative'}}>
-                <HomeIcon onPress={() => this._safelyNavigateToHome()}/>
+                <HomeIcon onPress={() => this._safelyNavigateToHome()} style={{right: 14}}/>
                 <Text>EVENTS</Text>
-                <FilterModalIcon
-                    onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}/>
+                <View />
             </Header>
         )
     },
 
 
-    _renderEvent(user:Object, sectionID:number, rowID:number) {
-        // @hmm: only users with extant interactions
-        if (user.ventureId === this.state.currentUserVentureId) return <View />;
+    _renderEvent(event:Object, sectionID:number, rowID:number) {
 
         return <Event currentUserData={this.state.currentUserData}
-                     currentUserIDHashed={this.state.currentUserVentureId}
-                     currentPosition={this.state.currentPosition}
-                     data={user}
+                      currentUserIDHashed={this.state.currentUserVentureId}
+                     data={event}
+                     eventsListRef={this.state.eventsListRef} 
                      firebaseRef={this.state.firebaseRef}
-                     navigator={this.props.navigator} />;
+                      openGuestListModal={this._openGuestListModal}
+                     navigator={this.props.navigator}
+                     usersListRef={this.state.usersListRef} 
+                />;
     },
 
     render() {
         return (
-            <View style={styles.usersListBaseContainer}>
+            <View style={styles.eventsListBaseContainer}>
                 <View>
                     {this._renderHeader()}
                 </View>
@@ -464,7 +726,7 @@ var EventsList = React.createClass({
                 <View style={{height: 48}}></View>
                 <Modal
                     height={SCREEN_HEIGHT}
-                    modalStyle={styles.loadingModalStyle}
+                    modalStyle={styles.modalStyle}
                     isVisible={this.state.showLoadingModal}
                     swipeableAreaStyle={{
                             position: 'absolute',
@@ -487,8 +749,32 @@ var EventsList = React.createClass({
                             <Text
                                 style={styles.loadingModalFunFactText}>
                                 <Text style={styles.loadingModalFunFactTextTitle}>Did You Know ?</Text>
-                                {'\n\n'} The average Yalie eats 5 chicken {'\n'} tenders in a week.</Text>
+                                {'\n\n'} Curiosly, 15% of Yalies don't {'\n'} know why they chose Yale.</Text>
                         </TouchableOpacity>
+                    </View>
+                </Modal>
+                <Modal
+                    height={SCREEN_HEIGHT}
+                    modalStyle={styles.modalStyle}
+                    isVisible={this.state.showGuestListModal}
+                    swipeableAreaStyle={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0
+                        }}
+                    swipeHideLength={1.0}>
+                    <View>
+                       <GuestList
+                           closeGuestListModal={this._closeGuestListModal}
+                           currentUserLocationCoords={this.props.currentUserLocationCoords}
+                           eventId={hash('YSO Halloween Show')}
+                           eventTitle='YSO Halloween Show'
+                           eventsListRef={this.state.eventsListRef}
+                           firebaseRef={this.state.firebaseRef}
+                           navigator={this.props.navigator}
+                           ventureId={this.props.ventureId} />
                     </View>
                 </Modal>
             </View>
@@ -497,19 +783,19 @@ var EventsList = React.createClass({
 });
 
 var styles = StyleSheet.create({
-    customRefreshingActivityIndicatorIOS: {
-        height: 20,
-        top: 5
+    modalStyle: {
+        backgroundColor: '#02030F'
     },
-    customRefreshingIndicatorContainer: {
-        alignSelf: 'center',
-        flexDirection: 'column',
-        alignItems: 'center',
-        paddingVertical: 10
+    eventThumbnail: {
+        width: SCREEN_HEIGHT / 10,
+        height: SCREEN_HEIGHT / 10,
+        borderRadius: SCREEN_HEIGHT / 20,
+        marginVertical: 7,
+        marginLeft: 10
     },
-    customRefreshingIndicatorText: {
-        color: '#fff',
-        fontFamily: 'AvenirNextCondensed-Regular'
+    eventsListBaseContainer: {
+        flex: 1,
+        backgroundColor: '#040A19'
     },
     loadingModalActivityIndicatorIOS: {
         height: 80
@@ -618,11 +904,19 @@ var styles = StyleSheet.create({
         fontFamily: 'AvenirNextCondensed-Medium'
     },
     thumbnail: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
+        width: THUMBNAIL_SIZE,
+        height: THUMBNAIL_SIZE,
+        borderRadius: THUMBNAIL_SIZE / 2,
         marginVertical: 7,
         marginLeft: 10
+    },
+    timerValOverlay: {
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        width: THUMBNAIL_SIZE,
+        height: THUMBNAIL_SIZE,
+        borderRadius: THUMBNAIL_SIZE / 2,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     userContentWrapper: {
         top: 0,
@@ -635,14 +929,17 @@ var styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fefefb'
     },
-    usersListBaseContainer: {
+    guestListBaseContainer: {
         flex: 1,
-        backgroundColor: '#040A19'
+        backgroundColor: '#040A19',
+        paddingTop: SCREEN_HEIGHT / 18
     },
-    activityPreference: {
-        width: 140,
-        fontSize: 18,
-        fontFamily: 'AvenirNextCondensed-UltraLight',
+    eventTitle: {
+        width: 154,
+        right: 20,
+        fontSize: 17,
+        top: 2,
+        fontFamily: 'AvenirNextCondensed-Regular',
         fontWeight: '400'
     },
     backdrop: {
@@ -663,6 +960,7 @@ var styles = StyleSheet.create({
     },
     distance: {
         width: 75,
+        right: 10,
         textAlign: 'center',
         fontSize: 16,
         marginHorizontal: 25,
@@ -672,41 +970,12 @@ var styles = StyleSheet.create({
     filterPageButton: {
         width: 30,
         height: 30
+    },
+    timerValText: {
+        opacity: 1.0,
+        color: '#fff',
+        fontFamily: 'AvenirNextCondensed-Medium'
     }
 });
-
-var animations = {
-    layout: {
-        spring: {
-            duration: 750,
-            create: {
-                duration: 300,
-                type: LayoutAnimation.Types.easeInEaseOut,
-                property: LayoutAnimation.Properties.opacity
-            },
-            update: {
-                type: LayoutAnimation.Types.spring,
-                springDamping: 0.6
-            }
-        },
-        easeInEaseOut: {
-            duration: 300,
-            create: {
-                type: LayoutAnimation.Types.easeInEaseOut,
-                property: LayoutAnimation.Properties.scaleXY
-            },
-            update: {
-                delay: 100,
-                type: LayoutAnimation.Types.easeInEaseOut
-            }
-        }
-    }
-};
-
-var layoutAnimationConfigs = [
-    animations.layout.spring,
-    animations.layout.easeInEaseOut
-];
-
 
 module.exports = EventsList;

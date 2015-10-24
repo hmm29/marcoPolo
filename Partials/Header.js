@@ -91,8 +91,6 @@ var styles = StyleSheet.create({
     headerContainer: {
         width: SCREEN_WIDTH,
         height: SCREEN_HEIGHT/20,
-        position: 'absolute',
-        top: 0,
         backgroundColor: 'rgba(0,0,0,0.02)',
         paddingHorizontal: 20,
         paddingVertical: SCREEN_HEIGHT/15

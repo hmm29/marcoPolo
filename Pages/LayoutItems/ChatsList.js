@@ -37,6 +37,7 @@ var Display = require('react-native-device-display');
 var FilterModalIcon = require('../../Partials/Icons/FilterModalIcon');
 var Filters = require('../Filters');
 var Firebase = require('firebase');
+var GeoFire = require('geofire');
 var Header = require('../../Partials/Header');
 var HomeIcon = require('../../Partials/Icons/HomeIcon');
 var LinearGradient = require('react-native-linear-gradient');
@@ -47,13 +48,16 @@ var ReactFireMixin = require('reactfire');
 var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
 var Swipeout = require('react-native-swipeout');
 
+var EVENT_ID = 'e068e2d69f2b6b69acf181b6889f9db5934901c2b38fe9947850ed4bb033736f';
+var EVENT_TITLE = 'YSO Halloween Show';
+    
 var INITIAL_LIST_SIZE = 8;
 var LOGO_WIDTH = 200;
 var LOGO_HEIGHT = 120;
 var PAGE_SIZE = 10;
 var SCREEN_WIDTH = Display.width;
 var SCREEN_HEIGHT = Display.height;
-var SEARCH_TEXT_INPUT_REF = 'searchTextInput'
+var THUMBNAIL_SIZE = 50;
 
 var YELLOW_HEX_CODE = '#ffe770';
 var BLUE_HEX_CODE = '#40cbfb';
@@ -68,64 +72,86 @@ String.prototype.capitalize = function () {
 
 var User = React.createClass({
     propTypes: {
-        isCurrentUser: React.PropTypes.boolean,
-        data: React.PropTypes.object
+        currentUserLocationCoords: React.PropTypes.array,
+        currentUserData: React.PropTypes.object,
+        data: React.PropTypes.object,
+        navigator: React.PropTypes.object
     },
 
     getInitialState() {
         return {
             dir: 'row',
-            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
-            status: ''
+            status: '',
+            timerVal: '',
         }
     },
 
     componentWillMount() {
-        let _this = this;
+        let distance = this.props.data && this.props.data.location && this.props.data.location.coordinates && this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
+            _this = this;
 
-            this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-            && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).once('value', snapshot => {
-                _this.setState({status: snapshot.val() && snapshot.val().status});
+        if(this.props.data && this.props.data.isEventInvite) {
+            this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId)
+            && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+                _this.setState({
+                    distance,
+                    status: snapshot.val() && snapshot.val().status,
+                    timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)
+                });
             });
+        } else {
+            this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+            && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+                _this.setState({
+                    distance,
+                    status: snapshot.val() && snapshot.val().status,
+                    timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)
+                });
+            });
+        }
     },
 
     componentWillReceiveProps(nextProps) {
+        let distance = this.props.data && this.props.data.location && this.props.data.location.coordinates && this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
+            _this = this;
 
-        let _this = this;
-
-        this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-        && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).once('value', snapshot => {
-            _this.setState({status: snapshot.val() && snapshot.val().status});
-        });
+        if(this.props.data && this.props.data.isEventInvite) {
+            this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId)
+            && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+                _this.setState({
+                    distance,
+                    status: snapshot.val() && snapshot.val().status,
+                    timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)
+                });
+            });
+        } else {
+            this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+            && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+                _this.setState({
+                    distance,
+                    status: snapshot.val() && snapshot.val().status,
+                    timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)
+                });
+            });
+        }
     },
+
 
     componentWillUnmount() {
         let currentUserIDHashed = this.props.currentUserIDHashed,
             firebaseRef = this.props.firebaseRef,
             currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
 
+        if(this.props.data && this.props.data.isEventData) currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/event_invite_match_requests');
+
         currentUserMatchRequestsRef && currentUserMatchRequestsRef.off();
     },
 
-    calculateDistance(pt1:Object, pt2:Object) {
-        if (!pt1) {
-            return '';
-        }
-        var lon1 = Number(pt1.longitude),
-            lat1 = Number(pt1.latitude),
-            lon2 = pt2[0],
-            lat2 = pt2[1];
-        var dLat = this.numberToRadius(lat2 - lat1),
-            dLon = this.numberToRadius(lon2 - lon1),
-            a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(this.numberToRadius(lat1))
-                * Math.cos(this.numberToRadius(lat2)) * Math.pow(Math.sin(dLon / 2), 2);
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return ((6371 * c) * 1000 * 0.000621371).toFixed(1); // returns miles
+    calculateDistance(location1:Array, location2:Array) {
+        return location1 && location2 && (GeoFire.distance(location1, location2) * 0.621371).toFixed(1);
     },
 
     _getSecondaryStatusColor() {
-        if(this.props.isCurrentUser) return '#FBFBF1';
-
         switch (this.state.status) {
             case 'sent':
                 return '#FFF9B9';
@@ -151,77 +177,240 @@ var User = React.createClass({
         }
     },
 
-    handleMatchInteraction() {
-        // @hmm: use hashed targetUserID as key for data for user in list
-
-        let targetUserIDHashed = this.props.data.ventureId,
-            currentUserIDHashed = this.props.currentUserIDHashed,
-            firebaseRef = this.props.firebaseRef,
-            targetUserMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/match_requests'),
-            currentUserMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/match_requests'),
-            _this = this;
-
-        if (this.state.status === 'sent') {
-
-            // @hmm: delete the request
-
-            targetUserMatchRequestsRef.child(currentUserIDHashed).set(null);
-            currentUserMatchRequestsRef.child(targetUserIDHashed).set(null);
-        }
-
-        else if (this.state.status === 'received') {
-
-            // @hmm: accept the request
-            // chatroom reference uses id of the user who accepts the received matchInteraction
-
-            targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
-                status: 'matched',
-            }, 100);
-
-            currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
-                status: 'matched',
-            }, 100);
-        }
-
-        else if (this.state.status === 'matched') {
-            let distance = 0.7 + ' mi';
-
-            let chatRoomRef = firebaseRef.child('chat_rooms/' + currentUserIDHashed + '_TO_' + targetUserIDHashed);
-
-            chatRoomRef.child('timer').set({value: 300000}); // set timer
-
-            currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).off();
-
-            chatRoomRef.once('value', snapshot => {
-                if(snapshot.val() && _.last(_this.props.navigator.getCurrentRoutes()).title === 'Chat') _this.props.navigator.jumpForward();
-                else {
-                    _this.props.navigator.push({
-                        title: 'Chat',
-                        component: Chat,
-                        passProps: {
-                            recipient: _this.props.data,
-                            distance,
-                            chatRoomRef,
-                            currentUserData: _this.props.currentUserData
-                        }
-                    });
-                }
-            })
-
-        }
-
-        else {
-            targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
-                status: 'received'
-            }, 200);
-            currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
-                status: 'sent'
-            }, 300);
-        }
+    _getTimerValue(numOfMilliseconds:number) {
+        var date = new Date(numOfMilliseconds);
+        return date.getMinutes() + 'm ' + date.getSeconds() + 's';
     },
 
-    numberToRadius(number:number) {
-        return number * Math.PI / 180;
+    handleMatchInteraction() {
+        // @hmm: use hashed targetUserID as key for data for user in list
+        if(this.props.data && this.props.data.isEventInvite) {
+
+            let targetUserIDHashed = this.props.data.ventureId,
+                currentUserIDHashed = this.props.currentUserIDHashed,
+                firebaseRef = this.props.firebaseRef,
+                targetUserEventInviteMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/event_invite_match_requests'),
+                currentUserEventInviteMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/event_invite_match_requests'),
+                _this = this;
+
+            if (this.state.status === 'sent') {
+
+                // @hmm: delete the request
+
+                targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).set(null);
+                currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).set(null);
+            }
+
+            else if (this.state.status === 'received') {
+
+                // @hmm: accept the request
+                // chatroom reference uses id of the user who accepts the received matchInteraction
+
+                targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+                    account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                    eventId: EVENT_ID,
+                    eventTitle: EVENT_TITLE,
+                    status: 'matched',
+                    role: 'recipient'
+                }, 100);
+
+                currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+                    account: this.props.data && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                    eventId: EVENT_ID,
+                    eventTitle: EVENT_TITLE,
+                    status: 'matched',
+                    role: 'sender'
+                }, 100);
+            }
+
+            else if (this.state.status === 'matched') {
+                let chatRoomEventTitle = EVENT_TITLE,
+                    distance = this.state.distance + ' mi',
+                    _id;
+
+                currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).once('value', snapshot => {
+
+                    if (snapshot.val() && snapshot.val().role === 'sender') {
+                        _id = 'EVENT_INVITE_' + targetUserIDHashed + '_TO_' + currentUserIDHashed;
+                    } else {
+                        _id = 'EVENT_INVITE_' + currentUserIDHashed + '_TO_' + targetUserIDHashed;
+                    }
+
+                    firebaseRef.child(`chat_rooms/${_id}`).once('value', snapshot => {
+
+                        let chatRoomRef = firebaseRef.child(`chat_rooms/${_id}`),
+                            currentRouteStack = this.props.navigator.getCurrentRoutes(),
+                            chatRoomRoute = _.findWhere(currentRouteStack, {title: 'Chat', passProps: {_id}});
+
+                        if (snapshot.val() === null) {
+
+                            chatRoomRef.child('_id').set(_id); // @hmm: set unique chat Id
+                            chatRoomRef.child('timer').set({value: 300000}); // @hmm: set timer
+                            chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set(EVENT_TITLE);
+                            chatRoomRef.child('user_activity_preference_titles').child(targetUserIDHashed).set(EVENT_TITLE);
+
+                        }
+
+                        firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).once('value', snapshot => {
+                            if (snapshot.val() === 0) {
+                                _this.props.navigator.push({
+                                    title: 'Chat',
+                                    component: Chat,
+                                    passProps: {
+                                        _id,
+                                        recipient: _this.props.data,
+                                        distance,
+                                        chatRoomEventTitle,
+                                        chatRoomRef,
+                                        currentUserData: _this.props.currentUserData
+                                    }
+                                });
+                            }
+                            else if (chatRoomRoute) _this.props.navigator.jumpTo(chatRoomRoute);
+                            else {
+                                currentRouteStack.push({
+                                    title: 'Chat',
+                                    component: Chat,
+                                    passProps: {
+                                        _id,
+                                        recipient: _this.props.data,
+                                        distance,
+                                        chatRoomEventTitle,
+                                        chatRoomRef,
+                                        currentUserData: _this.props.currentUserData
+                                    }
+                                });
+                                _this.props.navigator.immediatelyResetRouteStack(currentRouteStack);
+                            }
+                        });
+                    })
+                });
+            }
+
+            else {
+                targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+                    account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                    eventId: EVENT_ID,
+                    eventTitle: EVENT_TITLE,
+                    status: 'received'
+                }, 200);
+                currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+                    account: this.props.data && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                    eventId: EVENT_ID,
+                    eventTitle: EVENT_TITLE,
+                    status: 'sent'
+                }, 300);
+            }
+        } else {
+
+
+            let targetUserIDHashed = this.props.data.ventureId,
+                currentUserIDHashed = this.props.currentUserIDHashed,
+                firebaseRef = this.props.firebaseRef,
+                targetUserMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/match_requests'),
+                currentUserMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/match_requests'),
+                _this = this;
+
+            if (this.state.status === 'sent') {
+
+                // @hmm: delete the request
+
+                targetUserMatchRequestsRef.child(currentUserIDHashed).set(null);
+                currentUserMatchRequestsRef.child(targetUserIDHashed).set(null);
+            }
+
+            else if (this.state.status === 'received') {
+
+                // @hmm: accept the request
+                // chatroom reference uses id of the user who accepts the received matchInteraction
+
+                targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+                    status: 'matched',
+                    role: 'recipient'
+                }, 100);
+
+                currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+                    status: 'matched',
+                    role: 'sender'
+                }, 100);
+            }
+
+            else if (this.state.status === 'matched') {
+                let chatRoomActivityPreferenceTitle,
+                    distance = 0.7 + ' mi',
+                    _id;
+
+                currentUserMatchRequestsRef.child(targetUserIDHashed).once('value', snapshot => {
+
+                    if (snapshot.val() && snapshot.val().role === 'sender') {
+                        _id = targetUserIDHashed + '_TO_' + currentUserIDHashed;
+                        chatRoomActivityPreferenceTitle = this.props.currentUserData.activityPreference.title
+                    }
+                    else {
+                        _id = currentUserIDHashed + '_TO_' + targetUserIDHashed;
+                        chatRoomActivityPreferenceTitle = this.props.currentUserData.activityPreference.title
+                    }
+
+                    firebaseRef.child(`chat_rooms/${_id}`).once('value', snapshot => {
+
+                        let chatRoomRef = firebaseRef.child(`chat_rooms/${_id}`),
+                            currentRouteStack = this.props.navigator.getCurrentRoutes(),
+                            chatRoomRoute = _.findWhere(currentRouteStack, {title: 'Chat', passProps: {_id}});
+
+                        if (snapshot.val() === null) {
+
+                            chatRoomRef.child('_id').set(_id); // @hmm: set unique chat Id
+                            chatRoomRef.child('timer').set({value: 300000}); // @hmm: set timer
+                            chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set(this.props.currentUserData.activityPreference.title);
+                            chatRoomRef.child('user_activity_preference_titles').child(targetUserIDHashed).set(this.props.data.activityPreference.title);
+
+                        }
+
+                        firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).once('value', snapshot => {
+                            if (snapshot.val() === 0) {
+                                _this.props.navigator.push({
+                                    title: 'Chat',
+                                    component: Chat,
+                                    passProps: {
+                                        _id,
+                                        recipient: _this.props.data,
+                                        distance,
+                                        chatRoomActivityPreferenceTitle,
+                                        chatRoomRef,
+                                        currentUserData: _this.props.currentUserData
+                                    }
+                                });
+                            }
+                            else if (chatRoomRoute) _this.props.navigator.jumpTo(chatRoomRoute);
+                            else {
+                                currentRouteStack.push({
+                                    title: 'Chat',
+                                    component: Chat,
+                                    passProps: {
+                                        _id,
+                                        recipient: _this.props.data,
+                                        distance,
+                                        chatRoomActivityPreferenceTitle,
+                                        chatRoomRef,
+                                        currentUserData: _this.props.currentUserData
+                                    }
+                                });
+                                _this.props.navigator.immediatelyResetRouteStack(currentRouteStack);
+                            }
+                        });
+                    })
+                });
+            }
+
+            else {
+                targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+                    status: 'received'
+                }, 200);
+                currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+                    status: 'sent'
+                }, 300);
+            }
+        }
     },
 
     _onPressItem() {
@@ -255,53 +444,84 @@ var User = React.createClass({
     render() {
         if(this.state.status === null) return <View />;
 
-        let distance, profileModal, swipeoutBtns;
+        let profileModal, userRowContent;
 
-        if (!this.props.currentUser && this.props.currentPosition) distance = 0.7 + 'mi';
-        //this.calculateDistance(this.props.currentPosition.coords, this.props.data.location.coordinates) + ' mi'
-
-        if (!this.props.isCurrentUser)
-            swipeoutBtns = [
-                {
-                    text: 'Report', backgroundColor: '#4f535e'
-                },
-                {
-                    text: 'Block', backgroundColor: '#1d222f', color: '#fff'
-                }
-            ];
-
-        profileModal = (
-            <View style={styles.profileModalContainer}>
-                <View
-                    style={[styles.profileModal, {backgroundColor: this._getSecondaryStatusColor()}]}>
-                    <Image
-                        source={{uri: this.props.data && this.props.data.picture}}
-                        style={styles.profileModalUserPicture}/>
-                    <Text
-                        style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'} | {'\t'}
-                        <Text style={styles.profileModalActivityInfo}>
-                            <Text
-                                style={styles.profileModalActivityPreference}>{this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title && this.props.data.activityPreference.title.slice(0,-1)} </Text>:
-                            {'\t'} {this.props.data && this.props.data.activityPreference && (this.props.data.activityPreference.start.time || this.props.data.activityPreference.status)} {'\n'}
-                        </Text>
-                    </Text>
-                    <View style={[styles.tagBar, {bottom: 10}]}>
+        if(this.props.data && this.props.data.isEventInvite) {
+            profileModal = (
+                <View style={styles.profileModalContainer}>
+                    <View
+                        style={[styles.profileModal, {backgroundColor: this._getSecondaryStatusColor()}]}>
+                        <Image
+                            source={{uri: this.props.data && this.props.data.picture}}
+                            style={styles.profileModalUserPicture}/>
                         <Text
-                            style={styles.profileModalSectionTitle}>TAGS: </Text>
-                        {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.tags && this.props.data.activityPreference.tags.map((tag, i) => (
-                            <TouchableOpacity key={i} style={styles.tag}><Text
-                                style={styles.tagText}>{tag}</Text></TouchableOpacity>
-                        ))
-                        }
+                            style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'}
+                            | {'\t'}
+                            <Text style={styles.profileModalActivityInfo}>
+                                <Text
+                                    style={styles.profileModalActivityPreference}>YSO Halloween Show</Text>
+                                {'\t'} {this.props.data && this.props.data.activityPreference && (this.props.data.activityPreference.start.time || this.props.data.activityPreference.status)} {'\n'}
+                            </Text>
+                        </Text>
+                        <Text
+                            style={styles.profileModalBio}>{this.props.data && this.props.data.bio}</Text>
                     </View>
-                    <Text
-                        style={styles.profileModalBio}>{this.props.data && this.props.data.bio}</Text>
                 </View>
-            </View>
-        );
+            )
+
+            userRowContent = (
+                <View style={styles.rightContainer}>
+                    <Text
+                        style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
+                    <Text style={styles.eventTitle}>
+                        YSO HALLOWEEN SHOW?
+                    </Text>
+                    <View style={{top: 10, right: 10}}>{this._renderStatusIcon()}</View>
+                </View>
+            )
+        } else {
+            profileModal = (
+                <View style={styles.profileModalContainer}>
+                    <View
+                        style={[styles.profileModal, {backgroundColor: this._getSecondaryStatusColor()}]}>
+                        <Image
+                            source={{uri: this.props.data && this.props.data.picture}}
+                            style={styles.profileModalUserPicture}/>
+                        <Text
+                            style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'} | {'\t'}
+                            <Text style={styles.profileModalActivityInfo}>
+                                <Text
+                                    style={styles.profileModalActivityPreference}>{this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title && this.props.data.activityPreference.title.slice(0,-1)} </Text>:
+                                {'\t'} {this.props.data && this.props.data.activityPreference && (this.props.data.activityPreference.start.time || this.props.data.activityPreference.status)} {'\n'}
+                            </Text>
+                        </Text>
+                        <View style={[styles.tagBar, {bottom: 10}]}>
+                            <Text
+                                style={styles.profileModalSectionTitle}>TAGS: </Text>
+                            {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.tags && this.props.data.activityPreference.tags.map((tag, i) => (
+                                <TouchableOpacity key={i} style={styles.tag}><Text
+                                    style={styles.tagText}>{tag}</Text></TouchableOpacity>
+                            ))
+                            }
+                        </View>
+                        <Text
+                            style={styles.profileModalBio}>{this.props.data && this.props.data.bio}</Text>
+                    </View>
+                </View>
+            );
+
+            userRowContent = (
+                <View style={styles.rightContainer}>
+                    <Text style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
+                    <Text style={styles.activityPreference}>
+                        {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title}
+                    </Text>
+                    <View style={{top: 10}}>{this._renderStatusIcon()}</View>
+                </View>
+            );
+        }
 
         return (
-            <Swipeout right={swipeoutBtns}>
                 <TouchableHighlight
                     underlayColor={WHITE_HEX_CODE}
                     activeOpacity={0.3}
@@ -318,22 +538,16 @@ var User = React.createClass({
                             <Image
                                 onPress={this._onPressItem}
                                 source={{uri: this.props.data && this.props.data.picture}}
-                                style={styles.thumbnail}/>
-                            <View style={styles.rightContainer}>
-                                <Text style={styles.distance}>{distance}</Text>
-                                <Text style={styles.activityPreference}>
-                                    {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title}
-                                </Text>
-                                <View>
-                                    {!this.props.isCurrentUser ?
-                                        <View style={{top: 10}}>{this._renderStatusIcon()}</View> : <View />}
+                                style={[styles.thumbnail]}>
+                                <View style={(this.state.timerVal ? styles.timerValOverlay : {})}>
+                                    <Text style={[styles.timerValText, (this.state.timerVal && this.state.timerVal[0] === '1' ? {color: '#FFF484'} : {}), (this.state.timerVal && this.state.timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{this.state.timerVal}</Text>
                                 </View>
-                            </View>
+                            </Image>
+                            {userRowContent}
                         </LinearGradient>
                         {this.state.dir === 'column' ? profileModal: <View />}
                     </View>
                 </TouchableHighlight>
-            </Swipeout>
         );
     }
 });
@@ -348,13 +562,12 @@ var ChatsList = React.createClass({
             usersListRef = firebaseRef.child('users');
 
         return {
-            currentPosition: null,
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
             }),
             firebaseRef,
             userRows: [],
-            searchText: '',
+            showFunFact: true,
             showLoadingModal: true,
             usersListRef
         };
@@ -362,43 +575,48 @@ var ChatsList = React.createClass({
 
     componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
-            let usersListRef = this.state.firebaseRef.child('/users'), _this = this;
+            let eventInvites = [], usersListRef = this.state.firebaseRef.child('/users'), _this = this;
 
             this.bindAsArray(usersListRef, 'userRows');
 
-            AsyncStorage.getItem('@AsyncStorage:Venture:account')
-                .then((account: string) => {
-                    account = JSON.parse(account);
+            this.props.ventureId && usersListRef.on('value', snapshot => {
+                // @hmm: sweet! order alphabetically to sort with priority ('matched' --> 'received' --> 'sent')
 
-                    // @hmm: sweet! order alphabetically to sort with priority ('matched' --> 'received' --> 'sent')
+                let usersListSnapshotVal = snapshot.val();
 
-                    usersListRef.on('value', snapshot => {
-                        _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${account.ventureId}.status`));
-                        _this.setState({rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
+                usersListRef.child(`${this.props.ventureId}/event_invite_match_requests`).once('value', snapshot => {
+                    _.each(snapshot.val(), (eventInviteMatchRequest) => {
+                        eventInvites.push(eventInviteMatchRequest.account);
                     });
 
-                    this.setState({currentUserVentureId: account.ventureId})
+                    // @hmm: add event invites into general activity interactions
 
-                    this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {
-                        _this.setState({currentUserData: snapshot.val()});
-                    });
-                })
-                .then(() => {
-                    InteractionManager.runAfterInteractions(() => {
-                        navigator.geolocation.getCurrentPosition(
-                            (currentPosition) => {
-                                _this.setState({currentPosition});
-                            },
-                            (error) => {
-                                console.error(error);
-                            },
-                            {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
-                        );
-                    });
-                })
-                .catch((error) => console.log(error.message))
-                .done();
+                    _this.updateRows(_.sortBy((_.cloneDeep(_.values(usersListSnapshotVal))).concat(eventInvites), `match_requests.${this.props.ventureId}.status`));
+                    _this.setState({currentUserVentureId: this.props.ventureId, userRows: _.cloneDeep(_.values((_.cloneDeep(_.values(usersListSnapshotVal))).concat(eventInvites))), usersListRef});
+
+                    // @hmm: rest to prevent multiple event invites in chats list
+
+                    eventInvites = [];
+
+                    if(!_.isEmpty(usersListSnapshotVal[this.props.ventureId].match_requests) || !_.isEmpty(usersListSnapshotVal[this.props.ventureId].event_invite_match_requests)) this.setState({showFunFact: false});
+                    else {
+                        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                        this.setState({showFunFact: true});
+                    }
+                });
+
+            });
+
+            this.state.firebaseRef.child(`/users/${this.props.ventureId}`).once('value', snapshot => {
+                _this.setState({currentUserData: snapshot.val()});
+            });
         });
+    },
+
+    componentWillUnmount() {
+        let usersListRef = this.state.firebaseRef.child('/users');
+
+        usersListRef.off();
     },
 
     _safelyNavigateToHome() {
@@ -419,37 +637,47 @@ var ChatsList = React.createClass({
             this.props.navigator.immediatelyResetRouteStack(currentRouteStack)
         }
     },
-
     updateRows(userRows:Array) {
         this.setState({dataSource: this.state.dataSource.cloneWithRows(userRows)});
         InteractionManager.runAfterInteractions(() => {
             this.setState({showLoadingModal: false});
-        })
+        });
     },
     _renderHeader() {
         return (
             <Header containerStyle={{position: 'relative'}}>
-                <HomeIcon onPress={() => this._safelyNavigateToHome()}/>
+                <HomeIcon onPress={() => this._safelyNavigateToHome()} style={{right: 14}} />
+                <Text>MY CHATS</Text>
                 <FilterModalIcon
-                    onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}/>
+                    onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}
+                    style={{left: 14}} />
             </Header>
         )
     },
 
-
     _renderUser(user:Object, sectionID:number, rowID:number) {
-        // @hmm: only users with extant interactions
         if (user.ventureId === this.state.currentUserVentureId) return <View />;
 
         return <User currentUserData={this.state.currentUserData}
                      currentUserIDHashed={this.state.currentUserVentureId}
-                     currentPosition={this.state.currentPosition}
+                     currentUserLocationCoords={this.props.currentUserLocationCoords}
                      data={user}
                      firebaseRef={this.state.firebaseRef}
-                     navigator={this.props.navigator} />;
+                     navigator={this.props.navigator}/>;
     },
 
     render() {
+        let funFact = (
+            <View style={{alignSelf: 'center', bottom: SCREEN_HEIGHT/2.5}}>
+                <TouchableOpacity>
+                    <Text
+                        style={{color: '#fff', fontFamily: 'AvenirNextCondensed-Medium', textAlign: 'center', fontSize: 18}}>
+                        <Text style={{fontSize: Display.height/30, top: 15}}>Did You Know ?</Text> {'\n\n'} 1 in every 16 Yale students {'\n'}
+                        is a section asshole.</Text>
+                </TouchableOpacity>
+            </View>
+        );
+
         return (
             <View style={styles.usersListBaseContainer}>
                 <View>
@@ -462,6 +690,7 @@ var ChatsList = React.createClass({
                     pageSize={PAGE_SIZE}
                     automaticallyAdjustContentInsets={false}
                     scrollRenderAheadDistance={200}/>
+                {this.state.showFunFact ? funFact : <View />}
                 <View style={{height: 48}}></View>
                 <Modal
                     height={SCREEN_HEIGHT}
@@ -588,18 +817,6 @@ var styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start'
     },
-    searchTextInput: {
-        color: '#222',
-        backgroundColor: 'white',
-        borderRadius: 3,
-        borderWidth: 1,
-        width: 200,
-        height: 30,
-        paddingLeft: 10,
-        fontSize: 18,
-        fontWeight: 'bold',
-        fontFamily: 'AvenirNextCondensed-Regular'
-    },
     tag: {
         backgroundColor: 'rgba(4,22,43,0.5)',
         borderRadius: 12,
@@ -619,9 +836,9 @@ var styles = StyleSheet.create({
         fontFamily: 'AvenirNextCondensed-Medium'
     },
     thumbnail: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
+        width: THUMBNAIL_SIZE,
+        height: THUMBNAIL_SIZE,
+        borderRadius: THUMBNAIL_SIZE/2,
         marginVertical: 7,
         marginLeft: 10
     },
@@ -670,44 +887,31 @@ var styles = StyleSheet.create({
         fontFamily: 'AvenirNext-UltraLight',
         fontWeight: '300'
     },
+    eventTitle: {
+        width: 154,
+        right: 20,
+        fontSize: 17,
+        top: 2,
+        fontFamily: 'AvenirNextCondensed-Regular',
+        fontWeight: '400'
+    },
     filterPageButton: {
         width: 30,
         height: 30
+    },
+    timerValText: {
+        opacity: 1.0,
+        color: '#fff',
+        fontFamily: 'AvenirNextCondensed-Medium',
+    },
+    timerValOverlay: {
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        width: THUMBNAIL_SIZE,
+        height: THUMBNAIL_SIZE,
+        borderRadius: THUMBNAIL_SIZE / 2,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });
-
-var animations = {
-    layout: {
-        spring: {
-            duration: 750,
-            create: {
-                duration: 300,
-                type: LayoutAnimation.Types.easeInEaseOut,
-                property: LayoutAnimation.Properties.opacity
-            },
-            update: {
-                type: LayoutAnimation.Types.spring,
-                springDamping: 0.6
-            }
-        },
-        easeInEaseOut: {
-            duration: 300,
-            create: {
-                type: LayoutAnimation.Types.easeInEaseOut,
-                property: LayoutAnimation.Properties.scaleXY
-            },
-            update: {
-                delay: 100,
-                type: LayoutAnimation.Types.easeInEaseOut
-            }
-        }
-    }
-};
-
-var layoutAnimationConfigs = [
-    animations.layout.spring,
-    animations.layout.easeInEaseOut
-];
-
 
 module.exports = ChatsList;

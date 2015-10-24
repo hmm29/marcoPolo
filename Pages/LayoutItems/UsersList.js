@@ -37,6 +37,7 @@ var Display = require('react-native-device-display');
 var FilterModalIcon = require('../../Partials/Icons/FilterModalIcon');
 var Filters = require('../Filters');
 var Firebase = require('firebase');
+var GeoFire = require('geofire');
 var Header = require('../../Partials/Header');
 var HomeIcon = require('../../Partials/Icons/HomeIcon');
 var LinearGradient = require('react-native-linear-gradient');
@@ -46,7 +47,6 @@ var Modal = require('react-native-swipeable-modal');
 var ReactFireMixin = require('reactfire');
 var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
 var RefreshableListView = require('react-native-refreshable-listview');
-var Swipeout = require('react-native-swipeout');
 var TimerMixin = require('react-timer-mixin');
 
 var INITIAL_LIST_SIZE = 8;
@@ -55,7 +55,8 @@ var LOGO_HEIGHT = 120;
 var PAGE_SIZE = 10;
 var SCREEN_WIDTH = Display.width;
 var SCREEN_HEIGHT = Display.height;
-var SEARCH_TEXT_INPUT_REF = 'searchTextInput'
+var SEARCH_TEXT_INPUT_REF = 'searchTextInput';
+var THUMBNAIL_SIZE = 50;
 
 var YELLOW_HEX_CODE = '#ffe770';
 var BLUE_HEX_CODE = '#40cbfb';
@@ -71,51 +72,59 @@ String.prototype.capitalize = function () {
 var User = React.createClass({
 
     propTypes: {
-        currentPosition: React.PropTypes.object,
+        currentUserLocationCoords: React.PropTypes.array,
+        currentUserData: React.PropTypes.object,
+        data: React.PropTypes.object,
         isCurrentUser: React.PropTypes.boolean,
-        data: React.PropTypes.object
+        navigator: React.PropTypes.object
     },
 
     getInitialState() {
         return {
             dir: 'row',
-            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
-            status: ''
+            status: '',
+            timerVal: ''
         }
     },
 
     componentWillMount() {
-        let _this = this;
+        let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
+            _this = this;
 
-        this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-        && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).once('value', snapshot => {
-            _this.setState({status: snapshot.val() && snapshot.val().status});
+        this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+        && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+            _this.setState({
+                distance,
+                status: snapshot.val() && snapshot.val().status,
+                timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)
+            });
         });
     },
 
     componentWillReceiveProps(nextProps) {
-        let _this = this;
+        let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
+            _this = this;
 
-        this.state.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.state.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-        && (this.state.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).once('value', snapshot => {
-            _this.setState({status: snapshot.val() && snapshot.val().status});
+        this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+        && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+            _this.setState({
+                distance,
+                status: snapshot.val() && snapshot.val().status,
+                timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)
+            });
         });
     },
 
-    calculateDistance(pt1:Object, pt2:Object) {
-        if (!pt1) {
-            return '';
-        }
-        var lon1 = Number(pt1.longitude),
-            lat1 = Number(pt1.latitude),
-            lon2 = pt2[0],
-            lat2 = pt2[1];
-        var dLat = this.numberToRadius(lat2 - lat1),
-            dLon = this.numberToRadius(lon2 - lon1),
-            a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(this.numberToRadius(lat1))
-                * Math.cos(this.numberToRadius(lat2)) * Math.pow(Math.sin(dLon / 2), 2);
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return ((6371 * c) * 1000 * 0.000621371).toFixed(1); // returns miles
+    componentWillUnmount() {
+        let currentUserIDHashed = this.props.currentUserIDHashed,
+            firebaseRef = this.props.firebaseRef,
+            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
+
+        currentUserMatchRequestsRef && currentUserMatchRequestsRef.off();
+    },
+
+    calculateDistance(location1:Array, location2:Array) {
+        return location1 && location2 && (GeoFire.distance(location1, location2) * 0.621371).toFixed(1);
     },
 
     _getSecondaryStatusColor() {
@@ -146,8 +155,13 @@ var User = React.createClass({
         }
     },
 
+    _getTimerValue(numOfMilliseconds:number) {
+        var date = new Date(numOfMilliseconds);
+        return date.getMinutes() + 'm ' + date.getSeconds() + 's';
+    },
+
     handleMatchInteraction() {
-        // @hmm: use hashed targetUserID as key for Firebase database
+        // @hmm: use hashed targetUserID as key for data for user in list
 
         let targetUserIDHashed = this.props.data.ventureId,
             currentUserIDHashed = this.props.currentUserIDHashed,
@@ -169,56 +183,91 @@ var User = React.createClass({
             // @hmm: accept the request
             // chatroom reference uses id of the user who accepts the received matchInteraction
 
-            // let chatRoomRef = firebaseRef.child('chat_rooms/' + targetUserIDHashed + '_TO_' + currentUserIDHashed);
-
-            targetUserMatchRequestsRef.child(currentUserIDHashed).set({
+            targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
                 status: 'matched',
-            });
+                role: 'recipient'
+            }, 100);
 
-            currentUserMatchRequestsRef.child(targetUserIDHashed).set({
+            currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
                 status: 'matched',
-            });
+                role: 'sender'
+            }, 100);
         }
 
         else if (this.state.status === 'matched') {
-            let distance = 0.7 + ' mi';
+            let chatRoomActivityPreferenceTitle,
+                distance = 0.7 + ' mi',
+                _id;
 
-            let chatRoomRef = firebaseRef.child('chat_rooms/' + currentUserIDHashed + '_TO_' + targetUserIDHashed);
+            currentUserMatchRequestsRef.child(targetUserIDHashed).once('value', snapshot => {
 
-            chatRoomRef.child('timer').set({value: 300000}); // set timer
+                if (snapshot.val() && snapshot.val().role === 'sender') {
+                    _id = targetUserIDHashed + '_TO_' + currentUserIDHashed;
+                    chatRoomActivityPreferenceTitle = this.props.currentUserData.activityPreference.title
+                } else {
+                    _id = currentUserIDHashed + '_TO_' + targetUserIDHashed;
+                    chatRoomActivityPreferenceTitle = this.props.currentUserData.activityPreference.title
+                }
 
-            currentUserMatchRequestsRef && currentUserMatchRequestsRef.child(targetUserIDHashed).off();
+                firebaseRef.child(`chat_rooms/${_id}`).once('value', snapshot => {
 
-            chatRoomRef.once('value', snapshot => {
-                if (snapshot.val() && _.last(_this.props.navigator.getCurrentRoutes()).title === 'Chat') _this.props.navigator.jumpForward();
-                else {
-                    _this.props.navigator.push({
-                        title: 'Chat',
-                        component: Chat,
-                        passProps: {
-                            recipient: _this.props.data,
-                            distance,
-                            chatRoomRef,
-                            currentUserData: _this.props.currentUserData
+                    let chatRoomRef = firebaseRef.child(`chat_rooms/${_id}`),
+                        currentRouteStack = this.props.navigator.getCurrentRoutes(),
+                        chatRoomRoute = _.findWhere(currentRouteStack, {title: 'Chat', passProps: {_id}});
+
+                    if (snapshot.val() === null) {
+
+                        chatRoomRef.child('_id').set(_id); // @hmm: set unique chat Id
+                        chatRoomRef.child('timer').set({value: 300000}); // @hmm: set timer
+                        chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set(this.props.currentUserData.activityPreference.title);
+                        chatRoomRef.child('user_activity_preference_titles').child(targetUserIDHashed).set(this.props.data.activityPreference.title);
+
+                    }
+
+                    firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).once('value', snapshot => {
+                        if (snapshot.val() === 0) {
+                            _this.props.navigator.push({
+                                title: 'Chat',
+                                component: Chat,
+                                passProps: {
+                                    _id,
+                                    recipient: _this.props.data,
+                                    distance,
+                                    chatRoomActivityPreferenceTitle,
+                                    chatRoomRef,
+                                    currentUserData: _this.props.currentUserData
+                                }
+                            });
+                        }
+                        else if (chatRoomRoute) _this.props.navigator.jumpTo(chatRoomRoute);
+                        else {
+                            currentRouteStack.push({
+                                title: 'Chat',
+                                component: Chat,
+                                passProps: {
+                                    _id,
+                                    recipient: _this.props.data,
+                                    distance,
+                                    chatRoomActivityPreferenceTitle,
+                                    chatRoomRef,
+                                    currentUserData: _this.props.currentUserData
+                                }
+                            });
+                            _this.props.navigator.immediatelyResetRouteStack(currentRouteStack);
                         }
                     });
-                }
-            })
-
+                })
+            });
         }
 
         else {
-            targetUserMatchRequestsRef.child(currentUserIDHashed).set({
+            targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
                 status: 'received'
-            });
-            currentUserMatchRequestsRef.child(targetUserIDHashed).set({
+            }, 200);
+            currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
                 status: 'sent'
-            });
+            }, 300);
         }
-    },
-
-    numberToRadius(number:number) {
-        return number * Math.PI / 180;
     },
 
     _onPressItem() {
@@ -245,27 +294,14 @@ var User = React.createClass({
                     color='rgba(0,0,0,0.2)'
                     direction='right'
                     onPress={() => this.handleMatchInteraction()}
-                    size={22}/>
+                    size={18}
+                    style={{left: 8}}/>
         }
     },
 
     render() {
-        let distance, profileModal, swipeoutBtns;
 
-        if (!this.props.currentUser && this.props.currentPosition) distance = 0.7 + 'mi';
-        //this.calculateDistance(this.props.currentPosition.coords, this.props.data.location.coordinates) + ' mi'
-
-        if (!this.props.isCurrentUser)
-            swipeoutBtns = [
-                {
-                    text: 'Report', backgroundColor: '#4f535e'
-                },
-                {
-                    text: 'Block', backgroundColor: '#1d222f', color: '#fff'
-                }
-            ];
-
-        profileModal = (
+        let profileModal = (
             <View style={styles.profileModalContainer}>
                 <View
                     style={[styles.profileModal, {backgroundColor: this._getSecondaryStatusColor()}]}>
@@ -297,7 +333,6 @@ var User = React.createClass({
         );
 
         return (
-            <Swipeout right={swipeoutBtns}>
                 <TouchableHighlight
                     underlayColor={WHITE_HEX_CODE}
                     activeOpacity={0.3}
@@ -314,9 +349,14 @@ var User = React.createClass({
                             <Image
                                 onPress={this._onPressItem}
                                 source={{uri: this.props.data && this.props.data.picture}}
-                                style={[styles.thumbnail, (this.state.isFacebookFriend ? {borderWidth: 3, borderColor: '#4E598C'} : {})]}/>
+                                style={[styles.thumbnail]}>
+                                <View style={(this.state.timerVal ? styles.timerValOverlay : {})}>
+                                    <Text style={[styles.timerValText, (this.state.timerVal && this.state.timerVal[0] === '1' ? {color: '#FFF484'} : {}), (this.state.timerVal && this.state.timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{this.state.timerVal}</Text>
+                                </View>
+                            </Image>
                             <View style={styles.rightContainer}>
-                                <Text style={styles.distance}>{distance}</Text>
+                                <Text
+                                    style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
                                 <Text style={styles.activityPreference}>
                                     {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title}
                                 </Text>
@@ -329,7 +369,6 @@ var User = React.createClass({
                         {this.state.dir === 'column' ? profileModal : <View />}
                     </View>
                 </TouchableHighlight>
-            </Swipeout>
         );
     }
 });
@@ -357,7 +396,6 @@ var UsersList = React.createClass({
 
     getInitialState() {
         return {
-            currentPosition: null,
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
             }),
@@ -371,47 +409,84 @@ var UsersList = React.createClass({
 
     componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
-            let usersListRef = this.state.firebaseRef.child('/users'), _this = this;
+            let currentUserRef = this.props.ventureId && this.state.firebaseRef.child(`users/${this.props.ventureId}`),
+                usersListRef = this.state.firebaseRef.child('/users'),
+                _this = this;
 
             // @hmm: show users based on filter settings
 
-            usersListRef.orderByChild('gender').equalTo('male').on('value', snapshot => {
-                _this.updateRows(_.cloneDeep(_.values(snapshot.val())));
-                _this.setState({rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
+            currentUserRef && currentUserRef.child('matchingPreferences').on('value', snapshot => {
+                InteractionManager.runAfterInteractions(() => {
+
+                    let matchingPreferences = snapshot.val(),
+                        filteredUsersArray = [];
+
+                    fetch(this.props.friendsAPICallURL)
+                        .then(response => response.json())
+                        .then(responseData => {
+                            this.setState({currentUserFriends: responseData.data});
+                        })
+                        .done();
+
+                    _this.setState({maxSearchDistance: matchingPreferences.maxSearchDistance});
+
+                    usersListRef.once('value', snapshot => {
+
+                        snapshot.val() && _.each(snapshot.val(), (user) => {
+
+                            // @hmm: because of cumulative privacy selection, only have to check for friends+ for both 'friends+' and 'all'
+                            if (matchingPreferences.privacy.indexOf('friends+') > -1) {
+                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
+                                    if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
+                                    if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
+                                }
+                            } else if (matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
+                                fetch(this.props.friendsAPICallURL)
+                                    .then(response => response.json())
+                                    .then(responseData => {
+                                        InteractionManager.runAfterInteractions(() => {
+
+                                            if (responseData.data && _.findWhere(responseData.data, {name: user.name})) {
+                                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
+                                                    if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
+                                                    if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
+                                                }
+                                            }
+
+                                            _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
+                                            _this.setState({
+                                                rows: _.cloneDeep(_.values(filteredUsersArray)),
+                                                currentUserRef,
+                                                usersListRef
+                                            });
+                                        });
+
+                                    })
+                                    .done();
+                            }
+
+                        });
+                        _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
+                        _this.setState({rows: _.cloneDeep(_.values(filteredUsersArray)), currentUserRef, filteredUsersArray, usersListRef});
+                    });
+
+                });
+
             });
 
             this.bindAsArray(usersListRef, 'rows');
 
-            AsyncStorage.getItem('@AsyncStorage:Venture:account')
-                .then((account:string) => {
-                    account = JSON.parse(account);
+            this.setState({currentUserVentureId: this.props.ventureId})
 
-                    this.setState({currentUserVentureId: account.ventureId})
-
-                    this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {
-                        _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
-                    });
-                })
-                .then(() => {
-                    InteractionManager.runAfterInteractions(() => {
-                        navigator.geolocation.getCurrentPosition(
-                            (currentPosition) => {
-                                _this.setState({currentPosition});
-                            },
-                            (error) => {
-                                console.error(error);
-                            },
-                            {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
-                        );
-                    });
-                })
-                .catch((error) => console.log(error.message))
-                .done();
+            this.state.firebaseRef.child(`/users/${this.props.ventureId}`).once('value', snapshot => {
+                _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
+            });
         });
     },
 
     componentWillUnmount() {
-       // if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
+        this.state.currentUserRef.off();
+        this.state.usersListRef.off();
     },
 
     _safelyNavigateToHome() {
@@ -447,7 +522,7 @@ var UsersList = React.createClass({
     },
 
     shuffleUsers() {
-        this.updateRows(_.cloneDeep(_.values(_.shuffle(this.state.rows))));
+        this.updateRows(_.cloneDeep(_.values(_.shuffle(this.state.filteredUsersArray))));
     },
 
     updateRows(rows) {
@@ -468,8 +543,8 @@ var UsersList = React.createClass({
 
     _renderHeader() {
         return (
-            <Header containerStyle={{position: 'relative'}}>
-                <HomeIcon onPress={() => this._safelyNavigateToHome()}/>
+            <Header>
+                <HomeIcon onPress={() => this._safelyNavigateToHome()} style={{right: 14}}/>
                 <TextInput
                     ref={SEARCH_TEXT_INPUT_REF}
                     autoCapitalize='none'
@@ -481,7 +556,8 @@ var UsersList = React.createClass({
                     returnKeyType='done'
                     style={styles.searchTextInput}/>
                 <FilterModalIcon
-                    onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}/>
+                    onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}
+                    style={{left: 14}}/>
                 <Text />
             </Header>
         )
@@ -493,7 +569,7 @@ var UsersList = React.createClass({
 
         return <User currentUserData={this.state.currentUserData}
                      currentUserIDHashed={this.state.currentUserVentureId}
-                     currentPosition={this.state.currentPosition}
+                     currentUserLocationCoords={this.props.currentUserLocationCoords}
                      data={user}
                      firebaseRef={this.state.firebaseRef}
                      navigator={this.props.navigator}/>;
@@ -674,11 +750,19 @@ var styles = StyleSheet.create({
         fontFamily: 'AvenirNextCondensed-Medium'
     },
     thumbnail: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
+        width: THUMBNAIL_SIZE,
+        height: THUMBNAIL_SIZE,
+        borderRadius: THUMBNAIL_SIZE / 2,
         marginVertical: 7,
         marginLeft: 10
+    },
+    timerValOverlay: {
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        width: THUMBNAIL_SIZE,
+        height: THUMBNAIL_SIZE,
+        borderRadius: THUMBNAIL_SIZE / 2,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     userContentWrapper: {
         top: 0,
@@ -728,41 +812,12 @@ var styles = StyleSheet.create({
     filterPageButton: {
         width: 30,
         height: 30
+    },
+    timerValText: {
+        opacity: 1.0,
+        color: '#fff',
+        fontFamily: 'AvenirNextCondensed-Medium'
     }
 });
-
-var animations = {
-    layout: {
-        spring: {
-            duration: 750,
-            create: {
-                duration: 300,
-                type: LayoutAnimation.Types.easeInEaseOut,
-                property: LayoutAnimation.Properties.opacity
-            },
-            update: {
-                type: LayoutAnimation.Types.spring,
-                springDamping: 0.6
-            }
-        },
-        easeInEaseOut: {
-            duration: 300,
-            create: {
-                type: LayoutAnimation.Types.easeInEaseOut,
-                property: LayoutAnimation.Properties.scaleXY
-            },
-            update: {
-                delay: 100,
-                type: LayoutAnimation.Types.easeInEaseOut
-            }
-        }
-    }
-};
-
-var layoutAnimationConfigs = [
-    animations.layout.spring,
-    animations.layout.easeInEaseOut
-];
-
 
 module.exports = UsersList;

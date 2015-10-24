@@ -15,6 +15,7 @@
 var React = require('react-native');
 
 var {
+    AppStateIOS,
     AsyncStorage,
     DatePickerIOS,
     Image,
@@ -43,17 +44,21 @@ var MainLayout = require('../Layouts/MainLayout');
 var ProfilePageIcon = require('../Partials/Icons/ProfilePageIcon');
 var TimerMixin = require('react-timer-mixin');
 
-var ADD_INFO_BUTTON_SIZE = 32;
+var ADD_INFO_BUTTON_SIZE = 28;
 var ACTIVITY_TEXT_INPUT_PADDING = 5;
 var ACTIVITY_TITLE_INPUT_REF = 'activityTitleInput'
 var LOGO_WIDTH = 200;
 var LOGO_HEIGHT = 120;
+var MAX_TEXT_INPUT_VAL_LENGTH = 15;
 var NEXT_BUTTON_SIZE = 28;
 var SCREEN_HEIGHT = Display.height;
 var SCREEN_WIDTH = Display.width;
 var TAG_TEXT_INPUT_PADDING = 3;
 
-var YALIES = [`http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_56,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206258/Harrison%20Miller.png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_52,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206076/Noah%20Cho.png`, `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Sophie%20Dillon.png`];
+var YALIES = [
+    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_56,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206258/Harrison%20Miller.png`,
+    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_52,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206076/Noah%20Cho.png`,
+    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Sophie%20Dillon.png`];
 var EVENTS = [
     `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Frozen%20Four%20(Center%20-%20Big%20Text).png`,
     `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_48,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442894669/Event%20-%20Freshman%20Screw%20(Center%20-%20Big%20Text).png`,
@@ -77,31 +82,34 @@ var Home = React.createClass({
             activeTimeOption: 'now',
             activityTitleInput: '',
             contentOffsetXVal: 0,
+            currentAppState: AppStateIOS.currentState,
             date: new Date(),
+            events: [],
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             hasIshSelected: false,
             hasKeyboardSpace: false,
             hasSpecifiedTime: false,
-            isLoggedIn: true,
             showAddInfoBox: false,
             showAddInfoButton: true,
             showNextButton: false,
             showTextInput: true,
             showTimeSpecificationOptions: false,
-            showTrendingItems: true,
+            showTrendingItems: false,
             tagsArr: [],
             tagInput: '',
             timeZoneOffsetInHours: (-1) * (new Date()).getTimezoneOffset() / 60,
             trendingContent: 'YALIES',
+            trendingContentOffsetXVal: 0,
             ventureId: '',
             viewStyle: {
                 marginHorizontal: 0,
                 borderRadius: 0
-            }
+            },
+            yalies: []
         }
     },
 
-    componentDidMount() {
+    componentWillMount() {
         //@hmm: wait for async storage account to update on login
         InteractionManager.runAfterInteractions(() => {
             this.setTimeout(() => {
@@ -110,16 +118,55 @@ var Home = React.createClass({
                         account = JSON.parse(account);
 
                         if (account === null) {
-                            this.setState({isLoggedIn: false})
+                            this.setTimeout(this._safelyNavigateToLogin, 200)
                             return;
                         }
 
+                        let currentUserRef = this.state.firebaseRef.child(`users/${account.ventureId}`),
+                            trendingItemsRef = this.state.firebaseRef.child('trending'),
+                            _this = this;
+
+                        //@hmm: get current user location & save to firebase object
+                        // make sure this fires before navigating away!
+                        navigator.geolocation.getCurrentPosition(
+                            (currentPosition) => {
+                                currentUserRef.child(`location/coordinates`).set(currentPosition.coords);
+                                this.setState({currentUserLocationCoords: [currentPosition.coords.latitude, currentPosition.coords.longitude], currentUserRef});
+                            },
+                            (error) => {
+                                console.error(error);
+                            },
+                            {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
+                        );
+
+                        trendingItemsRef.once('value', snapshot => {
+                                LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+                                _this.setState({
+                                    events: snapshot.val() && snapshot.val().events && _.slice(snapshot.val().events, 0, 1),
+                                    yalies: snapshot.val() && snapshot.val().yalies  && _.slice(snapshot.val().yalies, 0, 3),
+                                    showTrendingItems: true
+                                })
+                            }
+                        );
+
                         this.setState({ventureId: account.ventureId});
+
+                        AppStateIOS.addEventListener('change', this._handleAppStateChange);
+
                     })
                     .catch((error) => console.log(error.message))
                     .done();
-            }, 800);
+
+                AsyncStorage.getItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL')
+                    .then((friendsAPICallURL) => this.setState({friendsAPICallURL}))
+                    .catch(error => console.log(error.message))
+                    .done();
+            }, 900);
         });
+    },
+
+    componentWillUnmount() {
+        AppStateIOS.removeEventListener('change', this._handleAppStateChange);
     },
 
     animateViewLayout(text:string) {
@@ -136,40 +183,6 @@ var Home = React.createClass({
         return (
             <TrendingItem type={type} key={i} uri={uri}/>
         )
-
-    },
-
-    onSubmitActivity() {
-        let activityTitleInputWithoutPunctuation = (this.state.activityTitleInput).replace(/[^\w\s]|_/g, '').replace(/\s+/g, ' '),
-            activityPreferenceChange = {
-                title: activityTitleInputWithoutPunctuation + '?',
-                tags: this.state.tagsArr,
-                status: this.state.activeTimeOption.toUpperCase(),
-                start: {
-                    time: (this.state.activeTimeOption === 'specify' ? this._getTimeString(this.state.date) : ''),
-                    dateTime: this.state.date,
-                    timeZoneOffsetInHours: this.state.timeZoneOffsetInHours
-                },
-                createdAt: new Date(),
-                updatedAt: new Date()
-            },
-            firebaseRef = this.state.firebaseRef;
-
-        // @hmm: have to manually blur the text input,
-        // since were not using navigator.push()
-
-        this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
-
-        AsyncStorage.getItem('@AsyncStorage:Venture:account')
-            .then((account: string) => {
-                account = JSON.parse(account);
-                firebaseRef.child(`users/${account.ventureId}/activityPreference`).set(activityPreferenceChange)
-
-                if (!this.state.isLoggedIn) this._safelyNavigateToLogin()
-                else this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {selected: 'users', ventureId: account.ventureId}})
-            })
-            .catch((error) => console.log(error.message))
-            .done();
 
     },
 
@@ -198,10 +211,24 @@ var Home = React.createClass({
         return t;
     },
 
-    handleScroll: function(event: Object) {
-        if(event.nativeEvent.contentOffset.x < 0) {}
-        else if(event.nativeEvent.contentOffset.x > 200 && event.nativeEvent.contentOffset.x < 300) this.setState({trendingContent: 'YALIES'})
-        else this.setState({trendingContent: 'EVENTS'});
+
+    _handleAppStateChange(currentAppState) {
+        let previousAppState = this.state.currentAppState;
+
+        this.setState({currentAppState, previousAppState});
+
+        if(previousAppState === 'background' && currentAppState === 'active') {
+            navigator.geolocation.getCurrentPosition(
+                (currentPosition) => {
+                    this.state.currentUserRef && this.state.currentUserRef.child(`location/coordinates`).set(currentPosition.coords);
+                    this.setState({currentUserLocationCoords: [currentPosition.coords.latitude, currentPosition.coords.longitude]});
+                },
+                (error) => {
+                    console.error(error);
+                },
+                {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
+            );
+        }
     },
 
     _onBlur() {
@@ -216,6 +243,38 @@ var Home = React.createClass({
     _onFocus() {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.spring)
         this.setState({hasKeyboardSpace: true, showAddInfoButton: false, showNextButton: false, showTextInput: false});
+    },
+
+    onSubmitActivity() {
+        let activityTitleInputWithoutPunctuation = (this.state.activityTitleInput).replace(/[^\w\s]|_/g, '').replace(/\s+/g, ' '),
+            activityPreferenceChange = {
+                title: activityTitleInputWithoutPunctuation + '?',
+                tags: this.state.tagsArr,
+                status: this.state.activeTimeOption.toUpperCase(),
+                start: {
+                    time: (this.state.activeTimeOption === 'specify' ? this._getTimeString(this.state.date) : ''),
+                    dateTime: this.state.date,
+                    timeZoneOffsetInHours: this.state.timeZoneOffsetInHours
+                },
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            firebaseRef = this.state.firebaseRef;
+
+        // @hmm: have to manually blur the text input,
+        // since were not using navigator.push()
+
+        this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
+
+        AsyncStorage.getItem('@AsyncStorage:Venture:account')
+            .then((account: string) => {
+                account = JSON.parse(account);
+                firebaseRef.child(`users/${account.ventureId}/activityPreference`).set(activityPreferenceChange)
+                this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {currentUserLocationCoords: this.state.currentUserLocationCoords, friendsAPICallURL: this.state.friendsAPICallURL, selected: 'users', ventureId: account.ventureId}});
+            })
+            .catch((error) => console.log(error.message))
+            .done();
+
     },
 
     _roundDateDownToNearestXMinutes(date, num) {
@@ -244,6 +303,7 @@ var Home = React.createClass({
     render() {
         let content,
             isAtScrollViewStart = this.state.contentOffsetXVal === 0,
+            isAtTrendingScrollViewStart = this.state.trendingContentOffsetXVal === 0,
             tagSelection;
 
         let activityTitleInput = (
@@ -254,18 +314,19 @@ var Home = React.createClass({
                 maxLength={15}
                 onChangeText={(text) => {
                         LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+                        if(!text) this.setState({showTimeSpecificationOptions: false});
                         this.setState({activityTitleInput: text.toUpperCase(), showNextButton: !!text});
                         this.animateViewLayout(text);
                     }}
                 placeholder={'What do you want to do?'}
                 placeholderTextColor={'rgba(255,255,255,1.0)'}
                 returnKeyType='done'
-                style={[styles.activityTitleInput, this.state.viewStyle, {marginTop: SCREEN_HEIGHT/2.5}]}
+                style={[styles.activityTitleInput, this.state.viewStyle, {marginTop: SCREEN_HEIGHT/3}]}
                 value={this.state.activityTitleInput}/>
         );
 
         let addInfoButton = (
-            <View style={[styles.addInfoButtonContainer, {bottom: (this.state.showNextButton ? 30 : 0)}]}>
+            <View style={[styles.addInfoButtonContainer, {bottom: (this.state.showNextButton && this.state.showAddInfoBox ? SCREEN_HEIGHT/20 : SCREEN_HEIGHT/32 )}]}>
                 <TouchableOpacity
                     activeOpacity={0.4}
                     onPress={() => {
@@ -303,18 +364,25 @@ var Home = React.createClass({
                 <Title>TRENDING <Text style={{color: '#ee964b'}}>{this.state.trendingContent}</Text></Title>
                 <ScrollView
                     automaticallyAdjustContentInsets={false}
-                    centerContent={true}
+                    canCancelContentTouches={false}
+                    contentOffset={{x: this.state.trendingContentOffsetXVal, y: 0}}
                     horizontal={true}
-                    pagingEnabled={true}
                     directionalLockEnabled={true}
-                    onScroll={this.handleScroll}
-                    snapToAlignment='center'
-                    snapToInterval={64}
                     showsHorizontalScrollIndicator={true}
                     style={[styles.scrollView, styles.horizontalScrollView, {marginTop: 10}]}>
-                    {YALIES.map(this._createTrendingItem.bind(null, 'user'))}
-                    {EVENTS.map(this._createTrendingItem.bind(null, 'event'))}
+                    {this.state.yalies && this.state.yalies.map(this._createTrendingItem.bind(null, 'user'))}
+                    {this.state.events && this.state.events.map(this._createTrendingItem.bind(null, 'event'))}
                 </ScrollView>
+                <View style={[styles.scrollbarArrow, {bottom: SCREEN_HEIGHT / 22}, (isAtTrendingScrollViewStart ? {right: 2} : {left: 2})]}>
+                    <ChevronIcon
+                        color='rgba(255,255,255,0.8)'
+                        size={20}
+                        direction={isAtTrendingScrollViewStart ? 'right' : 'left'}
+                        onPress={() => {
+                            LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+                            this.setState({trendingContentOffsetXVal: (isAtTrendingScrollViewStart ? SCREEN_WIDTH / 1.31 : 0), trendingContent: (isAtTrendingScrollViewStart ? 'EVENTS' : 'YALIES')})
+                            }}/>
+                </View>
             </View>
         );
 
@@ -391,15 +459,18 @@ var Home = React.createClass({
             );
 
         tagSelection = (
-            <View style={[styles.tagSelection]}>
+            <View style={styles.tagSelection}>
                 <TextInput
                     onFocus={this._onFocus}
                     onBlur={this._onBlur}
                     autoCapitalize='none'
                     autoCorrect={false}
-                    maxLength={15}
+                    maxLength={MAX_TEXT_INPUT_VAL_LENGTH}
                     onChangeText={(text) => {
+                        // @hmm: make sure emojis don't cause error - each emoji counts for 3 characters
+                        if(!text.match(/^[a-zA-Z]+$/) && text.length >= MAX_TEXT_INPUT_VAL_LENGTH - 1) return;
                         this.setState({tagInput: text});
+
                         if(text[text.length-1] === ',') {
                         let tagsArr = this.state.tagsArr;
 
@@ -429,7 +500,7 @@ var Home = React.createClass({
         let addInfoBox = (
             <View
                 style={[styles.addInfoBox, {bottom: (this.state.hasKeyboardSpace ? SCREEN_HEIGHT/3 : SCREEN_HEIGHT / 35)}]}>
-                <Title>WHEN?</Title>
+                <View style={{top: 5}}><Title>WHEN?</Title></View>
                 {content}
                 {tagSelection}
             </View>
@@ -438,26 +509,22 @@ var Home = React.createClass({
         let MainLayout = require('../Layouts/MainLayout');
 
         return (
-            // @hmm: passProps ventureId is for MainLayout and not for profile or chat
-
             <View style={styles.container}>
                 <Image
                     source={require('image!HomeBackground')}
                     style={styles.backdrop}>
                     <Header>
-                        <ProfilePageIcon style={{opacity: 0.4}}
+                        <ProfilePageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/34, right: 20}}
                                          onPress={() => {
                                             this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
-                                            if (!this.state.isLoggedIn) this._safelyNavigateToLogin()
-                                            else this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {selected: 'profile', ventureId: this.state.ventureId}})
-                                         }}/>
-                        <ChatsListPageIcon style={{opacity: 0.4}}
+                                            this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {currentUserLocationCoords: this.state.currentUserLocationCoords, friendsAPICallURL: this.state.friendsAPICallURL, selected: 'profile', ventureId: this.state.ventureId}})
+                                         }} />
+                        <ChatsListPageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/34, left: 20}}
                                            onPress={() => {
                                             this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
-                                            if (!this.state.isLoggedIn) this._safelyNavigateToLogin()
-                                            this._safelyNavigateForward({title: 'Chats', component: MainLayout, passProps: {selected: 'chats', ventureId: this.state.ventureId}})
-                                           }}
-                            />
+                                            // @hmm: pass ventureId to MainLayout
+                                            this._safelyNavigateForward({title: 'Chats', component: MainLayout, passProps: {currentUserLocationCoords: this.state.currentUserLocationCoords, friendsAPICallURL: this.state.friendsAPICallURL, selected: 'chats', ventureId: this.state.ventureId}})
+                                           }} />
                     </Header>
                     <Logo
                         logoContainerStyle={styles.logoContainerStyle}
@@ -465,7 +532,7 @@ var Home = React.createClass({
                     {this.state.showTextInput ? activityTitleInput : <View />}
                     {this.state.showNextButton ? nextButton : <View />}
                     {this.state.showAddInfoButton && !this.state.showTimeSpecificationOptions && this.state.activityTitleInput ? addInfoButton : <View />}
-                    {this.state.showAddInfoBox ? addInfoBox : <View/>}
+                    {this.state.showAddInfoBox && this.state.activityTitleInput ? addInfoBox : <View/>}
                     {this.state.showTrendingItems && !this.state.showAddInfoBox ? trendingItemsCarousel : <View/>}
                 </Image>
             </View>
@@ -564,7 +631,7 @@ var styles = StyleSheet.create({
     },
     scrollbarArrow: {
         position: 'absolute',
-        bottom: 12
+        bottom: SCREEN_HEIGHT / 58
     },
     scrollView: {
         backgroundColor: 'rgba(0,0,0,0.008)'
@@ -604,7 +671,7 @@ var styles = StyleSheet.create({
         flex: 1,
         padding: TAG_TEXT_INPUT_PADDING,
         height: SCREEN_HEIGHT / 158,
-        fontSize: SCREEN_HEIGHT / 45,
+        fontSize: SCREEN_HEIGHT / 52,
         color: '#000',
         textAlign: 'center',
         fontFamily: 'AvenirNextCondensed-Regular',
@@ -616,7 +683,7 @@ var styles = StyleSheet.create({
         height: SCREEN_HEIGHT / 6.6,
         paddingTop: 19,
         paddingHorizontal: 25,
-        bottom: 10
+        bottom: 5
     },
     timeSpecificationDatePicker: {
         top: 10,
@@ -641,7 +708,7 @@ var styles = StyleSheet.create({
     trendingItemsCarousel: {
         position: 'absolute',
         bottom: SCREEN_HEIGHT / 35,
-        width: SCREEN_WIDTH / 1.2,
+        width: SCREEN_WIDTH / 1.18,
         alignSelf: 'center',
         justifyContent: 'center',
         marginHorizontal: (SCREEN_WIDTH - (SCREEN_WIDTH / 1.2)) / 2,

@@ -18,9 +18,7 @@ var {
     ActivityIndicatorIOS,
     AsyncStorage,
     Image,
-    LayoutAnimation,
     Navigator,
-    PixelRatio,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -57,8 +55,8 @@ var getInitialAgeRangeLimits = (ageVal:number, lim:string) => {
 var hash = (msg:string) => sha256(sha256(sha256(msg)));
 
 var prepAgeRangeVal = (ageRangeObj:Object):{max:number, min: number, exactVal: number} => {
-    if (!ageRangeObj.max) _.assign(ageRangeObj, {max: ageRangeObj.min, exactVal: ageRangeObj.min});
-    return ageRangeObj;
+    if (!ageRangeObj.max) _.assign(ageRangeObj, {max: ageRangeObj.min});
+    return _.assign(ageRangeObj, {exactVal: ageRangeObj.min});
 };
 
 var Profile = React.createClass({
@@ -80,7 +78,6 @@ var Profile = React.createClass({
     _createAccount() {
         let user = this.state.user,
             ventureId = this.state.ventureId,
-            pixelRatioCalc = PixelRatio.getPixelSizeForLayoutSize(200),
             api = `https://graph.facebook.com/v2.3/${user && user.userId}?fields=name,email,gender,age_range&access_token=${user.token}`;
 
         fetch(api)
@@ -93,7 +90,7 @@ var Profile = React.createClass({
                     firstName: responseData.name.split(' ')[0],
                     lastName: responseData.name.split(' ')[1],
                     activityPreference: {
-                        title: 'explore',
+                        title: 'EXPLORE?',
                         status: 'now',
                         start: {
                             time: '',
@@ -104,7 +101,7 @@ var Profile = React.createClass({
                         created: new Date(),
                         updated: new Date()
                     },
-                    picture: `https://res.cloudinary.com/dwnyawluh/image/facebook/w_${pixelRatioCalc},h_${pixelRatioCalc}/${this.state.user.userId}.jpg`,
+                    picture: `https://res.cloudinary.com/dwnyawluh/image/facebook/${this.state.user.userId}.jpg`,
                     gender: responseData.gender,
                     bio: 'New to Venture!',
                     email: responseData.email,
@@ -127,7 +124,8 @@ var Profile = React.createClass({
                         isOnline: true
                     },
                     match_requests: {},
-                    events: []
+                    events: [],
+                    event_invite_match_requests: {}
                 };
 
                 this.state.firebaseRef.child(`users/${ventureId}`).set(newUserData);
@@ -202,7 +200,7 @@ var Profile = React.createClass({
     render() {
         let _this = this,
             user = this.state.user,
-            ventureId = this.state.ventureId
+            ventureId = this.state.ventureId;
 
         return (
             <View style={styles.container}>
@@ -242,6 +240,9 @@ var Profile = React.createClass({
                                     .catch((error) => console.log(error.message))
                                     .done();
 
+                                  AsyncStorage.setItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL', 'null')
+                                    .catch(error => console.log(error.message))
+                                    .done();
                                 }}
 
                                  onLoginFound={function(data){
@@ -281,19 +282,16 @@ var Profile = React.createClass({
 
     renderHeader() {
         return (
-            <View style={styles.header}>
-                <View style={{left: 20}}>
+            <Header containerStyle={{backgroundColor: '#040A19'}}>
                     <HomeIcon onPress={() => {
                         this._safelyNavigateToHome();
-                    }}/>
-                </View>
-                <View style={{right: 20}}>
+                    }} style={{right: 14}}/>
+                <Text>MY PROFILE</Text>
                     <EditProfilePageIcon
                         onPress={() => {
                           this._safelyNavigateForward({title: 'EditProfile',component: EditProfile,  passProps: {ventureId: this.state.ventureId}});
-                    }} />
-                </View>
-            </View>
+                    }} style={{left: 14}}/>
+            </Header>
         )
     }
 });
@@ -316,7 +314,7 @@ var Photo = React.createClass({
                       bottom: 20
                     }
                   }
-                        source={{uri: `https://res.cloudinary.com/dwnyawluh/image/facebook/w_600,h_600/${this.props.user.userId}.jpg`}}
+                        source={{uri: `https://res.cloudinary.com/dwnyawluh/image/facebook/${this.props.user.userId}.jpg`}}
                         />
                 </View>
             );
@@ -346,7 +344,7 @@ var Info = React.createClass({
                     firebaseUserData,
                     renderLoadingView: false,
                     info: {
-                        name: snapshot.val() && snapshot.val().name,
+                        firstName: snapshot.val() && snapshot.val().firstName,
                         gender: snapshot.val() && snapshot.val().gender,
                         ageRange: snapshot.val() && snapshot.val().ageRange,
                         bio: snapshot.val() && snapshot.val().bio
@@ -355,8 +353,16 @@ var Info = React.createClass({
         );
     },
 
+    componentDidMount() {
+        let api = `https://graph.facebook.com/v2.3/${this.props.user && this.props.user.userId}/friends?access_token=${this.props.user && this.props.user.token}`;
+
+        AsyncStorage.setItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL', api)
+            .catch(error => console.log(error.message))
+            .done();
+    },
+
     componentWillUnmount() {
-      this.state.firebaseUserData.off();
+      this.state.firebaseUserData && this.state.firebaseUserData.off();
     },
 
     render() {
@@ -369,7 +375,7 @@ var Info = React.createClass({
         return (
             <View style={styles.infoContent}>
                 <Text
-                    style={[styles.infoText, styles.infoTextNameAge]}>{ info && (info.name + ', ') } { info && info.ageRange && info.ageRange.min }</Text>
+                    style={[styles.infoText, styles.infoTextNameAge]}>{ info && (info.firstName + ', ') } { info && info.ageRange && info.ageRange.min }</Text>
                 <Text
                     style={[styles.infoText, styles.infoTextGender]}>{ info && info.gender && info.gender.capitalize() }</Text>
                 <Text style={[styles.infoText, styles.infoTextBio]}>{ info && info.bio }</Text>
@@ -398,22 +404,12 @@ var styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         width: SCREEN_WIDTH,
-        height: SCREEN_HEIGHT
     },
     container: {
         flex: 1
     },
     FBLoginButton: {
         top: 70
-    },
-    header: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: '#040A19',
-        paddingTop: 20,
-        paddingBottom: 5
     },
     infoContent: {
         paddingLeft: 20,
@@ -423,6 +419,9 @@ var styles = StyleSheet.create({
         color: 'white',
         fontSize: 18,
         fontFamily: 'AvenirNextCondensed-Medium'
+    },
+    infoTextNameAge: {
+        fontSize: 24
     },
     loadingViewActivityIndicatorIOS: {
         height: 80,

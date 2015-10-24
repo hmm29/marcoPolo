@@ -36,15 +36,24 @@ var MainLayout = React.createClass({
     },
 
     render() {
-        let navigator = this.props.navigator,
-            selected = this.props.passProps.selected,
-            ventureId = this.props.passProps.ventureId;
+        let currentUserLocationCoords = this.props.passProps && this.props.passProps.currentUserLocationCoords,
+            friendsAPICallURL = this.props.passProps && this.props.passProps.friendsAPICallURL,
+            navigator = this.props.passProps && this.props.navigator,
+            selected = this.props.passProps && this.props.passProps.selected,
+            ventureId = this.props.passProps && this.props.passProps.ventureId;
 
         if (Platform.OS === 'android') {
-            return <AndroidLayout navigator={navigator} selected={selected} />;
+            return <AndroidLayout
+                navigator={navigator}
+                selected={selected} />;
         }
 
-        return <IOSLayout navigator={navigator} selected={selected} ventureId={ventureId} />;
+        return <IOSLayout
+            currentUserLocationCoords={currentUserLocationCoords}
+            friendsAPICallURL={friendsAPICallURL}
+            navigator={navigator}
+            selected={selected}
+            ventureId={ventureId} />;
     }
 });
 
@@ -73,11 +82,11 @@ var IOSLayout = React.createClass({
             case 'hot':
                 return <Hot navigator={this.props.navigator} />;
             case 'events':
-                return <EventsList navigator={this.props.navigator} />;
+                return <EventsList currentUserLocationCoords={this.props.currentUserLocationCoords} friendsAPICallURL={this.props.friendsAPICallURL} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'users':
-                return <UsersList navigator={this.props.navigator} />;
+                return <UsersList currentUserLocationCoords={this.props.currentUserLocationCoords} friendsAPICallURL={this.props.friendsAPICallURL} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'chats':
-                return <ChatsList navigator={this.props.navigator} />;
+                return <ChatsList currentUserLocationCoords={this.props.currentUserLocationCoords} friendsAPICallURL={this.props.friendsAPICallURL} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'profile':
                 return <Profile navigator={this.props.navigator} />;
         }
