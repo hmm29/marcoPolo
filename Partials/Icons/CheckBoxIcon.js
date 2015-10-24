@@ -33,6 +33,7 @@ var CheckboxIcon = React.createClass({
         color: React.PropTypes.string,
         onPress: React.PropTypes.func.isRequired,
         captionStyle: View.propTypes.style,
+        size: React.PropTypes.number,
         style: View.propTypes.style
     },
 
@@ -41,11 +42,11 @@ var CheckboxIcon = React.createClass({
             <View style={styles.container}>
                 <TouchableOpacity
                     onPress={this.props.onPress}
-                    stlye={this.props.style}>
+                    style={this.props.style}>
                     <Icon
                         color={this.props.color || "#fff"}
                         name={'ion|' + (this.props.active ? 'checkmark-circled' : 'record')}
-                        size={SIZE}
+                        size={this.props.size || SIZE}
                         style={styles.checkboxIcon}
                         />
                 </TouchableOpacity>
@@ -67,8 +68,8 @@ var styles = StyleSheet.create({
         fontWeight: '500'
     },
     checkboxIcon: {
-        width: SIZE * 1.14,
-        height: SIZE * 1.14
+        width: SIZE * 1.6,
+        height: SIZE * 1.6
     }
 });
 

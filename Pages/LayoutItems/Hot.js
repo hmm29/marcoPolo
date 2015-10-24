@@ -81,22 +81,19 @@ var Hot = React.createClass({
         let _this = this,
             trendingItemsRef = this.state.firebaseRef.child('trending');
 
-        trendingItemsRef.on('value', snapshot => {
+        trendingItemsRef.once('value', snapshot => {
                 _this.setState({
                     events: snapshot.val() && snapshot.val().events,
                     yalies: snapshot.val() && snapshot.val().yalies,
                     trendingItemsRef
-                })
+                });
+                _this.startAnimation();
             }
         );
     },
 
     componentWillUnmount() {
         this.state.trendingItemsRef && this.state.trendingItemsRef.off();
-    },
-
-    componentDidMount() {
-      this.startAnimation();
     },
 
     startAnimation() {

@@ -54,7 +54,6 @@ var LOGO_HEIGHT = 120;
 var PAGE_SIZE = 10;
 var SCREEN_WIDTH = Display.width;
 var SCREEN_HEIGHT = Display.height;
-var SEARCH_TEXT_INPUT_REF = 'searchTextInput';
 var THUMBNAIL_SIZE = 50;
 
 var YELLOW_HEX_CODE = '#ffe770';
@@ -301,20 +300,7 @@ var User = React.createClass({
     render() {
         if(this.state.status === null) return <View />;
 
-        let profileModal, swipeoutBtns;
-
-        // if (!this.props.isCurrentUser) {
-        //    swipeoutBtns = [
-        //        {
-        //            text: 'Report', backgroundColor: '#4f535e'
-        //        },
-        //        {
-        //            text: 'Block', backgroundColor: '#1d222f', color: '#fff'
-        //        }
-        //    ];
-        //    }
-
-        profileModal = (
+        let profileModal = (
             <View style={styles.profileModalContainer}>
                 <View
                     style={[styles.profileModal, {backgroundColor: this._getSecondaryStatusColor()}]}>
@@ -345,7 +331,6 @@ var User = React.createClass({
         );
 
         return (
-            <Swipeout right={swipeoutBtns}>
                 <TouchableHighlight
                     underlayColor={WHITE_HEX_CODE}
                     activeOpacity={0.3}
@@ -381,7 +366,6 @@ var User = React.createClass({
                         {this.state.dir === 'column' ? profileModal: <View />}
                     </View>
                 </TouchableHighlight>
-            </Swipeout>
         );
     }
 });
@@ -401,7 +385,6 @@ var ChatsList = React.createClass({
             }),
             firebaseRef,
             userRows: [],
-            searchText: '',
             showFunFact: true,
             showLoadingModal: true,
             usersListRef
@@ -414,29 +397,22 @@ var ChatsList = React.createClass({
 
             this.bindAsArray(usersListRef, 'userRows');
 
-            AsyncStorage.getItem('@AsyncStorage:Venture:account')
-                .then((account: string) => {
-                    account = JSON.parse(account);
+            this.props.ventureId && usersListRef.on('value', snapshot => {
+                // @hmm: sweet! order alphabetically to sort with priority ('matched' --> 'received' --> 'sent')
 
-                    usersListRef.on('value', snapshot => {
-                        // @hmm: sweet! order alphabetically to sort with priority ('matched' --> 'received' --> 'sent')
+                _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${this.props.ventureId}.status`));
+                _this.setState({currentUserVentureId: this.props.ventureId, rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
 
-                        _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${account.ventureId}.status`));
-                        _this.setState({currentUserVentureId: account.ventureId, rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
+                if(!_.isEmpty(snapshot.val()[this.props.ventureId].match_requests)) this.setState({showFunFact: false});
+                else {
+                    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                    this.setState({showFunFact: true});
+                }
+            });
 
-                        if(!_.isEmpty(snapshot.val()[account.ventureId].match_requests)) this.setState({showFunFact: false});
-                        else {
-                            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-                            this.setState({showFunFact: true});
-                        }
-                    });
-
-                    this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {
-                        _this.setState({currentUserData: snapshot.val()});
-                    });
-                })
-                .catch((error) => console.log(error.message))
-                .done();
+            this.state.firebaseRef.child(`/users/${this.props.ventureId}`).once('value', snapshot => {
+                _this.setState({currentUserData: snapshot.val()});
+            });
         });
     },
 
@@ -644,18 +620,6 @@ var styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start'
-    },
-    searchTextInput: {
-        color: '#222',
-        backgroundColor: 'white',
-        borderRadius: 3,
-        borderWidth: 1,
-        width: 200,
-        height: 30,
-        paddingLeft: 10,
-        fontSize: 18,
-        fontWeight: 'bold',
-        fontFamily: 'AvenirNextCondensed-Regular'
     },
     tag: {
         backgroundColor: 'rgba(4,22,43,0.5)',

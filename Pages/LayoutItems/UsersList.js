@@ -47,7 +47,6 @@ var Modal = require('react-native-swipeable-modal');
 var ReactFireMixin = require('reactfire');
 var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
 var RefreshableListView = require('react-native-refreshable-listview');
-var Swipeout = require('react-native-swipeout');
 var TimerMixin = require('react-timer-mixin');
 
 var INITIAL_LIST_SIZE = 8;
@@ -302,20 +301,8 @@ var User = React.createClass({
     },
 
     render() {
-        let profileModal, swipeoutBtns;
 
-        // if (!this.props.isCurrentUser) {
-        //    swipeoutBtns = [
-        //        {
-        //            text: 'Report', backgroundColor: '#4f535e'
-        //        },
-        //        {
-        //            text: 'Block', backgroundColor: '#1d222f', color: '#fff'
-        //        }
-        //    ];
-        //    }
-
-        profileModal = (
+        let profileModal = (
             <View style={styles.profileModalContainer}>
                 <View
                     style={[styles.profileModal, {backgroundColor: this._getSecondaryStatusColor()}]}>
@@ -347,7 +334,6 @@ var User = React.createClass({
         );
 
         return (
-            <Swipeout right={swipeoutBtns}>
                 <TouchableHighlight
                     underlayColor={WHITE_HEX_CODE}
                     activeOpacity={0.3}
@@ -384,7 +370,6 @@ var User = React.createClass({
                         {this.state.dir === 'column' ? profileModal : <View />}
                     </View>
                 </TouchableHighlight>
-            </Swipeout>
         );
     }
 });
@@ -412,7 +397,6 @@ var UsersList = React.createClass({
 
     getInitialState() {
         return {
-            currentPosition: null,
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
             }),
@@ -493,18 +477,11 @@ var UsersList = React.createClass({
 
             this.bindAsArray(usersListRef, 'rows');
 
-            AsyncStorage.getItem('@AsyncStorage:Venture:account')
-                .then((account:string) => {
-                    account = JSON.parse(account);
+            this.setState({currentUserVentureId: this.props.ventureId})
 
-                    this.setState({currentUserVentureId: account.ventureId})
-
-                    this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {
-                        _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
-                    });
-                })
-                .catch((error) => console.log(error.message))
-                .done();
+            this.state.firebaseRef.child(`/users/${this.props.ventureId}`).once('value', snapshot => {
+                _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
+            });
         });
     },
 

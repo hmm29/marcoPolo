@@ -122,8 +122,6 @@ var Home = React.createClass({
                             return;
                         }
 
-                        AppStateIOS.addEventListener('change', this._handleAppStateChange);
-
                         let currentUserRef = this.state.firebaseRef.child(`users/${account.ventureId}`),
                             trendingItemsRef = this.state.firebaseRef.child('trending'),
                             _this = this;
@@ -141,8 +139,6 @@ var Home = React.createClass({
                             {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
                         );
 
-                        this.setState({ventureId: account.ventureId});
-
                         trendingItemsRef.once('value', snapshot => {
                                 LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
                                 _this.setState({
@@ -152,6 +148,11 @@ var Home = React.createClass({
                                 })
                             }
                         );
+
+                        this.setState({ventureId: account.ventureId});
+
+                        AppStateIOS.addEventListener('change', this._handleAppStateChange);
+
                     })
                     .catch((error) => console.log(error.message))
                     .done();

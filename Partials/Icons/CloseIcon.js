@@ -32,6 +32,7 @@ var CloseIcon = React.createClass({
         color: React.PropTypes.string,
         onPress: React.PropTypes.func.isRequired,
         captionStyle: View.propTypes.style,
+        size: React.PropTypes.number,
         style: View.propTypes.style
     },
 
@@ -45,7 +46,7 @@ var CloseIcon = React.createClass({
                     <Icon
                         color={this.props.color || "#fff"}
                         name={'ion|ios-close'}
-                        size={SIZE}
+                        size={this.props.size || SIZE}
                         style={styles.closeIcon}
                         />
                 </TouchableOpacity>
@@ -67,8 +68,8 @@ var styles = StyleSheet.create({
         fontWeight: '500'
     },
     closeIcon: {
-        width: SIZE,
-        height: SIZE
+        width: SIZE * 1.14,
+        height: SIZE * 1.14
     }
 });
 
