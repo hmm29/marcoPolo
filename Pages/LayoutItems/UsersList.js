@@ -484,7 +484,7 @@ var UsersList = React.createClass({
 
                         });
                         _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
-                        _this.setState({rows: _.cloneDeep(_.values(filteredUsersArray)), currentUserRef, usersListRef});
+                        _this.setState({rows: _.cloneDeep(_.values(filteredUsersArray)), currentUserRef, filteredUsersArray, usersListRef});
                     });
 
                 });
@@ -546,7 +546,7 @@ var UsersList = React.createClass({
     },
 
     shuffleUsers() {
-        this.updateRows(_.cloneDeep(_.values(_.shuffle(this.state.rows))));
+        this.updateRows(_.cloneDeep(_.values(_.shuffle(this.state.filteredUsersArray))));
     },
 
     updateRows(rows) {

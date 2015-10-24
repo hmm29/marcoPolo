@@ -425,7 +425,10 @@ var ChatsList = React.createClass({
                         _this.setState({currentUserVentureId: account.ventureId, rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
 
                         if(!_.isEmpty(snapshot.val()[account.ventureId].match_requests)) this.setState({showFunFact: false});
-                        else this.setState({showFunFact: true});
+                        else {
+                            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                            this.setState({showFunFact: true});
+                        }
                     });
 
                     this.state.firebaseRef.child(`/users/${account.ventureId}`).once('value', snapshot => {

@@ -84,6 +84,7 @@ var Home = React.createClass({
             contentOffsetXVal: 0,
             currentAppState: AppStateIOS.currentState,
             date: new Date(),
+            events: [],
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             hasIshSelected: false,
             hasKeyboardSpace: false,
@@ -93,16 +94,18 @@ var Home = React.createClass({
             showNextButton: false,
             showTextInput: true,
             showTimeSpecificationOptions: false,
-            showTrendingItems: true,
+            showTrendingItems: false,
             tagsArr: [],
             tagInput: '',
             timeZoneOffsetInHours: (-1) * (new Date()).getTimezoneOffset() / 60,
             trendingContent: 'YALIES',
+            trendingContentOffsetXVal: 0,
             ventureId: '',
             viewStyle: {
                 marginHorizontal: 0,
                 borderRadius: 0
-            }
+            },
+            yalies: []
         }
     },
 
@@ -121,7 +124,10 @@ var Home = React.createClass({
 
                         AppStateIOS.addEventListener('change', this._handleAppStateChange);
 
-                        let currentUserRef = this.state.firebaseRef.child(`users/${account.ventureId}`);
+                        let currentUserRef = this.state.firebaseRef.child(`users/${account.ventureId}`),
+                            trendingItemsRef = this.state.firebaseRef.child('trending'),
+                            _this = this;
+
                         //@hmm: get current user location & save to firebase object
                         // make sure this fires before navigating away!
                         navigator.geolocation.getCurrentPosition(
@@ -136,6 +142,16 @@ var Home = React.createClass({
                         );
 
                         this.setState({ventureId: account.ventureId});
+
+                        trendingItemsRef.once('value', snapshot => {
+                                LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+                                _this.setState({
+                                    events: snapshot.val() && snapshot.val().events && _.slice(snapshot.val().events, 0, 1),
+                                    yalies: snapshot.val() && snapshot.val().yalies  && _.slice(snapshot.val().yalies, 0, 3),
+                                    showTrendingItems: true
+                                })
+                            }
+                        );
                     })
                     .catch((error) => console.log(error.message))
                     .done();
@@ -214,12 +230,6 @@ var Home = React.createClass({
         }
     },
 
-    handleScroll: function(event: Object) {
-        if(event.nativeEvent.contentOffset.x < 0) {}
-        else if(event.nativeEvent.contentOffset.x > 200 && event.nativeEvent.contentOffset.x < 300) this.setState({trendingContent: 'YALIES'})
-        else this.setState({trendingContent: 'EVENTS'});
-    },
-
     _onBlur() {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
         this.setState({hasKeyboardSpace: false, showAddInfoButton: true, showNextButton: !!this.state.activityTitleInput, showTextInput: true});
@@ -292,6 +302,7 @@ var Home = React.createClass({
     render() {
         let content,
             isAtScrollViewStart = this.state.contentOffsetXVal === 0,
+            isAtTrendingScrollViewStart = this.state.trendingContentOffsetXVal === 0,
             tagSelection;
 
         let activityTitleInput = (
@@ -352,18 +363,25 @@ var Home = React.createClass({
                 <Title>TRENDING <Text style={{color: '#ee964b'}}>{this.state.trendingContent}</Text></Title>
                 <ScrollView
                     automaticallyAdjustContentInsets={false}
-                    centerContent={true}
+                    canCancelContentTouches={false}
+                    contentOffset={{x: this.state.trendingContentOffsetXVal, y: 0}}
                     horizontal={true}
-                    pagingEnabled={true}
                     directionalLockEnabled={true}
-                    onScroll={this.handleScroll}
-                    snapToAlignment='center'
-                    snapToInterval={64}
                     showsHorizontalScrollIndicator={true}
                     style={[styles.scrollView, styles.horizontalScrollView, {marginTop: 10}]}>
-                    {YALIES.map(this._createTrendingItem.bind(null, 'user'))}
-                    {EVENTS.map(this._createTrendingItem.bind(null, 'event'))}
+                    {this.state.yalies && this.state.yalies.map(this._createTrendingItem.bind(null, 'user'))}
+                    {this.state.events && this.state.events.map(this._createTrendingItem.bind(null, 'event'))}
                 </ScrollView>
+                <View style={[styles.scrollbarArrow, {bottom: SCREEN_HEIGHT / 22}, (isAtTrendingScrollViewStart ? {right: 2} : {left: 2})]}>
+                    <ChevronIcon
+                        color='rgba(255,255,255,0.8)'
+                        size={20}
+                        direction={isAtTrendingScrollViewStart ? 'right' : 'left'}
+                        onPress={() => {
+                            LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+                            this.setState({trendingContentOffsetXVal: (isAtTrendingScrollViewStart ? SCREEN_WIDTH / 1.31 : 0), trendingContent: (isAtTrendingScrollViewStart ? 'EVENTS' : 'YALIES')})
+                            }}/>
+                </View>
             </View>
         );
 
@@ -612,7 +630,7 @@ var styles = StyleSheet.create({
     },
     scrollbarArrow: {
         position: 'absolute',
-        bottom: 12
+        bottom: SCREEN_HEIGHT / 58
     },
     scrollView: {
         backgroundColor: 'rgba(0,0,0,0.008)'
@@ -689,7 +707,7 @@ var styles = StyleSheet.create({
     trendingItemsCarousel: {
         position: 'absolute',
         bottom: SCREEN_HEIGHT / 35,
-        width: SCREEN_WIDTH / 1.2,
+        width: SCREEN_WIDTH / 1.18,
         alignSelf: 'center',
         justifyContent: 'center',
         marginHorizontal: (SCREEN_WIDTH - (SCREEN_WIDTH / 1.2)) / 2,

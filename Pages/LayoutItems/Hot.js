@@ -14,6 +14,7 @@
 
 var React = require('react-native');
 var {
+    Animated,
     Image,
     PixelRatio,
     ScrollView,
@@ -23,35 +24,17 @@ var {
     View,
     } = React;
 
+var ChevronIcon = require('../../Partials/Icons/ChevronIcon');
 var Display = require('react-native-device-display');
+var Firebase = require('firebase');
 var Header = require('../../Partials/Header');
 var HomeIcon = require('../../Partials/Icons/HomeIcon');
 var { Icon, } = require('react-native-icons');
 var ReactFireMixin = require('reactfire');
+var TimerMixin = require('react-timer-mixin');
 
 var SCREEN_HEIGHT = Display.height;
 var SCREEN_WIDTH = Display.width;
-
-var YALIES = [
-    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_56,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206258/Harrison%20Miller.png`,
-    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_52,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206076/Noah%20Cho.png`,
-    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Sophie%20Dillon.png`,
-    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Titania%20Nguyen.png`,
-    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Ivonne%20Gonzalez.png`,
-    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Brandon%20Sherrod.png`,
-    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Isaak%20Cuenco.png`,
-    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Jessica%20Nelson.png`,
-    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/JT%20Flowers.png`
-];
-var EVENTS = [
-    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Venture%20Launch%20Party.png`,
-    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Frozen%20Four%20(Center%20-%20Big%20Text).png`,
-    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_48,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442894669/Event%20-%20Freshman%20Screw%20(Center%20-%20Big%20Text).png`,
-    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Swab%20A%20Cheek.png`,
-    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20The%20Game%20(Center%20-%20Big%20Text).png`,
-    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Freshman%20Screw%20(Center%20-%20Big%20Text).png`,
-    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20YSO%20Halloween%20(Center%20-%20Big%20Text).png`
-];
 
 class TrendingItem extends React.Component {
     render() {
@@ -82,29 +65,87 @@ class Title extends React.Component {
 
 var Hot = React.createClass({
 
-    mixins: [ReactFireMixin],
+    mixins: [TimerMixin, ReactFireMixin],
 
     getInitialState() {
         return {
-            events: EVENTS,
+            events: [],
+            fadeAnim: new Animated.Value(0),
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             trendingItems: {},
-            yalies: YALIES
+            yalies: []
         };
     },
 
     componentWillMount() {
-        //let _this = this,
-        //    trendingItemsRef = this.state.firebaseRef.child(`trending`);
-        //
-        //this.bindAsObject(trendingItemsRef, 'trendingItems');
-        //
-        //trendingItemsRef.once('value', snapshot =>
-        //        _this.setState({
-        //            events: snapshot.val() && snapshot.val().events,
-        //            yalies: snapshot.val() && snapshot.val().yalies
-        //        })
-        //);
+        let _this = this,
+            trendingItemsRef = this.state.firebaseRef.child('trending');
+
+        trendingItemsRef.on('value', snapshot => {
+                _this.setState({
+                    events: snapshot.val() && snapshot.val().events,
+                    yalies: snapshot.val() && snapshot.val().yalies,
+                    trendingItemsRef
+                })
+            }
+        );
+    },
+
+    componentWillUnmount() {
+        this.state.trendingItemsRef && this.state.trendingItemsRef.off();
+    },
+
+    componentDidMount() {
+      this.startAnimation();
+    },
+
+    startAnimation() {
+        Animated.timing(this.state.fadeAnim, {
+            toValue: 1,
+            duration: 1000,
+        }).start();
+
+        this.setTimeout(() => {
+            Animated.timing(this.state.fadeAnim, {
+                toValue: 0,
+                duration: 500,
+            }).start();
+
+            this.setTimeout(() => {
+                Animated.timing(this.state.fadeAnim, {
+                    toValue: 1,
+                    duration: 1000,
+                }).start();
+
+                this.setTimeout(() => {
+                    Animated.timing(this.state.fadeAnim, {
+                        toValue: 0,
+                        duration: 500,
+                    }).start();
+
+                    this.setTimeout(() => {
+                        Animated.timing(this.state.fadeAnim, {
+                            toValue: 1,
+                            duration: 1000,
+                        }).start();
+
+                        this.setTimeout(() => {
+                            Animated.timing(this.state.fadeAnim, {
+                                toValue: 0.15,
+                                duration: 500,
+                            }).start();
+
+                        }, 1000);
+
+                    }, 1000);
+
+                }, 1000);
+
+            }, 1000);
+
+
+        }, 1000);
+
     },
 
     componentWillUnmount() {
@@ -134,7 +175,6 @@ var Hot = React.createClass({
                         <Title>TRENDING <Text style={{color: '#ee964b'}}>YALIES</Text></Title>
                         <ScrollView
                             automaticallyAdjustContentInsets={false}
-                            centerContent={true}
                             horizontal={true}
                             pagingEnabled={true}
                             directionalLockEnabled={true}
@@ -145,19 +185,26 @@ var Hot = React.createClass({
                             style={[styles.scrollView, styles.horizontalScrollView, {marginTop: 10}]}>
                             {this.state.yalies && this.state.yalies.map(this._createTrendingItem.bind(null, 'user'))}
                         </ScrollView>
+                        <View style={[styles.scrollbarArrow, {top: SCREEN_HEIGHT / 10.6}, {left: SCREEN_WIDTH / 1.25}]}>
+                            <Animated.View style={{opacity: this.state.fadeAnim}}>
+                            <ChevronIcon
+                                color='rgba(255,255,255,0.8)'
+                                size={20}
+                                direction={'right'}/>
+                            </Animated.View>
+                        </View>
                     </View>
 
                     <View style={styles.trendingItemsCarousel}>
                         <Title>TRENDING <Text style={{color: '#ee964b'}}>EVENTS</Text></Title>
                         <ScrollView
                             automaticallyAdjustContentInsets={false}
-                            centerContent={true}
                             horizontal={true}
                             pagingEnabled={true}
                             directionalLockEnabled={true}
                             onScroll={this.handleScroll}
                             snapToAlignment='center'
-                            snapToInterval={64}
+                            snapToInterval={SCREEN_WIDTH / 1.3}
                             showsHorizontalScrollIndicator={true}
                             style={[styles.scrollView, styles.horizontalScrollView, {marginTop: 10}]}>
                             {this.state.events && this.state.events.map(this._createTrendingItem.bind(null, 'event'))}
@@ -202,6 +249,9 @@ var styles = StyleSheet.create({
     horizontalScrollView: {
         height: 125
     },
+    scrollbarArrow: {
+        position: 'absolute',
+    },
     scrollView: {
         backgroundColor: 'rgba(0,0,0,0.008)'
     },
@@ -227,8 +277,7 @@ var styles = StyleSheet.create({
         alignItems: 'center'
     },
     trendingItem: {
-        borderRadius: 3,
-        marginHorizontal: SCREEN_WIDTH / 30
+        borderRadius: 3
     },
     trendingItemsCarousel: {
         width: SCREEN_WIDTH / 1.2,
@@ -243,11 +292,12 @@ var styles = StyleSheet.create({
     trendingUserImg: {
         width: SCREEN_WIDTH / 5.2,
         height: 64,
+        marginHorizontal: SCREEN_WIDTH/30,
         resizeMode: 'contain'
     },
     trendingEventImg: {
-        width: SCREEN_WIDTH / 1.39,
-        height: 64,
+        width: SCREEN_WIDTH / 1.3,
+        height: 84,
         resizeMode: 'contain'
     }
 });
