@@ -58,6 +58,7 @@ var SCREEN_HEIGHT = Display.height;
 var SEARCH_TEXT_INPUT_REF = 'searchTextInput'
 
 var YELLOW_HEX_CODE = '#ffe770';
+var BLACK_HEX_CODE = '#000';
 var BLUE_HEX_CODE = '#40cbfb';
 var GREEN_HEX_CODE = '#84FF9B';
 var WHITE_HEX_CODE = '#fff';
@@ -501,6 +502,15 @@ var Event = React.createClass({
             case 'attending':
                 return '#AAFFA9';
             default:
+                return '#111';
+        }
+    },
+
+    _getEventProfileBackgroundColor() {
+        switch (this.state.status) {
+            case 'attending':
+                return '#AAFFA9';
+            default:
                 return '#FBFBF1';
         }
     },
@@ -510,7 +520,7 @@ var Event = React.createClass({
             case 'attending':
                 return GREEN_HEX_CODE;
             default:
-                return WHITE_HEX_CODE;
+                return BLACK_HEX_CODE;
         }
     },
 
@@ -535,22 +545,22 @@ var Event = React.createClass({
         this.setState({dir: this.state.dir === 'row' ? 'column' : 'row'});
     },
 
-    _renderStatusIcon() {
+    _renderEventAttendanceStatusIcon() {
         switch (this.state.status) {
             case 'attending':
                 return <CheckboxIcon
                     active={true}
                     onPress={this.handleEventInteraction}
-                    size={36}
-                    style={{borderRadius: 28, top: SCREEN_HEIGHT / 85, right: SCREEN_HEIGHT / 90}}
+                    size={26}
+                    style={{borderRadius: 28, top: 5, right: SCREEN_HEIGHT / 90}}
                     />;
             default:
                 return <ChevronIcon
                     color='rgba(0,0,0,0.8)'
                     direction='right'
                     onPress={this.handleEventInteraction}
-                    size={22}
-                    style={{backgroundColor: 'rgba(255,255,255,0.9)', marginHorizontal: 20, borderRadius: 14, top: SCREEN_HEIGHT / 85, left: SCREEN_HEIGHT / 90}}
+                    size={14}
+                    style={{backgroundColor: 'rgba(255,255,255,0.9)', width: 22, height: 22, marginHorizontal: 20, borderRadius: 11, justifyContent: 'center', alignItems: 'center', top: 12, left: SCREEN_HEIGHT / 90}}
                     />
         }
     },
@@ -560,7 +570,7 @@ var Event = React.createClass({
         let profileModal = (
             <View style={[styles.profileModalContainer, {flexDirection: 'column', alignItems: 'center'}]}>
                 <View
-                    style={[styles.profileModal, {backgroundColor: this._getSecondaryStatusColor(), alignSelf: 'stretch', alignItems: 'center'}]}>
+                    style={[styles.profileModal, {backgroundColor: this._getEventProfileBackgroundColor(), alignSelf: 'stretch', alignItems: 'center'}]}>
                     <Text style={styles.profileModalNameAgeInfo}>WHEN: {this.props.data && this.props.data.start && this.props.data.start.date}, {this.props.data && this.props.data.start && this.props.data.start.dateTime} {'\n'}
                     </Text>
                     <Text style={styles.profileModalNameAgeInfo}>WHERE: {this.props.data && this.props.data.location} {'\n'}
@@ -579,7 +589,7 @@ var Event = React.createClass({
                     underlayColor={WHITE_HEX_CODE}
                     activeOpacity={0.3}
                     onPress={this._onPressItem}
-                    style={styles.userRow}>
+                    style={[styles.userRow, {height: THUMBNAIL_SIZE * 2}]}>
                     <View
                         style={[styles.userContentWrapper, {flexDirection: this.state.dir}]}>
                         <LinearGradient
@@ -590,14 +600,15 @@ var Event = React.createClass({
                             style={styles.container}>
                             <Image
                                 source={{uri: this.props.data && this.props.data.event_img}}
-                                style={{resizeMode: 'cover', flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                                style={{resizeMode: 'cover', height: THUMBNAIL_SIZE * 2, flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                             <View
                                 onPress={this._onPressItem}
                                 style={[styles.eventThumbnail, {backgroundColor: 'rgba(0,0,0,0.9)', justifyContent: 'center', alignItems: 'center'}]}>
-                                    <Text style={{color: '#fff'}}>Y S O</Text>
+                                    <Text style={{fontFamily: 'AvenirNextCondensed-Regular', color: '#fff'}}>{this.props.data && this.props.data.organization && this.props.data.organization.displayName && this.props.data.organization.displayName.split('').join(' ')}</Text>
                                 </View>
-                            <View style={[styles.rightContainer, {flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}]}>
-                                        {this._renderStatusIcon()}
+                            <View style={[styles.rightContainer, {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}]}>
+                                        <Text style={styles.eventTitleBanner}>{this.props.data && this.props.data.title && this.props.data.title.toUpperCase()}</Text>
+                                        <View style={{position: 'absolute', right: 16}}>{this._renderEventAttendanceStatusIcon()}</View>
                             </View>
                                 </Image>
                         </LinearGradient>
@@ -796,6 +807,18 @@ var styles = StyleSheet.create({
     eventsListBaseContainer: {
         flex: 1,
         backgroundColor: '#040A19'
+    },
+    eventTitleBanner: {
+        fontFamily: 'AvenirNextCondensed-Medium',
+        color: '#fff',
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        width: SCREEN_WIDTH / 1.2,
+        fontSize: SCREEN_HEIGHT / 35,
+        paddingVertical: SCREEN_HEIGHT / 90,
+        paddingLeft: SCREEN_WIDTH / 15,
+        paddingRight: SCREEN_WIDTH / 9.5,
+        textAlign: 'center',
+        right: SCREEN_WIDTH / 20
     },
     loadingModalActivityIndicatorIOS: {
         height: 80

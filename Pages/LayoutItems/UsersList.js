@@ -391,9 +391,6 @@ var CustomRefreshingIndicator = React.createClass({
 var UsersList = React.createClass({
     mixins: [TimerMixin, ReactFireMixin],
 
-    // @hmm: no watching just yet
-    // watchID: null,
-
     getInitialState() {
         return {
             dataSource: new ListView.DataSource({
@@ -410,77 +407,87 @@ var UsersList = React.createClass({
     componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
             let currentUserRef = this.props.ventureId && this.state.firebaseRef.child(`users/${this.props.ventureId}`),
-                usersListRef = this.state.firebaseRef.child('/users'),
+                usersListRef = this.state.firebaseRef.child('users'),
                 _this = this;
 
-            // @hmm: show users based on filter settings
+            // @hmm: short delay to allow filtering for initial loaded users list
+            // also prevents RCTURLLoader equal priority error
 
-            currentUserRef && currentUserRef.child('matchingPreferences').on('value', snapshot => {
-                InteractionManager.runAfterInteractions(() => {
+            this.setTimeout(() => {
 
-                    let matchingPreferences = snapshot.val(),
-                        filteredUsersArray = [];
+                currentUserRef && currentUserRef.child('matchingPreferences').on('value', snapshot => {
+                    InteractionManager.runAfterInteractions(() => {
 
-                    fetch(this.props.friendsAPICallURL)
-                        .then(response => response.json())
-                        .then(responseData => {
-                            this.setState({currentUserFriends: responseData.data});
-                        })
-                        .done();
+                        // @hmm: show users based on filter settings
 
-                    _this.setState({maxSearchDistance: matchingPreferences.maxSearchDistance});
+                        let matchingPreferences = snapshot.val(),
+                            filteredUsersArray = [];
 
-                    usersListRef.once('value', snapshot => {
+                        fetch(this.props.friendsAPICallURL)
+                            .then(response => response.json())
+                            .then(responseData => {
+                                this.setState({currentUserFriends: responseData.data});
+                            })
+                            .done();
 
-                        snapshot.val() && _.each(snapshot.val(), (user) => {
+                        _this.setState({maxSearchDistance: matchingPreferences.maxSearchDistance});
 
-                            // @hmm: because of cumulative privacy selection, only have to check for friends+ for both 'friends+' and 'all'
-                            if (matchingPreferences.privacy.indexOf('friends+') > -1) {
-                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
-                                    if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
-                                    if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
-                                }
-                            } else if (matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
-                                fetch(this.props.friendsAPICallURL)
-                                    .then(response => response.json())
-                                    .then(responseData => {
-                                        InteractionManager.runAfterInteractions(() => {
+                        usersListRef.once('value', snapshot => {
+                            snapshot.val() && _.each(snapshot.val(), (user) => {
 
-                                            if (responseData.data && _.findWhere(responseData.data, {name: user.name})) {
-                                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
-                                                    if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
-                                                    if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
+                                // @hmm: because of cumulative privacy selection, only have to check for friends+ for both 'friends+' and 'all'
+                                if (matchingPreferences.privacy.indexOf('friends+') > -1) {
+                                    if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
+                                        if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
+                                        if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
+                                    }
+                                } else if (matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
+                                    fetch(this.props.friendsAPICallURL)
+                                        .then(response => response.json())
+                                        .then(responseData => {
+                                            InteractionManager.runAfterInteractions(() => {
+
+                                                if (responseData.data && _.findWhere(responseData.data, {name: user.name})) {
+                                                    if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
+                                                        if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
+                                                        if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
+                                                    }
                                                 }
-                                            }
 
-                                            _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
-                                            _this.setState({
-                                                rows: _.cloneDeep(_.values(filteredUsersArray)),
-                                                currentUserRef,
-                                                usersListRef
+                                                _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
+                                                _this.setState({
+                                                    rows: _.cloneDeep(_.values(filteredUsersArray)),
+                                                    currentUserRef,
+                                                    usersListRef
+                                                });
                                             });
-                                        });
 
-                                    })
-                                    .done();
-                            }
-
+                                        })
+                                        .done();
+                                }
+                            });
+                            _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
+                            _this.setState({
+                                rows: _.cloneDeep(_.values(filteredUsersArray)),
+                                currentUserRef,
+                                filteredUsersArray,
+                                usersListRef
+                            });
                         });
-                        _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
-                        _this.setState({rows: _.cloneDeep(_.values(filteredUsersArray)), currentUserRef, filteredUsersArray, usersListRef});
+
                     });
 
                 });
 
-            });
+                this.bindAsArray(usersListRef, 'rows');
 
-            this.bindAsArray(usersListRef, 'rows');
+                this.setState({currentUserVentureId: this.props.ventureId})
 
-            this.setState({currentUserVentureId: this.props.ventureId})
+                this.state.firebaseRef.child(`/users/${this.props.ventureId}`).once('value', snapshot => {
+                    _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
+                });
 
-            this.state.firebaseRef.child(`/users/${this.props.ventureId}`).once('value', snapshot => {
-                _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
-            });
+            }, 500); // @hmm: at least 500 ms
         });
     },
 

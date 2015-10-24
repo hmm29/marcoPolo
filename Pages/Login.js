@@ -29,6 +29,7 @@ var FBLogin = require('react-native-facebook-login');
 var Firebase = require('firebase');
 var Home = require('./Home');
 var sha256 = require('sha256');
+var Swiper = require('react-native-swiper');
 var TimerMixin = require('react-timer-mixin');
 
 var SCREEN_WIDTH = Display.width;
@@ -183,17 +184,23 @@ var Login = React.createClass({
         let _this = this;
 
         return (
-            <View style={styles.tabContent}>
-                <Image
-                    source={require('image!HomeBackground')}
-                    style={styles.backdrop}>
+            <View>
+                    <Swiper style={styles.wrapper}
+                            dot={<View style={{backgroundColor:'rgba(255,255,255,.3)', width: 13, height: 13,borderRadius: 7, top: SCREEN_HEIGHT / 30, marginLeft: 7, marginRight: 7,}} />}
+                            activeDot={<View style={{backgroundColor: '#fff', width: 13, height: 13, borderRadius: 7, top: SCREEN_HEIGHT / 30, marginLeft: 7, marginRight: 7}} />}
+                            paginationStyle={{bottom: 70,}}
+                            loop={false}>
+                        <View style={styles.slide}>
+                            <Image
+                                source={require('image!HomeBackground')}
+                                style={styles.backdrop}>
 
-                    <Image source={require('image!VentureLogoWhite')}
-                           style={styles.ventureLogo}/>
+                                <Image source={require('image!VentureLogoWhite')}
+                                       style={styles.ventureLogo}/>
 
-                    <FBLogin style={{ top: 40 }}
-                             permissions={['email','user_friends']}
-                             onLogin={function(data){
+                                <FBLogin style={{ top: 40 }}
+                                         permissions={['email','user_friends']}
+                                         onLogin={function(data){
 
                                 _this.setState({user: data.credentials, ventureId: hash(data.credentials.userId)});
 
@@ -206,8 +213,14 @@ var Login = React.createClass({
                                     .catch((error) => console.log(error.message))
                                     .done();
                         }}
-                        />
-                </Image>
+                                    />
+                            </Image>
+                        </View>
+                        <View style={styles.slide}>
+                        </View>
+                        <View style={styles.slide}>
+                        </View>
+                    </Swiper>
             </View>
         )
     }
@@ -223,10 +236,6 @@ var styles = StyleSheet.create({
         width: SCREEN_WIDTH,
         height: SCREEN_HEIGHT
     },
-    tabContent: {
-        flex: 1,
-        alignItems: 'center'
-    },
     tabText: {
         color: 'white',
         bottom: 190,
@@ -238,6 +247,17 @@ var styles = StyleSheet.create({
         width: 120,
         height: 92.62,
         backgroundColor: 'transparent'
+    },
+    wrapper: {
+        // backgroundColor: '#f00',
+    },
+    slide: {
+        flex: 1,
+        alignItems: 'center',
+        backgroundColor: 'transparent',
+    },
+    image: {
+        flex: 1,
     }
 });
 

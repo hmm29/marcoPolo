@@ -452,7 +452,7 @@ var Home = React.createClass({
                             direction={isAtScrollViewStart ? 'right' : 'left'}
                             onPress={() => {
                             LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-                            this.setState({contentOffsetXVal: (isAtScrollViewStart ? SCREEN_WIDTH/2.5 : 0)})
+                            this.setState({contentOffsetXVal: (isAtScrollViewStart ? SCREEN_WIDTH/2.65 : 0)})
                             }}/>
                     </View>
                 </View>
@@ -703,7 +703,7 @@ var styles = StyleSheet.create({
     },
     trendingItem: {
         borderRadius: 3,
-        marginHorizontal: SCREEN_WIDTH / 30
+        marginHorizontal: SCREEN_WIDTH / 29.9
     },
     trendingItemsCarousel: {
         position: 'absolute',
@@ -716,7 +716,7 @@ var styles = StyleSheet.create({
         padding: 10
     },
     trendingUserImg: {
-        width: SCREEN_WIDTH / 5.2,
+        width: SCREEN_WIDTH / 5.3,
         height: 64,
         resizeMode: 'contain'
     },

@@ -272,8 +272,7 @@ var Filters = React.createClass({
                     PREFERENCES </Text>
                     <CloseIcon onPress={() => {
                         this._safelyNavigateToMainLayout();
-                    }}
-                        />
+                    }} />
             </Header>
         );
     }
