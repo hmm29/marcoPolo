@@ -261,7 +261,7 @@ var EditProfile = React.createClass({
         );
 
         let genderAutocomplete = (
-            <View style={[styles.genderAutocomplete, (this.state.hasKeyboardSpace ? {left: SCREEN_WIDTH / 7} : {})]}>
+            <View style={[styles.genderAutocomplete, (this.state.hasKeyboardSpace ? {left: SCREEN_WIDTH / 6.5} : {})]}>
                 {this.state.showGenderAutocompleteLabel ? <Text
                     style={styles.label}>Gender</Text> : <Text/>}
                 <AutoComplete
