@@ -487,7 +487,7 @@ var UsersList = React.createClass({
                     _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
                 });
 
-            }, 500);
+            }, 200);
         });
     },
 
