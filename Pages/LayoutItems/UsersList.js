@@ -416,6 +416,10 @@ var UsersList = React.createClass({
             this.setTimeout(() => {
 
                 currentUserRef && currentUserRef.child('matchingPreferences').on('value', snapshot => {
+
+                    // @hmm: trigger on callback
+                    currentUserRef.child('matchingPreferences').set(snapshot.val());
+
                     InteractionManager.runAfterInteractions(() => {
 
                         // @hmm: show users based on filter settings

@@ -552,7 +552,7 @@ var Event = React.createClass({
                     active={true}
                     onPress={this.handleEventInteraction}
                     size={26}
-                    style={{borderRadius: 28, top: 5, right: SCREEN_HEIGHT / 90}}
+                    style={{borderRadius: 28, top: 1, right: SCREEN_HEIGHT / 90}}
                     />;
             default:
                 return <ChevronIcon
@@ -560,7 +560,7 @@ var Event = React.createClass({
                     direction='right'
                     onPress={this.handleEventInteraction}
                     size={14}
-                    style={{backgroundColor: 'rgba(255,255,255,0.9)', width: 22, height: 22, marginHorizontal: 20, borderRadius: 11, justifyContent: 'center', alignItems: 'center', top: 12, left: SCREEN_HEIGHT / 90}}
+                    style={{backgroundColor: 'rgba(255,255,255,0.9)', width: 22, height: 22, marginHorizontal: 20, borderRadius: 11, justifyContent: 'center', alignItems: 'center', top: 8, left: SCREEN_HEIGHT / 90}}
                     />
         }
     },
@@ -578,7 +578,7 @@ var Event = React.createClass({
                     <Text style={styles.profileModalSectionTitle}>EVENT DESCRIPTION:</Text>
                     <Text style={[styles.profileModalBio, {width: SCREEN_WIDTH / 1.4}]}>{this.props.data && this.props.data.description} {'\n'}</Text>
                     <Text style={styles.profileModalSectionTitle}>EVENT DESCRIPTION: {'\n'}</Text>
-                    <TouchableOpacity onPress={this.props.openGuestListModal} style={{backgroundColor: 'rgba(0,0,0,0.001)'}}><Text style={{color: '#3F7CFF', fontFamily: 'AvenirNextCondensed-Medium', fontSize: 20, paddingHorizontal: 40, paddingVertical: 10}}>WHO'S GOING?</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={this.props.openGuestListModal} style={{backgroundColor: 'rgba(0,0,0,0.001)'}}><Text style={{color: '#3F7CFF', fontFamily: 'AvenirNextCondensed-Medium', fontSize: 20, paddingHorizontal: 40, paddingBottoml: 10}}>WHO'S GOING?</Text></TouchableOpacity>
 
                 </View>
             </View>
@@ -814,7 +814,7 @@ var styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.6)',
         width: SCREEN_WIDTH / 1.2,
         fontSize: SCREEN_HEIGHT / 35,
-        paddingVertical: SCREEN_HEIGHT / 90,
+        paddingVertical: SCREEN_HEIGHT / 130,
         paddingLeft: SCREEN_WIDTH / 15,
         paddingRight: SCREEN_WIDTH / 9.5,
         textAlign: 'center',

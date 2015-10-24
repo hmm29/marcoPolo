@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2376615d-cff6-4ff3-89a0-7e7afb473618" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/EditProfile.js" afterPath="$PROJECT_DIR$/Pages/EditProfile.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/LayoutItems/EventsList.js" afterPath="$PROJECT_DIR$/Pages/LayoutItems/EventsList.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" afterPath="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" />
     </list>
@@ -25,20 +24,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="UsersList.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="UsersList.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/UsersList.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-20.25926">
-              <caret line="429" column="30" selection-start-line="429" selection-start-column="30" selection-end-line="429" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.47905758">
+              <caret line="419" column="49" selection-start-line="419" selection-start-column="49" selection-end-line="419" selection-end-column="49" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="EditProfile.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="EditProfile.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Pages/EditProfile.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5968586">
+            <state vertical-scroll-proportion="-8.444445">
               <caret line="338" column="110" selection-start-line="338" selection-start-column="110" selection-end-line="338" selection-end-column="110" />
               <folding />
             </state>
@@ -98,8 +97,8 @@
       <file leaf-file-name="EventsList.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/EventsList.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.333333">
-              <caret line="430" column="69" selection-start-line="430" selection-start-column="69" selection-end-line="430" selection-end-column="69" />
+            <state vertical-scroll-proportion="-110.48148">
+              <caret line="580" column="249" selection-start-line="580" selection-start-column="249" selection-end-line="580" selection-end-column="249" />
               <folding />
             </state>
           </provider>
@@ -172,9 +171,9 @@
         <option value="$PROJECT_DIR$/Pages/Filters.js" />
         <option value="$PROJECT_DIR$/Pages/LayoutItems/Profile.js" />
         <option value="$PROJECT_DIR$/Pages/Login.js" />
+        <option value="$PROJECT_DIR$/Pages/EditProfile.js" />
         <option value="$PROJECT_DIR$/Pages/LayoutItems/EventsList.js" />
         <option value="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" />
-        <option value="$PROJECT_DIR$/Pages/EditProfile.js" />
       </list>
     </option>
   </component>
@@ -919,14 +918,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/EventsList.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.333333">
-          <caret line="430" column="69" selection-start-line="430" selection-start-column="69" selection-end-line="430" selection-end-column="69" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/Profile.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-96.96296">
@@ -943,18 +934,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/UsersList.js">
+    <entry file="file://$PROJECT_DIR$/Pages/EditProfile.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-20.25926">
-          <caret line="429" column="30" selection-start-line="429" selection-start-column="30" selection-end-line="429" selection-end-column="30" />
+        <state vertical-scroll-proportion="-8.444445">
+          <caret line="338" column="110" selection-start-line="338" selection-start-column="110" selection-end-line="338" selection-end-column="110" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/EditProfile.js">
+    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/EventsList.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5968586">
-          <caret line="338" column="110" selection-start-line="338" selection-start-column="110" selection-end-line="338" selection-end-column="110" />
+        <state vertical-scroll-proportion="-110.48148">
+          <caret line="580" column="249" selection-start-line="580" selection-start-column="249" selection-end-line="580" selection-end-column="249" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/UsersList.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.47905758">
+          <caret line="419" column="49" selection-start-line="419" selection-start-column="49" selection-end-line="419" selection-end-column="49" />
           <folding />
         </state>
       </provider>
