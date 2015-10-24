@@ -481,13 +481,13 @@ var UsersList = React.createClass({
 
                 this.bindAsArray(usersListRef, 'rows');
 
-                this.setState({currentUserVentureId: this.props.ventureId})
+                this.setState({currentUserVentureId: this.props.ventureId});
 
                 this.state.firebaseRef.child(`/users/${this.props.ventureId}`).once('value', snapshot => {
                     _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
                 });
 
-            }, 500); // @hmm: at least 500 ms
+            }, 700); // @hmm: at least 500 ms
         });
     },
 

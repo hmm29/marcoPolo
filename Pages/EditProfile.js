@@ -69,6 +69,7 @@ var EditProfile = React.createClass({
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             hasKeyboardSpace: false,
             showAutocomplete: false,
+            showGenderAutocompleteLabel: true,
             showBioField: true,
             showCamera: false,
             isEditingGenderField: false,
@@ -113,13 +114,20 @@ var EditProfile = React.createClass({
             showAutocomplete: false,
             isEditingGenderField: false,
             hasKeyboardSpace: false,
-            showBioField: true
+            showBioField: true,
+            showGenderAutocompleteLabel: true
         });
     },
 
     _onFocusGender() {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-        this.setState({showAutocomplete: true, isEditingGenderField: true, hasKeyboardSpace: true, showBioField: false})
+        this.setState({
+            showAutocomplete: true,
+            isEditingGenderField: true,
+            hasKeyboardSpace: true,
+            showBioField: false,
+            showGenderAutocompleteLabel: false
+        })
     },
 
 
@@ -246,14 +254,16 @@ var EditProfile = React.createClass({
                         color="rgba(255,255,255,0.7)"
                         name="ion|edit"
                         size={EDIT_GENDER_ICON_SIZE}
-                        style={{width: EDIT_GENDER_ICON_SIZE * 1.4, height: EDIT_GENDER_ICON_SIZE * 1.4}}
+                        style={{width: EDIT_GENDER_ICON_SIZE * 1.4, height: EDIT_GENDER_ICON_SIZE * 1.4, left: 10}}
                         />
                 </TouchableOpacity>
             </View>
         );
 
         let genderAutocomplete = (
-            <View style={styles.genderAutocomplete}>
+            <View style={[styles.genderAutocomplete, (this.state.hasKeyboardSpace ? {left: SCREEN_WIDTH / 7} : {})]}>
+                {this.state.showGenderAutocompleteLabel ? <Text
+                    style={styles.label}>Gender</Text> : <Text/>}
                 <AutoComplete
                     ref={EDIT_GENDER_AUTOCOMPLETE_REF}
                     autoCompleteTableCellTextColor={'#fff'}
@@ -326,7 +336,7 @@ var EditProfile = React.createClass({
 
                         </View>
                         <TouchableOpacity onPress={this.saveData}
-                                          style={[styles.saveButton, {top: (this.state.showBioField ? 10 : 60)}]}>
+                                          style={[styles.saveButton, {top: (this.state.showBioField ? 10 : 115)}]}>
                             <Text style={styles.saveButtonText}>S A V E</Text>
                         </TouchableOpacity>
                     </Image>
@@ -359,8 +369,7 @@ var styles = StyleSheet.create({
         color: '#fff',
         width: SCREEN_WIDTH / 2,
         borderRadius: 10,
-        marginBottom: SCREEN_HEIGHT / 22,
-        left: 60,
+        top: 10,
         alignSelf: 'stretch'
     },
     backdrop: {
@@ -378,6 +387,7 @@ var styles = StyleSheet.create({
         borderRadius: 10,
         paddingLeft: SCREEN_WIDTH / 25,
         alignSelf: 'center',
+        left: SCREEN_WIDTH / 18,
         marginVertical: SCREEN_HEIGHT / 90,
         fontFamily: 'AvenirNextCondensed-Regular',
         color: 'white'
@@ -413,7 +423,8 @@ var styles = StyleSheet.create({
         bottom: 30
     },
     genderAutocomplete: {
-        margin: 10
+        margin: 10,
+        flexDirection: 'row'
     },
     genderField: {
         flexDirection: 'row',

@@ -421,7 +421,7 @@ var GuestList = React.createClass({
             <Header>
                 <View />
                 <Text>WHO'S GOING TO : <Text style={{color: '#F06449'}}>YSO HALLOWEEN SHOW</Text></Text>
-                <CloseIcon style={{bottom: SCREEN_HEIGHT / 15, left: SCREEN_WIDTH / 18}} size={38} onPress={this.props.closeGuestListModal} />
+                <CloseIcon style={{bottom: SCREEN_HEIGHT / 15, left: SCREEN_WIDTH / 18}} size={28} onPress={this.props.closeGuestListModal} />
             </Header>
         )
     },
