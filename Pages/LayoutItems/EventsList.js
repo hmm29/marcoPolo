@@ -579,7 +579,7 @@ var Event = React.createClass({
                     underlayColor={WHITE_HEX_CODE}
                     activeOpacity={0.3}
                     onPress={this._onPressItem}
-                    style={styles.userRow}>
+                    style={[styles.userRow, {height: THUMBNAIL_SIZE * 2}]}>
                     <View
                         style={[styles.userContentWrapper, {flexDirection: this.state.dir}]}>
                         <LinearGradient
@@ -590,7 +590,7 @@ var Event = React.createClass({
                             style={styles.container}>
                             <Image
                                 source={{uri: this.props.data && this.props.data.event_img}}
-                                style={{resizeMode: 'cover', flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                                style={{resizeMode: 'cover', height: THUMBNAIL_SIZE * 2, flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                             <View
                                 onPress={this._onPressItem}
                                 style={[styles.eventThumbnail, {backgroundColor: 'rgba(0,0,0,0.9)', justifyContent: 'center', alignItems: 'center'}]}>

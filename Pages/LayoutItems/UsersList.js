@@ -391,9 +391,6 @@ var CustomRefreshingIndicator = React.createClass({
 var UsersList = React.createClass({
     mixins: [TimerMixin, ReactFireMixin],
 
-    // @hmm: no watching just yet
-    // watchID: null,
-
     getInitialState() {
         return {
             dataSource: new ListView.DataSource({
@@ -407,7 +404,7 @@ var UsersList = React.createClass({
         };
     },
 
-    componentWillMount() {
+    componentDidMount() {
         InteractionManager.runAfterInteractions(() => {
             let currentUserRef = this.props.ventureId && this.state.firebaseRef.child(`users/${this.props.ventureId}`),
                 usersListRef = this.state.firebaseRef.child('/users'),
@@ -415,7 +412,7 @@ var UsersList = React.createClass({
 
             // @hmm: show users based on filter settings
 
-            currentUserRef && currentUserRef.child('matchingPreferences').on('value', snapshot => {
+            currentUserRef && currentUserRef.child('matchingPreferences') && currentUserRef.child('matchingPreferences').on('value', snapshot => {
                 InteractionManager.runAfterInteractions(() => {
 
                     let matchingPreferences = snapshot.val(),
