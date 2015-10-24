@@ -77,7 +77,6 @@ var User = React.createClass({
         currentUserLocationCoords: React.PropTypes.array,
         currentUserData: React.PropTypes.object,
         data: React.PropTypes.object,
-        isCurrentUser: React.PropTypes.boolean,
         navigator: React.PropTypes.object
     },
 
@@ -93,8 +92,8 @@ var User = React.createClass({
         let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
             _this = this;
 
-        this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-        && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+        this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId)
+        && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
             _this.setState({
                 distance,
                 status: snapshot.val() && snapshot.val().status,
@@ -107,8 +106,8 @@ var User = React.createClass({
         let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
             _this = this;
 
-        this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-        && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+        this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId)
+        && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
             _this.setState({
                 distance,
                 status: snapshot.val() && snapshot.val().status,
@@ -120,7 +119,7 @@ var User = React.createClass({
     componentWillUnmount() {
         let currentUserIDHashed = this.props.currentUserIDHashed,
             firebaseRef = this.props.firebaseRef,
-            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
+            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/event_invite_match_requests');
 
         currentUserMatchRequestsRef && currentUserMatchRequestsRef.off();
     },
@@ -130,8 +129,6 @@ var User = React.createClass({
     },
 
     _getSecondaryStatusColor() {
-        if (this.props.isCurrentUser) return '#FBFBF1';
-
         switch (this.state.status) {
             case 'sent':
                 return '#FFF9B9';
@@ -186,11 +183,17 @@ var User = React.createClass({
             // chatroom reference uses id of the user who accepts the received matchInteraction
 
             targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+                account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                eventId: this.props.eventId,
+                eventTitle: this.props.eventTitle,
                 status: 'matched',
                 role: 'recipient'
             }, 100);
 
             currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+                account: this.props.data && _.assign(_.pick(this.props.data, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                eventId: this.props.eventId,
+                eventTitle: this.props.eventTitle,
                 status: 'matched',
                 role: 'sender'
             }, 100);
@@ -262,9 +265,15 @@ var User = React.createClass({
 
         else {
             targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+                account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                eventId: this.props.eventId,
+                eventTitle: this.props.eventTitle,
                 status: 'received'
             }, 200);
             currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+                account: this.props.data && _.assign(_.pick(this.props.data, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                eventId: this.props.eventId,
+                eventTitle: this.props.eventTitle,
                 status: 'sent'
             }, 300);
         }
@@ -347,13 +356,10 @@ var User = React.createClass({
                             <View style={styles.rightContainer}>
                                 <Text
                                     style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
-                                <Text style={styles.activityPreference}>
+                                <Text style={styles.eventTitle}>
                                     YSO HALLOWEEN SHOW?
                                 </Text>
-                                <View>
-                                    {!this.props.isCurrentUser ?
-                                        <View style={{top: 10, right: 10}}>{this._renderStatusIcon()}</View> : <View />}
-                                </View>
+                               <View style={{top: 10, right: 10}}>{this._renderStatusIcon()}</View>
                             </View>
                         </LinearGradient>
                         {this.state.dir === 'column' ? profileModal : <View />}
@@ -427,6 +433,8 @@ var GuestList = React.createClass({
                      currentUserIDHashed={this.props.ventureId}
                      currentUserLocationCoords={this.props.currentUserLocationCoords}
                      data={user}
+                     eventId={this.props.eventId}
+                     eventTitle={this.props.eventTitle}
                      firebaseRef={this.props.firebaseRef}
                      navigator={this.props.navigator}/>;
     },
@@ -483,7 +491,7 @@ var Event = React.createClass({
     componentWillUnmount() {
         let currentUserIDHashed = this.props.currentUserIDHashed,
             firebaseRef = this.props.firebaseRef,
-            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
+            currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/event_invite_match_requests');
 
         currentUserMatchRequestsRef && currentUserMatchRequestsRef.off();
     },
@@ -741,7 +749,7 @@ var EventsList = React.createClass({
                             <Text
                                 style={styles.loadingModalFunFactText}>
                                 <Text style={styles.loadingModalFunFactTextTitle}>Did You Know ?</Text>
-                                {'\n\n'} 15% of Yalies don't know {'\n'} why they chose Yale.</Text>
+                                {'\n\n'} Sadly, 15% of Yalies don't know {'\n'} why they chose Yale.</Text>
                         </TouchableOpacity>
                     </View>
                 </Modal>
@@ -762,6 +770,7 @@ var EventsList = React.createClass({
                            closeGuestListModal={this._closeGuestListModal}
                            currentUserLocationCoords={this.props.currentUserLocationCoords}
                            eventId={hash('YSO Halloween Show')}
+                           eventTitle='YSO Halloween Show'
                            eventsListRef={this.state.eventsListRef}
                            firebaseRef={this.state.firebaseRef}
                            navigator={this.props.navigator}
@@ -925,7 +934,7 @@ var styles = StyleSheet.create({
         backgroundColor: '#040A19',
         paddingTop: SCREEN_HEIGHT / 18
     },
-    activityPreference: {
+    eventTitle: {
         width: 154,
         right: 20,
         fontSize: 17,

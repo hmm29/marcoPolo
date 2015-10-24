@@ -106,6 +106,8 @@ var Chat = React.createClass({
     },
 
     _renderHeader() {
+        let chatRoomTitle = (this.props.passProps.chatRoomActivityPreferenceTitle ? this.props.passProps.chatRoomActivityPreferenceTitle : this.props.passProps.chatRoomEventTitle);
+
         return (
             <Header containerStyle={{backgroundColor: '#040A19'}}>
                 <TouchableOpacity onPress={this._safelyNavigateToMainLayout} style={{right: 10, bottom: 5}}>
@@ -118,7 +120,7 @@ var Chat = React.createClass({
                 </TouchableOpacity>
                 <Text
                     style={styles.activityPreferenceTitle}>
-                    {this.props.passProps.chatRoomActivityPreferenceTitle && this.props.passProps.chatRoomActivityPreferenceTitle.toUpperCase() + '?'} </Text>
+                    {chatRoomTitle && chatRoomTitle.toUpperCase() + '?'} </Text>
                 <Text />
             </Header>
         );
@@ -295,7 +297,7 @@ var RecipientInfoBar = React.createClass({
     render(){
         let currentUserData = this.props.recipientData.currentUserData,
             recipient = this.props.recipientData.recipient,
-            tags = (this.state.infoContent === 'recipient' ? recipient.activityPreference.tags : currentUserData.activityPreference.tags),
+            tags = (this.state.infoContent === 'recipient' ? recipient.activityPreference && recipient.activityPreference.tags : currentUserData.activityPreference && currentUserData.activityPreference.tags),
             user = (this.state.infoContent === 'recipient' ? recipient : currentUserData);
 
         let infoContent = (
@@ -371,6 +373,7 @@ var RecipientInfoBar = React.createClass({
                           _id={this.props._id}
                           navigator={this.props.navigator}
                           recipient={recipient}
+                          recipientData={this.props.recipientData}
                           safelyNavigateToMainLayout={this.props.safelyNavigateToMainLayout}
                     />
                 {this.state.dir === 'column' ?
@@ -420,6 +423,7 @@ var TimerBar = React.createClass({
         _id: React.PropTypes.string.isRequired,
         navigator: React.PropTypes.object.isRequired,
         recipient: React.PropTypes.object.isRequired,
+        recipientData: React.PropTypes.object.isRequired,
         safelyNavigateToMainLayout: React.PropTypes.func.isRequired
     },
 
@@ -457,8 +461,14 @@ var TimerBar = React.createClass({
                         chatRoomRef.child('timer').set({value: this.state.timerValInMs});
 
                         // @hmm: update in match_request objects so it can be referenced in users list for timer overlays
-                        firebaseRef.child(`users/${currentUserData.ventureId}/match_requests/${recipient.ventureId}`).update({timerVal: this.state.timerValInMs});
-                        firebaseRef.child(`users/${recipient.ventureId}/match_requests/${currentUserData.ventureId}`).update({timerVal: this.state.timerValInMs});
+
+                        if(this.props.recipientData.chatRoomEventTitle) {
+                            firebaseRef.child(`users/${currentUserData.ventureId}/event_invite_match_requests/${recipient.ventureId}`).update({timerVal: this.state.timerValInMs});
+                            firebaseRef.child(`users/${recipient.ventureId}/event_invite_match_requests/${currentUserData.ventureId}`).update({timerVal: this.state.timerValInMs});
+                        } else {
+                            firebaseRef.child(`users/${currentUserData.ventureId}/match_requests/${recipient.ventureId}`).update({timerVal: this.state.timerValInMs});
+                            firebaseRef.child(`users/${recipient.ventureId}/match_requests/${currentUserData.ventureId}`).update({timerVal: this.state.timerValInMs});
+                        }
 
                         if (this.state.timerValInMs <= 1000) {
                             _this.clearInterval(_this.handle);

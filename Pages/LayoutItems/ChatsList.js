@@ -72,7 +72,6 @@ var User = React.createClass({
         currentUserLocationCoords: React.PropTypes.array,
         currentUserData: React.PropTypes.object,
         data: React.PropTypes.object,
-        isCurrentUser: React.PropTypes.boolean,
         navigator: React.PropTypes.object
     },
 
@@ -85,26 +84,53 @@ var User = React.createClass({
     },
 
     componentWillMount() {
-        let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
+        let distance = this.props.data && this.props.data.location && this.props.data.location.coordinates && this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
             _this = this;
 
-        this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-        && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
-            _this.setState({
-                distance,
-                status: snapshot.val() && snapshot.val().status,
-                timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)});
-        });
+        if(this.props.data && this.props.data.isEventInvite) {
+            this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId)
+            && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+                _this.setState({
+                    distance,
+                    status: snapshot.val() && snapshot.val().status,
+                    timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)
+                });
+            });
+        } else {
+            this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+            && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+                _this.setState({
+                    distance,
+                    status: snapshot.val() && snapshot.val().status,
+                    timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)
+                });
+            });
+        }
     },
 
     componentWillReceiveProps(nextProps) {
-        let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
+        let distance = this.props.data && this.props.data.location && this.props.data.location.coordinates && this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
             _this = this;
 
-        this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-        && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
-            _this.setState({distance, status: snapshot.val() && snapshot.val().status, timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)});
-        });
+        if(this.props.data && this.props.data.isEventInvite) {
+            this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId)
+            && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+                _this.setState({
+                    distance,
+                    status: snapshot.val() && snapshot.val().status,
+                    timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)
+                });
+            });
+        } else {
+            this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+            && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+                _this.setState({
+                    distance,
+                    status: snapshot.val() && snapshot.val().status,
+                    timerVal: snapshot.val() && snapshot.val().timerVal && this._getTimerValue(snapshot.val().timerVal)
+                });
+            });
+        }
     },
 
 
@@ -112,6 +138,8 @@ var User = React.createClass({
         let currentUserIDHashed = this.props.currentUserIDHashed,
             firebaseRef = this.props.firebaseRef,
             currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
+
+        if(this.props.data && this.props.data.isEventData) currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/event_invite_match_requests');
 
         currentUserMatchRequestsRef && currentUserMatchRequestsRef.off();
     },
@@ -121,8 +149,6 @@ var User = React.createClass({
     },
 
     _getSecondaryStatusColor() {
-        if(this.props.isCurrentUser) return '#FBFBF1';
-
         switch (this.state.status) {
             case 'sent':
                 return '#FFF9B9';
@@ -155,117 +181,233 @@ var User = React.createClass({
 
     handleMatchInteraction() {
         // @hmm: use hashed targetUserID as key for data for user in list
+        if(this.props.data && this.props.data.isEventInvite) {
 
-        let targetUserIDHashed = this.props.data.ventureId,
-            currentUserIDHashed = this.props.currentUserIDHashed,
-            firebaseRef = this.props.firebaseRef,
-            targetUserMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/match_requests'),
-            currentUserMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/match_requests'),
-            _this = this;
+            let targetUserIDHashed = this.props.data.ventureId,
+                currentUserIDHashed = this.props.currentUserIDHashed,
+                firebaseRef = this.props.firebaseRef,
+                targetUserEventInviteMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/event_invite_match_requests'),
+                currentUserEventInviteMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/event_invite_match_requests'),
+                _this = this;
 
-        if (this.state.status === 'sent') {
+            if (this.state.status === 'sent') {
 
-            // @hmm: delete the request
+                // @hmm: delete the request
 
-            targetUserMatchRequestsRef.child(currentUserIDHashed).set(null);
-            currentUserMatchRequestsRef.child(targetUserIDHashed).set(null);
-        }
+                targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).set(null);
+                currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).set(null);
+            }
 
-        else if (this.state.status === 'received') {
+            else if (this.state.status === 'received') {
 
-            // @hmm: accept the request
-            // chatroom reference uses id of the user who accepts the received matchInteraction
+                // @hmm: accept the request
+                // chatroom reference uses id of the user who accepts the received matchInteraction
 
-            targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
-                status: 'matched',
-                role: 'recipient'
-            }, 100);
+                targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+                    account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                    eventId: this.props.eventId,
+                    eventTitle: this.props.eventTitle,
+                    status: 'matched',
+                    role: 'recipient'
+                }, 100);
 
-            currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
-                status: 'matched',
-                role: 'sender'
-            }, 100);
-        }
+                currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+                    account: this.props.data && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                    eventId: this.props.eventId,
+                    eventTitle: this.props.eventTitle,
+                    status: 'matched',
+                    role: 'sender'
+                }, 100);
+            }
 
-        else if (this.state.status === 'matched') {
-            let chatRoomActivityPreferenceTitle,
-                distance = 0.7 + ' mi',
-                _id;
+            else if (this.state.status === 'matched') {
+                let chatRoomEventTitle = 'YSO Halloween Show',
+                    distance = this.state.distance + ' mi',
+                    _id;
 
-            currentUserMatchRequestsRef.child(targetUserIDHashed).once('value', snapshot => {
+                currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).once('value', snapshot => {
 
-                if(snapshot.val() && snapshot.val().role === 'sender') {
-                    _id = targetUserIDHashed + '_TO_' + currentUserIDHashed;
-                    chatRoomActivityPreferenceTitle = this.props.currentUserData.activityPreference.title
-                }
-                else {
-                    _id = currentUserIDHashed + '_TO_' + targetUserIDHashed;
-                    chatRoomActivityPreferenceTitle = this.props.currentUserData.activityPreference.title
-                }
-
-                firebaseRef.child(`chat_rooms/${_id}`).once('value', snapshot => {
-
-                    let chatRoomRef = firebaseRef.child(`chat_rooms/${_id}`),
-                        currentRouteStack = this.props.navigator.getCurrentRoutes(),
-                        chatRoomRoute = _.findWhere(currentRouteStack, {title: 'Chat', passProps: {_id}});
-
-                    if (snapshot.val() === null) {
-
-                        chatRoomRef.child('_id').set(_id); // @hmm: set unique chat Id
-                        chatRoomRef.child('timer').set({value: 300000}); // @hmm: set timer
-                        chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set(this.props.currentUserData.activityPreference.title);
-                        chatRoomRef.child('user_activity_preference_titles').child(targetUserIDHashed).set(this.props.data.activityPreference.title);
-
+                    if (snapshot.val() && snapshot.val().role === 'sender') {
+                        _id = 'EVENT_INVITE_' + targetUserIDHashed + '_TO_' + currentUserIDHashed;
+                    } else {
+                        _id = 'EVENT_INVITE_' + currentUserIDHashed + '_TO_' + targetUserIDHashed;
                     }
 
-                    firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).once('value', snapshot => {
-                        if (snapshot.val() === 0) {
-                            _this.props.navigator.push({
-                                title: 'Chat',
-                                component: Chat,
-                                passProps: {
-                                    _id,
-                                    recipient: _this.props.data,
-                                    distance,
-                                    chatRoomActivityPreferenceTitle,
-                                    chatRoomRef,
-                                    currentUserData: _this.props.currentUserData
-                                }
-                            });
-                        }
-                        else if (chatRoomRoute) _this.props.navigator.jumpTo(chatRoomRoute);
-                        else {
-                            currentRouteStack.push({
-                                title: 'Chat',
-                                component: Chat,
-                                passProps: {
-                                    _id,
-                                    recipient: _this.props.data,
-                                    distance,
-                                    chatRoomActivityPreferenceTitle,
-                                    chatRoomRef,
-                                    currentUserData: _this.props.currentUserData
-                                }
-                            });
-                            _this.props.navigator.immediatelyResetRouteStack(currentRouteStack);
-                        }
-                    });
-                })
-            });
-        }
+                    firebaseRef.child(`chat_rooms/${_id}`).once('value', snapshot => {
 
-        else {
-            targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
-                status: 'received'
-            }, 200);
-            currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
-                status: 'sent'
-            }, 300);
-        }
-    },
+                        let chatRoomRef = firebaseRef.child(`chat_rooms/${_id}`),
+                            currentRouteStack = this.props.navigator.getCurrentRoutes(),
+                            chatRoomRoute = _.findWhere(currentRouteStack, {title: 'Chat', passProps: {_id}});
 
-    numberToRadius(number:number) {
-        return number * Math.PI / 180;
+                        if (snapshot.val() === null) {
+
+                            chatRoomRef.child('_id').set(_id); // @hmm: set unique chat Id
+                            chatRoomRef.child('timer').set({value: 300000}); // @hmm: set timer
+                            chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set('YSO Halloween Show');
+                            chatRoomRef.child('user_activity_preference_titles').child(targetUserIDHashed).set('YSO Halloween Show');
+
+                        }
+
+                        firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).once('value', snapshot => {
+                            if (snapshot.val() === 0) {
+                                _this.props.navigator.push({
+                                    title: 'Chat',
+                                    component: Chat,
+                                    passProps: {
+                                        _id,
+                                        recipient: _this.props.data,
+                                        distance,
+                                        chatRoomEventTitle,
+                                        chatRoomRef,
+                                        currentUserData: _this.props.currentUserData
+                                    }
+                                });
+                            }
+                            else if (chatRoomRoute) _this.props.navigator.jumpTo(chatRoomRoute);
+                            else {
+                                currentRouteStack.push({
+                                    title: 'Chat',
+                                    component: Chat,
+                                    passProps: {
+                                        _id,
+                                        recipient: _this.props.data,
+                                        distance,
+                                        chatRoomEventTitle,
+                                        chatRoomRef,
+                                        currentUserData: _this.props.currentUserData
+                                    }
+                                });
+                                _this.props.navigator.immediatelyResetRouteStack(currentRouteStack);
+                            }
+                        });
+                    })
+                });
+            }
+
+            else {
+                targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+                    account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                    eventId: this.props.eventId,
+                    eventTitle: this.props.eventTitle,
+                    status: 'received'
+                }, 200);
+                currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+                    account: this.props.data && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                    eventId: this.props.eventId,
+                    eventTitle: this.props.eventTitle,
+                    status: 'sent'
+                }, 300);
+            }
+        } else {
+
+
+            let targetUserIDHashed = this.props.data.ventureId,
+                currentUserIDHashed = this.props.currentUserIDHashed,
+                firebaseRef = this.props.firebaseRef,
+                targetUserMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/match_requests'),
+                currentUserMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/match_requests'),
+                _this = this;
+
+            if (this.state.status === 'sent') {
+
+                // @hmm: delete the request
+
+                targetUserMatchRequestsRef.child(currentUserIDHashed).set(null);
+                currentUserMatchRequestsRef.child(targetUserIDHashed).set(null);
+            }
+
+            else if (this.state.status === 'received') {
+
+                // @hmm: accept the request
+                // chatroom reference uses id of the user who accepts the received matchInteraction
+
+                targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+                    status: 'matched',
+                    role: 'recipient'
+                }, 100);
+
+                currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+                    status: 'matched',
+                    role: 'sender'
+                }, 100);
+            }
+
+            else if (this.state.status === 'matched') {
+                let chatRoomActivityPreferenceTitle,
+                    distance = 0.7 + ' mi',
+                    _id;
+
+                currentUserMatchRequestsRef.child(targetUserIDHashed).once('value', snapshot => {
+
+                    if (snapshot.val() && snapshot.val().role === 'sender') {
+                        _id = targetUserIDHashed + '_TO_' + currentUserIDHashed;
+                        chatRoomActivityPreferenceTitle = this.props.currentUserData.activityPreference.title
+                    }
+                    else {
+                        _id = currentUserIDHashed + '_TO_' + targetUserIDHashed;
+                        chatRoomActivityPreferenceTitle = this.props.currentUserData.activityPreference.title
+                    }
+
+                    firebaseRef.child(`chat_rooms/${_id}`).once('value', snapshot => {
+
+                        let chatRoomRef = firebaseRef.child(`chat_rooms/${_id}`),
+                            currentRouteStack = this.props.navigator.getCurrentRoutes(),
+                            chatRoomRoute = _.findWhere(currentRouteStack, {title: 'Chat', passProps: {_id}});
+
+                        if (snapshot.val() === null) {
+
+                            chatRoomRef.child('_id').set(_id); // @hmm: set unique chat Id
+                            chatRoomRef.child('timer').set({value: 300000}); // @hmm: set timer
+                            chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set(this.props.currentUserData.activityPreference.title);
+                            chatRoomRef.child('user_activity_preference_titles').child(targetUserIDHashed).set(this.props.data.activityPreference.title);
+
+                        }
+
+                        firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).once('value', snapshot => {
+                            if (snapshot.val() === 0) {
+                                _this.props.navigator.push({
+                                    title: 'Chat',
+                                    component: Chat,
+                                    passProps: {
+                                        _id,
+                                        recipient: _this.props.data,
+                                        distance,
+                                        chatRoomActivityPreferenceTitle,
+                                        chatRoomRef,
+                                        currentUserData: _this.props.currentUserData
+                                    }
+                                });
+                            }
+                            else if (chatRoomRoute) _this.props.navigator.jumpTo(chatRoomRoute);
+                            else {
+                                currentRouteStack.push({
+                                    title: 'Chat',
+                                    component: Chat,
+                                    passProps: {
+                                        _id,
+                                        recipient: _this.props.data,
+                                        distance,
+                                        chatRoomActivityPreferenceTitle,
+                                        chatRoomRef,
+                                        currentUserData: _this.props.currentUserData
+                                    }
+                                });
+                                _this.props.navigator.immediatelyResetRouteStack(currentRouteStack);
+                            }
+                        });
+                    })
+                });
+            }
+
+            else {
+                targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+                    status: 'received'
+                }, 200);
+                currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+                    status: 'sent'
+                }, 300);
+            }
+        }
     },
 
     _onPressItem() {
@@ -299,35 +441,82 @@ var User = React.createClass({
     render() {
         if(this.state.status === null) return <View />;
 
-        let profileModal = (
-            <View style={styles.profileModalContainer}>
-                <View
-                    style={[styles.profileModal, {backgroundColor: this._getSecondaryStatusColor()}]}>
-                    <Image
-                        source={{uri: this.props.data && this.props.data.picture}}
-                        style={styles.profileModalUserPicture}/>
-                    <Text
-                        style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'} | {'\t'}
-                        <Text style={styles.profileModalActivityInfo}>
-                            <Text
-                                style={styles.profileModalActivityPreference}>{this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title && this.props.data.activityPreference.title.slice(0,-1)} </Text>:
-                            {'\t'} {this.props.data && this.props.data.activityPreference && (this.props.data.activityPreference.start.time || this.props.data.activityPreference.status)} {'\n'}
-                        </Text>
-                    </Text>
-                    <View style={[styles.tagBar, {bottom: 10}]}>
+        let profileModal, userRowContent;
+
+        if(this.props.data && this.props.data.isEventInvite) {
+            profileModal = (
+                <View style={styles.profileModalContainer}>
+                    <View
+                        style={[styles.profileModal, {backgroundColor: this._getSecondaryStatusColor()}]}>
+                        <Image
+                            source={{uri: this.props.data && this.props.data.picture}}
+                            style={styles.profileModalUserPicture}/>
                         <Text
-                            style={styles.profileModalSectionTitle}>TAGS: </Text>
-                        {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.tags && this.props.data.activityPreference.tags.map((tag, i) => (
-                            <TouchableOpacity key={i} style={styles.tag}><Text
-                                style={styles.tagText}>{tag}</Text></TouchableOpacity>
-                        ))
-                        }
+                            style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.name && this.props.data.name.split(" ")[0]}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'}
+                            | {'\t'}
+                            <Text style={styles.profileModalActivityInfo}>
+                                <Text
+                                    style={styles.profileModalActivityPreference}>YSO Halloween Show</Text>
+                                {'\t'} {this.props.data && this.props.data.activityPreference && (this.props.data.activityPreference.start.time || this.props.data.activityPreference.status)} {'\n'}
+                            </Text>
+                        </Text>
+                        <Text
+                            style={styles.profileModalBio}>{this.props.data && this.props.data.bio}</Text>
                     </View>
-                    <Text
-                        style={styles.profileModalBio}>{this.props.data && this.props.data.bio}</Text>
                 </View>
-            </View>
-        );
+            )
+
+            userRowContent = (
+                <View style={styles.rightContainer}>
+                    <Text
+                        style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
+                    <Text style={styles.eventTitle}>
+                        YSO HALLOWEEN SHOW?
+                    </Text>
+                    <View style={{top: 10, right: 10}}>{this._renderStatusIcon()}</View>
+                </View>
+            )
+        } else {
+            profileModal = (
+                <View style={styles.profileModalContainer}>
+                    <View
+                        style={[styles.profileModal, {backgroundColor: this._getSecondaryStatusColor()}]}>
+                        <Image
+                            source={{uri: this.props.data && this.props.data.picture}}
+                            style={styles.profileModalUserPicture}/>
+                        <Text
+                            style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'} | {'\t'}
+                            <Text style={styles.profileModalActivityInfo}>
+                                <Text
+                                    style={styles.profileModalActivityPreference}>{this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title && this.props.data.activityPreference.title.slice(0,-1)} </Text>:
+                                {'\t'} {this.props.data && this.props.data.activityPreference && (this.props.data.activityPreference.start.time || this.props.data.activityPreference.status)} {'\n'}
+                            </Text>
+                        </Text>
+                        <View style={[styles.tagBar, {bottom: 10}]}>
+                            <Text
+                                style={styles.profileModalSectionTitle}>TAGS: </Text>
+                            {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.tags && this.props.data.activityPreference.tags.map((tag, i) => (
+                                <TouchableOpacity key={i} style={styles.tag}><Text
+                                    style={styles.tagText}>{tag}</Text></TouchableOpacity>
+                            ))
+                            }
+                        </View>
+                        <Text
+                            style={styles.profileModalBio}>{this.props.data && this.props.data.bio}</Text>
+                    </View>
+                </View>
+            );
+
+            userRowContent = (
+                <View style={styles.rightContainer}>
+                    <Text style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
+                    <Text style={styles.activityPreference}>
+                        {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title}
+                    </Text>
+                    <View style={{top: 10}}>{this._renderStatusIcon()}</View>
+                </View>
+            );
+        }
 
         return (
                 <TouchableHighlight
@@ -351,16 +540,7 @@ var User = React.createClass({
                                     <Text style={[styles.timerValText, (this.state.timerVal && this.state.timerVal[0] === '1' ? {color: '#FFF484'} : {}), (this.state.timerVal && this.state.timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{this.state.timerVal}</Text>
                                 </View>
                             </Image>
-                            <View style={styles.rightContainer}>
-                                <Text style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
-                                <Text style={styles.activityPreference}>
-                                    {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title}
-                                </Text>
-                                <View>
-                                    {!this.props.isCurrentUser ?
-                                        <View style={{top: 10}}>{this._renderStatusIcon()}</View> : <View />}
-                                </View>
-                            </View>
+                            {userRowContent}
                         </LinearGradient>
                         {this.state.dir === 'column' ? profileModal: <View />}
                     </View>
@@ -392,21 +572,36 @@ var ChatsList = React.createClass({
 
     componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
-            let usersListRef = this.state.firebaseRef.child('/users'), _this = this;
+            let eventInvites = [], usersListRef = this.state.firebaseRef.child('/users'), _this = this;
 
             this.bindAsArray(usersListRef, 'userRows');
 
             this.props.ventureId && usersListRef.on('value', snapshot => {
                 // @hmm: sweet! order alphabetically to sort with priority ('matched' --> 'received' --> 'sent')
 
-                _this.updateRows(_.sortBy(_.cloneDeep(_.values(snapshot.val())), `match_requests.${this.props.ventureId}.status`));
-                _this.setState({currentUserVentureId: this.props.ventureId, rows: _.cloneDeep(_.values(snapshot.val())), usersListRef});
+                let usersListSnapshotVal = snapshot.val();
 
-                if(!_.isEmpty(snapshot.val()[this.props.ventureId].match_requests)) this.setState({showFunFact: false});
-                else {
-                    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-                    this.setState({showFunFact: true});
-                }
+                usersListRef.child(`${this.props.ventureId}/event_invite_match_requests`).once('value', snapshot => {
+                    _.each(snapshot.val(), (eventInviteMatchRequest) => {
+                        eventInvites.push(eventInviteMatchRequest.account);
+                    });
+
+                    // @hmm: add event invites into general activity interactions
+
+                    _this.updateRows(_.sortBy((_.cloneDeep(_.values(usersListSnapshotVal))).concat(eventInvites), `match_requests.${this.props.ventureId}.status`));
+                    _this.setState({currentUserVentureId: this.props.ventureId, userRows: _.cloneDeep(_.values((_.cloneDeep(_.values(usersListSnapshotVal))).concat(eventInvites))), usersListRef});
+
+                    // @hmm: rest to prevent multiple event invites in chats list
+
+                    eventInvites = [];
+
+                    if(!_.isEmpty(usersListSnapshotVal[this.props.ventureId].match_requests) || !_.isEmpty(usersListSnapshotVal[this.props.ventureId].event_invite_match_requests)) this.setState({showFunFact: false});
+                    else {
+                        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                        this.setState({showFunFact: true});
+                    }
+                });
+
             });
 
             this.state.firebaseRef.child(`/users/${this.props.ventureId}`).once('value', snapshot => {
@@ -419,7 +614,6 @@ var ChatsList = React.createClass({
         let usersListRef = this.state.firebaseRef.child('/users');
 
         usersListRef.off();
-        // if (navigator.geolocation) navigator.geolocation.clearWatch(this.watchID);
     },
 
     _safelyNavigateToHome() {
@@ -689,6 +883,14 @@ var styles = StyleSheet.create({
         marginHorizontal: 25,
         fontFamily: 'AvenirNext-UltraLight',
         fontWeight: '300'
+    },
+    eventTitle: {
+        width: 154,
+        right: 20,
+        fontSize: 17,
+        top: 2,
+        fontFamily: 'AvenirNextCondensed-Regular',
+        fontWeight: '400'
     },
     filterPageButton: {
         width: 30,
