@@ -286,10 +286,7 @@ var Home = React.createClass({
         let abbrevRoute = _.omit(route, 'component'),
             currentRouteStack = this.props.navigator.getCurrentRoutes();
 
-        if(currentRouteStack.indexOf(abbrevRoute) > -1) {
-            this.props.navigator.jumpTo(abbrevRoute);
-        }
-
+        if(currentRouteStack.indexOf(abbrevRoute) > -1) this.props.navigator.jumpTo(abbrevRoute);
         else {
             currentRouteStack.push(route);
             this.props.navigator.immediatelyResetRouteStack(currentRouteStack)
