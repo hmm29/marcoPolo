@@ -414,12 +414,7 @@ var UsersList = React.createClass({
             // also prevents RCTURLLoader equal priority error
 
             this.setTimeout(() => {
-
                 currentUserRef && currentUserRef.child('matchingPreferences').on('value', snapshot => {
-
-                    // @hmm: trigger on callback
-                    currentUserRef.child('matchingPreferences').set(snapshot.val());
-
                     InteractionManager.runAfterInteractions(() => {
 
                         // @hmm: show users based on filter settings
@@ -491,7 +486,7 @@ var UsersList = React.createClass({
                     _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
                 });
 
-            }, 700); // @hmm: at least 500 ms
+            }, 0); // @hmm: defer
         });
     },
 
