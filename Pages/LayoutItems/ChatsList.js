@@ -48,6 +48,9 @@ var ReactFireMixin = require('reactfire');
 var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
 var Swipeout = require('react-native-swipeout');
 
+var EVENT_ID = 'e068e2d69f2b6b69acf181b6889f9db5934901c2b38fe9947850ed4bb033736f';
+var EVENT_TITLE = 'YSO Halloween Show';
+    
 var INITIAL_LIST_SIZE = 8;
 var LOGO_WIDTH = 200;
 var LOGO_HEIGHT = 120;
@@ -205,23 +208,23 @@ var User = React.createClass({
 
                 targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
                     account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
-                    eventId: this.props.eventId,
-                    eventTitle: this.props.eventTitle,
+                    eventId: EVENT_ID,
+                    eventTitle: EVENT_TITLE,
                     status: 'matched',
                     role: 'recipient'
                 }, 100);
 
                 currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
                     account: this.props.data && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
-                    eventId: this.props.eventId,
-                    eventTitle: this.props.eventTitle,
+                    eventId: EVENT_ID,
+                    eventTitle: EVENT_TITLE,
                     status: 'matched',
                     role: 'sender'
                 }, 100);
             }
 
             else if (this.state.status === 'matched') {
-                let chatRoomEventTitle = 'YSO Halloween Show',
+                let chatRoomEventTitle = EVENT_TITLE,
                     distance = this.state.distance + ' mi',
                     _id;
 
@@ -243,8 +246,8 @@ var User = React.createClass({
 
                             chatRoomRef.child('_id').set(_id); // @hmm: set unique chat Id
                             chatRoomRef.child('timer').set({value: 300000}); // @hmm: set timer
-                            chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set('YSO Halloween Show');
-                            chatRoomRef.child('user_activity_preference_titles').child(targetUserIDHashed).set('YSO Halloween Show');
+                            chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set(EVENT_TITLE);
+                            chatRoomRef.child('user_activity_preference_titles').child(targetUserIDHashed).set(EVENT_TITLE);
 
                         }
 
@@ -287,14 +290,14 @@ var User = React.createClass({
             else {
                 targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
                     account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
-                    eventId: this.props.eventId,
-                    eventTitle: this.props.eventTitle,
+                    eventId: EVENT_ID,
+                    eventTitle: EVENT_TITLE,
                     status: 'received'
                 }, 200);
                 currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
                     account: this.props.data && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
-                    eventId: this.props.eventId,
-                    eventTitle: this.props.eventTitle,
+                    eventId: EVENT_ID,
+                    eventTitle: EVENT_TITLE,
                     status: 'sent'
                 }, 300);
             }
@@ -452,7 +455,7 @@ var User = React.createClass({
                             source={{uri: this.props.data && this.props.data.picture}}
                             style={styles.profileModalUserPicture}/>
                         <Text
-                            style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.name && this.props.data.name.split(" ")[0]}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'}
+                            style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'}
                             | {'\t'}
                             <Text style={styles.profileModalActivityInfo}>
                                 <Text

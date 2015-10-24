@@ -300,6 +300,17 @@ var RecipientInfoBar = React.createClass({
             tags = (this.state.infoContent === 'recipient' ? recipient.activityPreference && recipient.activityPreference.tags : currentUserData.activityPreference && currentUserData.activityPreference.tags),
             user = (this.state.infoContent === 'recipient' ? recipient : currentUserData);
 
+        let tagsSection = (
+            <View style={[styles.tagBar, {bottom: 10}]}>
+                <Text style={styles.tagsTitle}>TAGS: </Text>
+                {tags && tags.map((tag) => (
+                    <TouchableOpacity style={styles.tag}><Text
+                        style={styles.tagText}>{tag}</Text></TouchableOpacity>
+                ))
+                }
+            </View>
+        );
+
         let infoContent = (
             <View
                 style={{paddingVertical: (user === recipient ? SCREEN_HEIGHT/30 : SCREEN_HEIGHT/97), bottom: (this.state.hasKeyboardSpace ? SCREEN_HEIGHT/3.5 : 0), backgroundColor: '#eee', flexDirection: 'column', justifyContent: 'center'}}>
@@ -337,14 +348,7 @@ var RecipientInfoBar = React.createClass({
                     returnKeyType='default'
                     style={styles.textInput}
                     value={this.state.currentUserActivityPreferenceTitle}/> : <TextInput />}
-                <View style={[styles.tagBar, {bottom: 10}]}>
-                    <Text style={styles.tagsTitle}>TAGS: </Text>
-                    {tags && tags.map((tag) => (
-                        <TouchableOpacity style={styles.tag}><Text
-                            style={styles.tagText}>{tag}</Text></TouchableOpacity>
-                    ))
-                    }
-                </View>
+                {!this.props.recipientData.chatRoomEventTitle ? tagsSection : <View />}
                 <Text
                     style={styles.bio}>{user.bio}</Text>
             </View>
@@ -514,9 +518,14 @@ var TimerBar = React.createClass({
             targetUserIDHashed = recipient.ventureId,
             targetUserMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/match_requests');
 
+        if(this.props.recipientData.chatRoomEventTitle) {
+            currentUserMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/event_invite_match_requests'),
+            targetUserMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/event_invite_match_requests');
+        }
+
         // only navigate if still on chat page! :D
 
-        if((currentChatroomRoute.title === 'Chat' && currentChatroomRoute.passProps._id === this.props._id) || this.state.timerValInMs < 1000) this.props.safelyNavigateToMainLayout();
+        if((currentChatroomRoute.title === 'Chat' && currentChatroomRoute.passProps._id === this.props._id) || this.state.timerValInMs <= 1000) this.props.safelyNavigateToMainLayout();
 
         firebaseRef.child(`users/${targetUserIDHashed}/chatCount`).once('value', snapshot => {
             firebaseRef.child(`users/${targetUserIDHashed}/chatCount`).set(snapshot.val() - 1);

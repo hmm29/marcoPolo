@@ -68,8 +68,8 @@ var styles = StyleSheet.create({
         fontWeight: '500'
     },
     checkboxIcon: {
-        width: SIZE * 1.6,
-        height: SIZE * 1.6
+        width: SIZE * 1.14,
+        height: SIZE * 1.14
     }
 });
 

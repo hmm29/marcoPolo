@@ -229,9 +229,8 @@ var EditProfile = React.createClass({
 
         let editPhoto = (
             <View>
-                <TouchableOpacity
-                    // onPress={this._showActionSheet}
-                    >
+                <TouchableOpacity // onPress={this._showActionSheet}
+                >
                     <Image source={{isStatic: true, uri: this.state.currentPic}} style={styles.currentPic}/>
                 </TouchableOpacity>
             </View>
@@ -318,7 +317,7 @@ var EditProfile = React.createClass({
                         {editPhoto}
 
                         <Text
-                            style={[styles.label, {fontSize: 22}]}>{this.state.currentFirstName} {this.state.currentFirstName ? ',' : ''} {this.state.currentAge}</Text>
+                            style={[styles.label, {fontSize: 27}]}>{this.state.currentFirstName} {this.state.currentFirstName ? ',' : ''} {this.state.currentAge}</Text>
 
                         <View style={styles.editableTextFields}>
                             {this.state.isEditingGenderField && this.state.showAutocomplete ? genderAutocomplete : genderField}
@@ -404,7 +403,7 @@ var styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'flex-start',
         right: 10,
-        bottom: 15
+        bottom: 4
     },
     editBio: {
         flexDirection: 'row',

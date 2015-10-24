@@ -183,7 +183,7 @@ var User = React.createClass({
             // chatroom reference uses id of the user who accepts the received matchInteraction
 
             targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
-                account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'firstName', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
                 eventId: this.props.eventId,
                 eventTitle: this.props.eventTitle,
                 status: 'matched',
@@ -191,7 +191,7 @@ var User = React.createClass({
             }, 100);
 
             currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
-                account: this.props.data && _.assign(_.pick(this.props.data, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                account: this.props.data && _.assign(_.pick(this.props.data, 'firstName', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
                 eventId: this.props.eventId,
                 eventTitle: this.props.eventTitle,
                 status: 'matched',
@@ -265,13 +265,13 @@ var User = React.createClass({
 
         else {
             targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
-                account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'firstName', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
                 eventId: this.props.eventId,
                 eventTitle: this.props.eventTitle,
                 status: 'received'
             }, 200);
             currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
-                account: this.props.data && _.assign(_.pick(this.props.data, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                account: this.props.data && _.assign(_.pick(this.props.data, 'firstName', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
                 eventId: this.props.eventId,
                 eventTitle: this.props.eventTitle,
                 status: 'sent'
@@ -317,7 +317,7 @@ var User = React.createClass({
                         source={{uri: this.props.data && this.props.data.picture}}
                         style={styles.profileModalUserPicture}/>
                     <Text
-                        style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.name && this.props.data.name.split(" ")[0]}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'}
+                        style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'}
                         | {'\t'}
                         <Text style={styles.profileModalActivityInfo}>
                             <Text
@@ -519,8 +519,8 @@ var Event = React.createClass({
 
         if (this.state.status === 'notAttending') {
             this.setState({status: 'attending'});
-            this.props.eventsListRef && this.props.data && this.props.currentUserData && this.props.currentUserIDHashed && this.props.data.id && this.props.eventsListRef.child(`${this.props.data.id}/attendees/${this.props.currentUserIDHashed}`).set(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'))
-            this.props.usersListRef && this.props.data && this.props.currentUserIDHashed && this.props.data.id && this.props.usersListRef.child(`${this.props.currentUserIDHashed}/events/${this.props.data.id}`).set(_.pick(this.props.data, 'id', 'title', 'description', 'location', 'start'))
+            this.props.eventsListRef && this.props.data && this.props.currentUserData && this.props.currentUserIDHashed && this.props.data.id && this.props.eventsListRef.child(`${this.props.data.id}/attendees/${this.props.currentUserIDHashed}`).set(_.pick(this.props.currentUserData, 'firstName', 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'))
+            this.props.usersListRef && this.props.data && this.props.currentUserIDHashed && this.props.data.id && this.props.usersListRef.child(`${this.props.currentUserIDHashed}/events/${this.props.data.id}`).set(_.pick(this.props.data, 'id', 'title', 'description', 'location', 'start'));
 
         }
         else {
@@ -542,7 +542,7 @@ var Event = React.createClass({
                     active={true}
                     onPress={this.handleEventInteraction}
                     size={36}
-                    style={{borderRadius: 28, top: SCREEN_HEIGHT / 85 }}
+                    style={{borderRadius: 28, top: SCREEN_HEIGHT / 85, right: SCREEN_HEIGHT / 90}}
                     />;
             default:
                 return <ChevronIcon
@@ -550,7 +550,7 @@ var Event = React.createClass({
                     direction='right'
                     onPress={this.handleEventInteraction}
                     size={22}
-                    style={{backgroundColor: 'rgba(255,255,255,0.9)', marginHorizontal: 20, borderRadius: 14, top: SCREEN_HEIGHT / 85}}
+                    style={{backgroundColor: 'rgba(255,255,255,0.9)', marginHorizontal: 20, borderRadius: 14, top: SCREEN_HEIGHT / 85, left: SCREEN_HEIGHT / 90}}
                     />
         }
     },
@@ -568,7 +568,7 @@ var Event = React.createClass({
                     <Text style={styles.profileModalSectionTitle}>EVENT DESCRIPTION:</Text>
                     <Text style={[styles.profileModalBio, {width: SCREEN_WIDTH / 1.4}]}>{this.props.data && this.props.data.description} {'\n'}</Text>
                     <Text style={styles.profileModalSectionTitle}>EVENT DESCRIPTION: {'\n'}</Text>
-                    <TouchableOpacity onPress={this.props.openGuestListModal} style={{backgroundColor: 'rgba(0,0,0,0.001)'}}><Text style={{color: '#3F7CFF', fontFamily: 'AvenirNextCondensed-Medium', fontSize: 20, paddingHorizontal: 40}}>WHO'S GOING?</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={this.props.openGuestListModal} style={{backgroundColor: 'rgba(0,0,0,0.001)'}}><Text style={{color: '#3F7CFF', fontFamily: 'AvenirNextCondensed-Medium', fontSize: 20, paddingHorizontal: 40, paddingVertical: 10}}>WHO'S GOING?</Text></TouchableOpacity>
 
                 </View>
             </View>
@@ -590,7 +590,7 @@ var Event = React.createClass({
                             style={styles.container}>
                             <Image
                                 source={{uri: this.props.data && this.props.data.event_img}}
-                                style={{resizeMode: 'stretch', flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                                style={{resizeMode: 'cover', flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                             <View
                                 onPress={this._onPressItem}
                                 style={[styles.eventThumbnail, {backgroundColor: 'rgba(0,0,0,0.9)', justifyContent: 'center', alignItems: 'center'}]}>
@@ -749,7 +749,7 @@ var EventsList = React.createClass({
                             <Text
                                 style={styles.loadingModalFunFactText}>
                                 <Text style={styles.loadingModalFunFactTextTitle}>Did You Know ?</Text>
-                                {'\n\n'} Sadly, 15% of Yalies don't know {'\n'} why they chose Yale.</Text>
+                                {'\n\n'} Curiosly, 15% of Yalies don't {'\n'} know why they chose Yale.</Text>
                         </TouchableOpacity>
                     </View>
                 </Modal>
