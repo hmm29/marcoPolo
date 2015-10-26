@@ -404,7 +404,7 @@ var UsersList = React.createClass({
         };
     },
 
-    componentWillMount() {
+    componentDidMount() {
         InteractionManager.runAfterInteractions(() => {
             let currentUserRef = this.props.ventureId && this.state.firebaseRef.child(`users/${this.props.ventureId}`),
                 usersListRef = this.state.firebaseRef.child('users'),
