@@ -89,6 +89,7 @@ var Home = React.createClass({
             hasIshSelected: false,
             hasKeyboardSpace: false,
             hasSpecifiedTime: false,
+            locationKnown: false,
             showAddInfoBox: false,
             showAddInfoButton: true,
             showNextButton: false,
@@ -131,7 +132,7 @@ var Home = React.createClass({
                         navigator.geolocation.getCurrentPosition(
                             (currentPosition) => {
                                 currentUserRef.child(`location/coordinates`).set(currentPosition.coords);
-                                this.setState({currentUserLocationCoords: [currentPosition.coords.latitude, currentPosition.coords.longitude], currentUserRef});
+                                this.setState({currentUserLocationCoords: [currentPosition.coords.latitude, currentPosition.coords.longitude], currentUserRef, locationKnown: true});
                             },
                             (error) => {
                                 console.error(error);
@@ -156,13 +157,15 @@ var Home = React.createClass({
                     })
                     .catch((error) => console.log(error.message))
                     .done();
-
-                AsyncStorage.getItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL')
-                    .then((friendsAPICallURL) => this.setState({friendsAPICallURL}))
-                    .catch(error => console.log(error.message))
-                    .done();
-            }, 900);
+            }, 700);
         });
+    },
+
+    componentDidMount(){
+        AsyncStorage.getItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL')
+            .then((friendsAPICallURL) => this.setState({friendsAPICallURL}))
+            .catch(error => console.log(error.message))
+            .done();
     },
 
     componentWillUnmount() {
@@ -221,7 +224,7 @@ var Home = React.createClass({
             navigator.geolocation.getCurrentPosition(
                 (currentPosition) => {
                     this.state.currentUserRef && this.state.currentUserRef.child(`location/coordinates`).set(currentPosition.coords);
-                    this.setState({currentUserLocationCoords: [currentPosition.coords.latitude, currentPosition.coords.longitude]});
+                    this.setState({currentUserLocationCoords: [currentPosition.coords.latitude, currentPosition.coords.longitude], locationKnown: true});
                 },
                 (error) => {
                     console.error(error);
@@ -269,7 +272,7 @@ var Home = React.createClass({
         AsyncStorage.getItem('@AsyncStorage:Venture:account')
             .then((account: string) => {
                 account = JSON.parse(account);
-                firebaseRef.child(`users/${account.ventureId}/activityPreference`).set(activityPreferenceChange)
+                firebaseRef.child(`users/${account.ventureId}/activityPreference`).set(activityPreferenceChange);
                 this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {currentUserLocationCoords: this.state.currentUserLocationCoords, friendsAPICallURL: this.state.friendsAPICallURL, selected: 'users', ventureId: account.ventureId}});
             })
             .catch((error) => console.log(error.message))
@@ -286,10 +289,7 @@ var Home = React.createClass({
         let abbrevRoute = _.omit(route, 'component'),
             currentRouteStack = this.props.navigator.getCurrentRoutes();
 
-        if(currentRouteStack.indexOf(abbrevRoute) > -1) {
-            this.props.navigator.jumpTo(abbrevRoute);
-        }
-
+        if(currentRouteStack.indexOf(abbrevRoute) > -1) this.props.navigator.jumpTo(abbrevRoute);
         else {
             currentRouteStack.push(route);
             this.props.navigator.immediatelyResetRouteStack(currentRouteStack)

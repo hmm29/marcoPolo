@@ -404,7 +404,7 @@ var UsersList = React.createClass({
         };
     },
 
-    componentWillMount() {
+    componentDidMount() {
         InteractionManager.runAfterInteractions(() => {
             let currentUserRef = this.props.ventureId && this.state.firebaseRef.child(`users/${this.props.ventureId}`),
                 usersListRef = this.state.firebaseRef.child('users'),
@@ -414,7 +414,6 @@ var UsersList = React.createClass({
             // also prevents RCTURLLoader equal priority error
 
             this.setTimeout(() => {
-
                 currentUserRef && currentUserRef.child('matchingPreferences').on('value', snapshot => {
                     InteractionManager.runAfterInteractions(() => {
 
@@ -481,13 +480,13 @@ var UsersList = React.createClass({
 
                 this.bindAsArray(usersListRef, 'rows');
 
-                this.setState({currentUserVentureId: this.props.ventureId})
+                this.setState({currentUserVentureId: this.props.ventureId});
 
                 this.state.firebaseRef.child(`/users/${this.props.ventureId}`).once('value', snapshot => {
                     _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
                 });
 
-            }, 500); // @hmm: at least 500 ms
+            }, 0); // @hmm: defer
         });
     },
 
