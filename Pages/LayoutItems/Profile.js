@@ -404,9 +404,11 @@ var styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         width: SCREEN_WIDTH,
+        backgroundColor: 'transparent'
     },
     container: {
-        flex: 1
+        flex: 1,
+        backgroundColor: '#02030F'
     },
     FBLoginButton: {
         top: 70

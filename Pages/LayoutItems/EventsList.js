@@ -32,7 +32,7 @@ var {
 var _ = require('lodash');
 var AwaitingResponseIcon = require('../../Partials/Icons/AwaitingResponseIcon');
 var Chat = require('../Chat');
-var CheckboxIcon = require('../../Partials/Icons/CheckboxIcon');
+var CheckBoxIcon = require('../../Partials/Icons/CheckBoxIcon');
 var ChevronIcon = require('../../Partials/Icons/ChevronIcon');
 var CloseIcon = require('../../Partials/Icons/CloseIcon');
 var Display = require('react-native-device-display');
@@ -548,7 +548,7 @@ var Event = React.createClass({
     _renderEventAttendanceStatusIcon() {
         switch (this.state.status) {
             case 'attending':
-                return <CheckboxIcon
+                return <CheckBoxIcon
                     active={true}
                     onPress={this.handleEventInteraction}
                     size={26}
@@ -587,7 +587,7 @@ var Event = React.createClass({
         return (
                 <TouchableHighlight
                     underlayColor={WHITE_HEX_CODE}
-                    activeOpacity={0.3}
+                    activeOpacity={0.9}
                     onPress={this._onPressItem}
                     style={[styles.userRow, {height: THUMBNAIL_SIZE * 2}]}>
                     <View

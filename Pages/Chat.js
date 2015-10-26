@@ -44,16 +44,6 @@ var SCREEN_WIDTH = Display.width;
 var MESSAGE_TEXT_INPUT_REF = 'messageTextInput';
 var MESSAGES_LIST_REF = 'messagesList';
 
-let compoundStyles = () => {
-    let res = {};
-    for (var i = 0; i < arguments.length; ++i) {
-        if (arguments[i]) {
-            Object.assign(res, arguments[i]);
-        }
-    }
-    return res;
-};
-
 var Chat = React.createClass({
 
     mixins: [ReactFireMixin, TimerMixin],
@@ -139,11 +129,11 @@ var Chat = React.createClass({
             messageTextStyle = styles.sentMessageText;
         }
 
-        var avatarImage = (!sentByCurrentUser) ? recipient.picture : currentUserData.picture;
+        var avatarThumbnailURL = (!sentByCurrentUser) ? recipient.picture : currentUserData.picture;
 
-        var space = (
+        var avatarThumbnail = (
             <Image
-                source={{uri: avatarImage}}
+                source={{uri: avatarThumbnailURL}}
                 style={styles.recipientAlign}/>
         );
         return (
@@ -153,7 +143,7 @@ var Chat = React.createClass({
                 end={[1,0.9]}
                 locations={[0,1.0,0.9]}
                 style={styles.messageRow}>
-                { (!sentByCurrentUser) ? space : null }
+                { (!sentByCurrentUser) ? avatarThumbnail : null }
                 <View style={messageRowStyle}>
                     <Text style={styles.baseText}>
                         <Text style={messageTextStyle}>
@@ -161,14 +151,13 @@ var Chat = React.createClass({
                         </Text>
                     </Text>
                 </View>
-                { (sentByCurrentUser) ? space : null }
+                { (sentByCurrentUser) ? avatarThumbnail : null }
             </LinearGradient>
         );
     },
 
     _safelyNavigateToMainLayout() {
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
-        // @hmm navigate back to main layout component
             mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
                 return route && route.passProps && !! route.passProps.selected;
             });
@@ -178,12 +167,11 @@ var Chat = React.createClass({
     },
 
     _sendMessage() {
-        var _this = this;
-
-        var messageObj = {
+        let messageObj = {
             senderIDHashed: this.props.passProps.currentUserData.ventureId,
             body: this.state.message
-        };
+        }, _this = this;
+
         this.state.chatRoomMessagesRef.push(messageObj);
         this.state.chatRoomMessagesRef.once('value', (snapshot) => {
             LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
@@ -457,7 +445,6 @@ var TimerBar = React.createClass({
                 chatRoomRef.child('createdAt').once('value', snapshot => {
 
                 if (snapshot.val() === null) {
-                    console.log('Chat created and timer started');
                     chatRoomRef.child('createdAt').set((new Date()) + '');
 
                     _this.handle = _this.setInterval(() => {

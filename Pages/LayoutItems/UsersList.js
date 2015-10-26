@@ -404,32 +404,35 @@ var UsersList = React.createClass({
         };
     },
 
-    componentDidMount() {
+    componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
             let currentUserRef = this.props.ventureId && this.state.firebaseRef.child(`users/${this.props.ventureId}`),
                 usersListRef = this.state.firebaseRef.child('users'),
                 _this = this;
 
+            // @hmm: speed up by putting fetch here
+
+            fetch(this.props.friendsAPICallURL)
+                .then(response => response.json())
+                .then(responseData => {
+                    this.setState({currentUserFriends: responseData.data});
+                })
+                .done();
+
             // @hmm: short delay to allow filtering for initial loaded users list
             // also prevents RCTURLLoader equal priority error
 
-            this.setTimeout(() => {
                 currentUserRef && currentUserRef.child('matchingPreferences').on('value', snapshot => {
+
+
+                    let matchingPreferences = snapshot.val(),
+                        filteredUsersArray = [];
+
+                    _this.setState({maxSearchDistance: matchingPreferences.maxSearchDistance});
+
                     InteractionManager.runAfterInteractions(() => {
 
                         // @hmm: show users based on filter settings
-
-                        let matchingPreferences = snapshot.val(),
-                            filteredUsersArray = [];
-
-                        fetch(this.props.friendsAPICallURL)
-                            .then(response => response.json())
-                            .then(responseData => {
-                                this.setState({currentUserFriends: responseData.data});
-                            })
-                            .done();
-
-                        _this.setState({maxSearchDistance: matchingPreferences.maxSearchDistance});
 
                         usersListRef.once('value', snapshot => {
                             snapshot.val() && _.each(snapshot.val(), (user) => {
@@ -441,12 +444,9 @@ var UsersList = React.createClass({
                                         if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
                                     }
                                 } else if (matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
-                                    fetch(this.props.friendsAPICallURL)
-                                        .then(response => response.json())
-                                        .then(responseData => {
                                             InteractionManager.runAfterInteractions(() => {
 
-                                                if (responseData.data && _.findWhere(responseData.data, {name: user.name})) {
+                                                if (this.state.currentUserFriends && _.findWhere(this.state.currentUserFriends, {name: user.name})) {
                                                     if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
                                                         if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
                                                         if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
@@ -460,18 +460,19 @@ var UsersList = React.createClass({
                                                     usersListRef
                                                 });
                                             });
-
-                                        })
-                                        .done();
                                 }
                             });
-                            _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
-                            _this.setState({
-                                rows: _.cloneDeep(_.values(filteredUsersArray)),
-                                currentUserRef,
-                                filteredUsersArray,
-                                usersListRef
-                            });
+                            _this.setTimeout(() => {
+                                // important: update with this.state.rows!!!
+
+                                _this.updateRows(_.cloneDeep(_.values(this.state.rows)));
+                                _this.setState({
+                                    rows: _.cloneDeep(_.values(filteredUsersArray)),
+                                    currentUserRef,
+                                    filteredUsersArray,
+                                    usersListRef
+                                });
+                            }, 0)
                         });
 
                     });
@@ -486,13 +487,7 @@ var UsersList = React.createClass({
                     _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
                 });
 
-            }, 0); // @hmm: defer
         });
-    },
-
-    componentWillUnmount() {
-        this.state.currentUserRef.off();
-        this.state.usersListRef.off();
     },
 
     _safelyNavigateToHome() {
@@ -528,7 +523,7 @@ var UsersList = React.createClass({
     },
 
     shuffleUsers() {
-        this.updateRows(_.cloneDeep(_.values(_.shuffle(this.state.filteredUsersArray))));
+        this.updateRows(_.cloneDeep(_.values(_.shuffle(this.state.rows))));
     },
 
     updateRows(rows) {

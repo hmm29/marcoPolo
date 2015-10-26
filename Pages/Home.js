@@ -32,7 +32,7 @@ var {
 
 var _ = require('lodash');
 var ChatsListPageIcon = require('../Partials/Icons/ChatsListPageIcon');
-var CheckboxIcon = require('../Partials/Icons/CheckboxIcon');
+var CheckBoxIcon = require('../Partials/Icons/CheckBoxIcon');
 var ChevronIcon = require('../Partials/Icons/ChevronIcon');
 var ClockIcon = require('../Partials/Icons/ClockIcon');
 var Display = require('react-native-device-display');
@@ -89,7 +89,6 @@ var Home = React.createClass({
             hasIshSelected: false,
             hasKeyboardSpace: false,
             hasSpecifiedTime: false,
-            locationKnown: false,
             showAddInfoBox: false,
             showAddInfoButton: true,
             showNextButton: false,
@@ -132,7 +131,7 @@ var Home = React.createClass({
                         navigator.geolocation.getCurrentPosition(
                             (currentPosition) => {
                                 currentUserRef.child(`location/coordinates`).set(currentPosition.coords);
-                                this.setState({currentUserLocationCoords: [currentPosition.coords.latitude, currentPosition.coords.longitude], currentUserRef, locationKnown: true});
+                                this.setState({currentUserLocationCoords: [currentPosition.coords.latitude, currentPosition.coords.longitude], currentUserRef});
                             },
                             (error) => {
                                 console.error(error);
@@ -157,7 +156,7 @@ var Home = React.createClass({
                     })
                     .catch((error) => console.log(error.message))
                     .done();
-            }, 700);
+            }, 500); //@hmm: this time has to be less than time spent on home page
         });
     },
 
@@ -224,7 +223,7 @@ var Home = React.createClass({
             navigator.geolocation.getCurrentPosition(
                 (currentPosition) => {
                     this.state.currentUserRef && this.state.currentUserRef.child(`location/coordinates`).set(currentPosition.coords);
-                    this.setState({currentUserLocationCoords: [currentPosition.coords.latitude, currentPosition.coords.longitude], locationKnown: true});
+                    this.setState({currentUserLocationCoords: [currentPosition.coords.latitude, currentPosition.coords.longitude]});
                 },
                 (error) => {
                     console.error(error);
@@ -269,15 +268,8 @@ var Home = React.createClass({
 
         this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
 
-        AsyncStorage.getItem('@AsyncStorage:Venture:account')
-            .then((account: string) => {
-                account = JSON.parse(account);
-                firebaseRef.child(`users/${account.ventureId}/activityPreference`).set(activityPreferenceChange);
-                this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {currentUserLocationCoords: this.state.currentUserLocationCoords, friendsAPICallURL: this.state.friendsAPICallURL, selected: 'users', ventureId: account.ventureId}});
-            })
-            .catch((error) => console.log(error.message))
-            .done();
-
+        firebaseRef.child(`users/${this.state.ventureId}/activityPreference`).set(activityPreferenceChange);
+        this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {currentUserLocationCoords: this.state.currentUserLocationCoords, friendsAPICallURL: this.state.friendsAPICallURL, selected: 'users', ventureId: this.state.ventureId}});
     },
 
     _roundDateDownToNearestXMinutes(date, num) {
@@ -402,7 +394,7 @@ var Home = React.createClass({
                             caption='Done'
                             captionStyle={{color: '#fff'}}
                             onPress={() => this.setState({showTimeSpecificationOptions: false})}/>
-                        <CheckboxIcon
+                        <CheckBoxIcon
                             active={this.state.hasIshSelected}
                             caption='-ish'
                             captionStyle={{color: '#fff'}}
@@ -424,13 +416,13 @@ var Home = React.createClass({
                         horizontal={true}
                         directionalLockEnabled={true}
                         style={[styles.scrollView, styles.horizontalScrollView, {paddingTop: 10}]}>
-                        <CheckboxIcon
+                        <CheckBoxIcon
                             active={this.state.activeTimeOption === 'now'}
                             caption='now'
                             captionStyle={styles.captionStyle}
                             color='#7cff9d'
                             onPress={() => this.setState({activeTimeOption: 'now', hasSpecifiedTime: false})}/>
-                        <CheckboxIcon
+                        <CheckBoxIcon
                             active={this.state.activeTimeOption === 'later'}
                             caption='later'
                             captionStyle={styles.captionStyle}

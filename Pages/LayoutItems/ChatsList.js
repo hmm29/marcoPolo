@@ -599,10 +599,11 @@ var ChatsList = React.createClass({
                     eventInvites = [];
 
                     if(!_.isEmpty(usersListSnapshotVal[this.props.ventureId].match_requests) || !_.isEmpty(usersListSnapshotVal[this.props.ventureId].event_invite_match_requests)) this.setState({showFunFact: false});
-                    else {
-                        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-                        this.setState({showFunFact: true});
-                    }
+                    else this.setState({showFunFact: true});
+
+                    // @hmm: only show easing effect when fun fact reappears
+                    if(!this.state.showFunFact) LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+
                 });
 
             });
@@ -679,7 +680,7 @@ var ChatsList = React.createClass({
         );
 
         return (
-            <View style={styles.usersListBaseContainer}>
+            <View style={styles.chatsListBaseContainer}>
                 <View>
                     {this._renderHeader()}
                 </View>
@@ -853,7 +854,7 @@ var styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fefefb'
     },
-    usersListBaseContainer: {
+    chatsListBaseContainer: {
         flex: 1,
         backgroundColor: '#040A19'
     },
