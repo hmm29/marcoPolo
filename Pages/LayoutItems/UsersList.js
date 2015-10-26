@@ -453,9 +453,9 @@ var UsersList = React.createClass({
                                                     }
                                                 }
 
-                                                _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
+                                                _this.updateRows(_.cloneDeep(_.values(this.state.rows)));
                                                 _this.setState({
-                                                    rows: _.cloneDeep(_.values(filteredUsersArray)),
+                                                    rows: _.cloneDeep(_.values(this.state.rows)),
                                                     currentUserRef,
                                                     usersListRef
                                                 });
@@ -467,7 +467,7 @@ var UsersList = React.createClass({
 
                                 _this.updateRows(_.cloneDeep(_.values(this.state.rows)));
                                 _this.setState({
-                                    rows: _.cloneDeep(_.values(filteredUsersArray)),
+                                    rows: _.cloneDeep(_.values(this.state.rows)),
                                     currentUserRef,
                                     filteredUsersArray,
                                     usersListRef
