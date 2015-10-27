@@ -101,10 +101,14 @@ var IOSLayout = React.createClass({
         this.state.chatCountRef.off();
     },
 
+    _handleSelectedTabChange(selectedTab:string) {
+        this.setState({selectedTab});
+    },
+
     _renderComponent(title:string) {
         switch(title) {
             case 'hot':
-                return <Hot navigator={this.props.navigator} />;
+                return <Hot handleSelectedTabChange={this._handleSelectedTabChange} navigator={this.props.navigator} />;
             case 'events':
                 return <EventsList currentUserLocationCoords={this.props.currentUserLocationCoords} friendsAPICallURL={this.props.friendsAPICallURL} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'users':

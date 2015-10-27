@@ -36,24 +36,6 @@ var TimerMixin = require('react-timer-mixin');
 var SCREEN_HEIGHT = Display.height;
 var SCREEN_WIDTH = Display.width;
 
-class TrendingItem extends React.Component {
-    render() {
-        if (this.props.type === 'user')
-            return (
-                <TouchableOpacity style={styles.trendingItem}>
-                    <Image style={styles.trendingUserImg} source={{uri:this.props.uri}}/>
-                </TouchableOpacity>
-            );
-
-        else
-            return (
-                <TouchableOpacity style={styles.trendingItem}>
-                    <Image style={styles.trendingEventImg} source={{uri:this.props.uri}}/>
-                </TouchableOpacity>
-            );
-    }
-}
-
 class Title extends React.Component {
     render() {
         return (
@@ -64,6 +46,9 @@ class Title extends React.Component {
 }
 
 var Hot = React.createClass({
+    propTypes: {
+      handleSelectedTabChange: React.PropTypes.func.isRequired
+    },
 
     mixins: [TimerMixin, ReactFireMixin],
 
@@ -150,8 +135,16 @@ var Hot = React.createClass({
     },
 
     _createTrendingItem(type, uri, i) {
+        if(type === 'user') return (
+            <TouchableOpacity key={i} style={styles.trendingItem}>
+                <Image style={styles.trendingUserImg} source={{uri}}/>
+            </TouchableOpacity>
+        )
+
         return (
-            <TrendingItem type={type} key={i} uri={uri}/>
+            <TouchableOpacity key={i} onPress={() => this.props.handleSelectedTabChange('events')} style={styles.trendingItem}>
+                <Image style={styles.trendingEventImg} source={{uri}}/>
+            </TouchableOpacity>
         )
 
     },

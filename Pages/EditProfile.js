@@ -225,7 +225,7 @@ var EditProfile = React.createClass({
                     autoCorrect={false}
                     onChangeText={(text) => {
                         // @hmm: make sure emojis don't cause error - each emoji counts for 3 characters
-                        if(!text.match(/^[a-zA-Z]+$/)) return;
+                        if(!text.match(/^[a-zA-Z]+$/) && text.length <= MAX_TEXT_INPUT_VAL_LENGTH + 3 && text.length >= MAX_TEXT_INPUT_VAL_LENGTH - 2) return;
                         this.setState({currentBio: text})
                     }}
                     maxLength={MAX_TEXT_INPUT_VAL_LENGTH}
@@ -321,7 +321,7 @@ var EditProfile = React.createClass({
                 <View>
                     {this._renderHeader()}
                 </View>
-                <View style={{bottom: this.state.hasKeyboardSpace ? SCREEN_HEIGHT/ 3 : 0, backgroundColor: 'transparent'}}>
+                <View style={{bottom: this.state.hasKeyboardSpace ? SCREEN_HEIGHT/ 3 : 0, backgroundCOlor: ''}}>
                     <Image source={require('image!about')} style={styles.backdrop}>
 
                         {editPhoto}
@@ -378,7 +378,8 @@ var styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        paddingTop: SCREEN_HEIGHT / 14
+        paddingTop: SCREEN_HEIGHT / 14,
+        backgroundColor: 'transparent'
     },
     bio: {
         backgroundColor: 'rgba(9, 24, 58,0.2)',

@@ -591,7 +591,7 @@ var ChatsList = React.createClass({
 
                     // @hmm: add event invites into general activity interactions
 
-                    _this.updateRows(_.sortBy((_.cloneDeep(_.values(usersListSnapshotVal))).concat(eventInvites), `match_requests.${this.props.ventureId}.status`));
+                    _this.updateRows((_.cloneDeep(_.values(usersListSnapshotVal))).concat(eventInvites));
                     _this.setState({currentUserVentureId: this.props.ventureId, userRows: _.cloneDeep(_.values((_.cloneDeep(_.values(usersListSnapshotVal))).concat(eventInvites))), usersListRef});
 
                     // @hmm: rest to prevent multiple event invites in chats list
