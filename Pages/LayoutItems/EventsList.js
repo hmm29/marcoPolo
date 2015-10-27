@@ -49,6 +49,8 @@ var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
 var sha256 = require('sha256');
 var TimerMixin = require('react-timer-mixin');
 
+var EVENT_TITLE = "YSO HALLOWEEN SHOW";
+var EVENT_LOGISTICS = "October 31, 11:59 PM\t | \tWoolsey Hall";
 var INITIAL_LIST_SIZE = 8;
 var LOGO_WIDTH = 200;
 var LOGO_HEIGHT = 120;
@@ -327,6 +329,8 @@ var User = React.createClass({
                         </Text>
                     </Text>
                     <Text
+                        style={[styles.profileModalSectionTitle, {textAlign: 'center'}]}>{EVENT_LOGISTICS}</Text>
+                    <Text
                         style={styles.profileModalBio}>{this.props.data && this.props.data.bio}</Text>
                 </View>
             </View>
@@ -358,7 +362,7 @@ var User = React.createClass({
                                 <Text
                                     style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
                                 <Text style={styles.eventTitle}>
-                                    YSO HALLOWEEN SHOW?
+                                    {EVENT_TITLE}
                                 </Text>
                                <View style={{top: 10, right: 10}}>{this._renderStatusIcon()}</View>
                             </View>
@@ -907,24 +911,6 @@ var styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         fontFamily: 'AvenirNextCondensed-Regular'
-    },
-    tag: {
-        backgroundColor: 'rgba(4,22,43,0.5)',
-        borderRadius: 12,
-        paddingHorizontal: Display.width / 80,
-        marginHorizontal: Display.width / 70,
-        paddingVertical: Display.width / 170,
-        borderWidth: 0.5,
-        borderColor: 'rgba(255,255,255,0.4)'
-    },
-    tagBar: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    tagText: {
-        color: 'rgba(255,255,255,0.95)',
-        fontFamily: 'AvenirNextCondensed-Medium'
     },
     thumbnail: {
         width: THUMBNAIL_SIZE,

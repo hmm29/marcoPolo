@@ -575,7 +575,7 @@ var ChatsList = React.createClass({
 
     componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
-            let eventInvites = [], usersListRef = this.state.firebaseRef.child('/users'), _this = this;
+            let eventInvites = [], usersListRef = this.state.firebaseRef.child('users'), _this = this;
 
             this.bindAsArray(usersListRef, 'userRows');
 
@@ -608,14 +608,14 @@ var ChatsList = React.createClass({
 
             });
 
-            this.state.firebaseRef.child(`/users/${this.props.ventureId}`).once('value', snapshot => {
+            this.state.firebaseRef.child(`users/${this.props.ventureId}`).once('value', snapshot => {
                 _this.setState({currentUserData: snapshot.val()});
             });
         });
     },
 
     componentWillUnmount() {
-        let usersListRef = this.state.firebaseRef.child('/users');
+        let usersListRef = this.state.firebaseRef.child('users');
 
         usersListRef.off();
     },

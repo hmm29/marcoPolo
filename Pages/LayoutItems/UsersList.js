@@ -394,7 +394,6 @@ var UsersList = React.createClass({
 
     getInitialState() {
         return {
-            currentUserFriends: [],
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
             }),
@@ -415,28 +414,6 @@ var UsersList = React.createClass({
         this.bindAsArray(usersListRef, 'rows');
 
         // @hmm: speed up by putting fetch here
-
-        AsyncStorage.getItem('@AsyncStorage:Venture:currentUserFriends')
-            .then((currentUserFriends) => {
-                currentUserFriends = JSON.parse(currentUserFriends);
-
-                if(currentUserFriends) this.setState({currentUserFriends});
-                else {
-                    fetch(this.props.friendsAPICallURL)
-                        .then(response => response.json())
-                        .then(responseData => {
-
-                            AsyncStorage.setItem('@AsyncStorage:Venture:currentUserFriends', JSON.stringify(responseData.data))
-                                .catch(error => console.log(error.message))
-                                .done();
-
-                            this.setState({currentUserFriends: responseData.data});
-                        })
-                        .done();
-                }
-            })
-            .catch(error => console.log(error.message))
-            .done();
 
         // @hmm: short delay to allow filtering for initial loaded users list
         // also prevents RCTURLLoader equal priority error
@@ -462,7 +439,7 @@ var UsersList = React.createClass({
                                 if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
                             }
                         } else if (matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
-                                if (!! _.findWhere(this.state.currentUserFriends, {name: user.name})) {
+                            if (!! _.findWhere(this.props.currentUserFriends, {name: user.name})) {
                                     if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
                                         if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
                                         if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
@@ -487,7 +464,7 @@ var UsersList = React.createClass({
 
                         _this.updateRows(_.cloneDeep(_.values(this.state.rows)));
                         _this.setState({
-                            rows: _.cloneDeep(_.values(this.state.rows)),
+                            rows: _.cloneDeep(_.values(filteredUsersArray)),
                             currentUserRef,
                             filteredUsersArray,
                             usersListRef

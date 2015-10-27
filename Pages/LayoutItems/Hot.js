@@ -294,7 +294,7 @@ var styles = StyleSheet.create({
     },
     trendingEventImg: {
         width: SCREEN_WIDTH / 1.3,
-        height: 84,
+        height: 94,
         resizeMode: 'contain'
     }
 });

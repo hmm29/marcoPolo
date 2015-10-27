@@ -60,6 +60,7 @@ var MainLayout = React.createClass({
 var IOSLayout = React.createClass({
     getInitialState() {
         return {
+            currentUserFriends: [],
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             selectedTab: this.props.selected
         }
@@ -71,6 +72,29 @@ var IOSLayout = React.createClass({
         chatCountRef.on('value', snapshot => {
             this.setState({chatCount: snapshot.val(), chatCountRef})
         });
+
+        AsyncStorage.getItem('@AsyncStorage:Venture:currentUserFriends')
+            .then((currentUserFriends) => {
+                currentUserFriends = JSON.parse(currentUserFriends);
+
+                if(currentUserFriends) this.setState({currentUserFriends});
+
+                else {
+                    fetch(this.props.friendsAPICallURL)
+                        .then(response => response.json())
+                        .then(responseData => {
+
+                            AsyncStorage.setItem('@AsyncStorage:Venture:currentUserFriends', JSON.stringify(responseData.data))
+                                .catch(error => console.log(error.message))
+                                .done();
+
+                            this.setState({currentUserFriends: responseData.data});
+                        })
+                        .done();
+                }
+            })
+            .catch(error => console.log(error.message))
+            .done();
     },
 
     componentWillUnmount() {
@@ -84,7 +108,7 @@ var IOSLayout = React.createClass({
             case 'events':
                 return <EventsList currentUserLocationCoords={this.props.currentUserLocationCoords} friendsAPICallURL={this.props.friendsAPICallURL} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'users':
-                return <UsersList currentUserLocationCoords={this.props.currentUserLocationCoords} friendsAPICallURL={this.props.friendsAPICallURL} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
+                return <UsersList currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} friendsAPICallURL={this.props.friendsAPICallURL} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'chats':
                 return <ChatsList currentUserLocationCoords={this.props.currentUserLocationCoords} friendsAPICallURL={this.props.friendsAPICallURL} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'profile':
