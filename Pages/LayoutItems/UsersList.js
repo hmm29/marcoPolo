@@ -333,42 +333,43 @@ var User = React.createClass({
         );
 
         return (
-                <TouchableHighlight
-                    underlayColor={WHITE_HEX_CODE}
-                    activeOpacity={0.3}
-                    onPress={this._onPressItem}
-                    style={styles.userRow}>
-                    <View
-                        style={[styles.userContentWrapper, {flexDirection: this.state.dir}]}>
-                        <LinearGradient
-                            colors={(this.props.backgroundColor && [this.props.backgroundColor, this.props.backgroundColor]) || [this.getStatusColor(), this._getSecondaryStatusColor(), WHITE_HEX_CODE, 'transparent']}
-                            start={[0,1]}
-                            end={[1,1]}
-                            locations={[0.3,0.99,1.0]}
-                            style={styles.container}>
-                            <Image
-                                onPress={this._onPressItem}
-                                source={{uri: this.props.data && this.props.data.picture}}
-                                style={[styles.thumbnail]}>
-                                <View style={(this.state.timerVal ? styles.timerValOverlay : {})}>
-                                    <Text style={[styles.timerValText, (this.state.timerVal && this.state.timerVal[0] === '1' ? {color: '#FFF484'} : {}), (this.state.timerVal && this.state.timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{this.state.timerVal}</Text>
-                                </View>
-                            </Image>
-                            <View style={styles.rightContainer}>
+            <TouchableHighlight
+                underlayColor={WHITE_HEX_CODE}
+                activeOpacity={0.3}
+                onPress={this._onPressItem}
+                style={styles.userRow}>
+                <View
+                    style={[styles.userContentWrapper, {flexDirection: this.state.dir}]}>
+                    <LinearGradient
+                        colors={(this.props.backgroundColor && [this.props.backgroundColor, this.props.backgroundColor]) || [this.getStatusColor(), this._getSecondaryStatusColor(), WHITE_HEX_CODE, 'transparent']}
+                        start={[0,1]}
+                        end={[1,1]}
+                        locations={[0.3,0.99,1.0]}
+                        style={styles.container}>
+                        <Image
+                            onPress={this._onPressItem}
+                            source={{uri: this.props.data && this.props.data.picture}}
+                            style={[styles.thumbnail]}>
+                            <View style={(this.state.timerVal ? styles.timerValOverlay : {})}>
                                 <Text
-                                    style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
-                                <Text style={styles.activityPreference}>
-                                    {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title}
-                                </Text>
-                                <View>
-                                    {!this.props.isCurrentUser ?
-                                        <View style={{top: 10}}>{this._renderStatusIcon()}</View> : <View />}
-                                </View>
+                                    style={[styles.timerValText, (this.state.timerVal && this.state.timerVal[0] === '1' ? {color: '#FFF484'} : {}), (this.state.timerVal && this.state.timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{this.state.timerVal}</Text>
                             </View>
-                        </LinearGradient>
-                        {this.state.dir === 'column' ? profileModal : <View />}
-                    </View>
-                </TouchableHighlight>
+                        </Image>
+                        <View style={styles.rightContainer}>
+                            <Text
+                                style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
+                            <Text style={styles.activityPreference}>
+                                {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title}
+                            </Text>
+                            <View>
+                                {!this.props.isCurrentUser ?
+                                    <View style={{top: 10}}>{this._renderStatusIcon()}</View> : <View />}
+                            </View>
+                        </View>
+                    </LinearGradient>
+                    {this.state.dir === 'column' ? profileModal : <View />}
+                </View>
+            </TouchableHighlight>
         );
     }
 });
@@ -393,6 +394,7 @@ var UsersList = React.createClass({
 
     getInitialState() {
         return {
+            currentUserFriends: [],
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
             }),
@@ -405,89 +407,104 @@ var UsersList = React.createClass({
     },
 
     componentWillMount() {
-        InteractionManager.runAfterInteractions(() => {
-            let currentUserRef = this.props.ventureId && this.state.firebaseRef.child(`users/${this.props.ventureId}`),
-                usersListRef = this.state.firebaseRef.child('users'),
-                _this = this;
 
-            // @hmm: speed up by putting fetch here
+        let currentUserRef = this.props.ventureId && this.state.firebaseRef.child(`users/${this.props.ventureId}`),
+            usersListRef = this.state.firebaseRef.child('users'),
+            _this = this;
 
-            fetch(this.props.friendsAPICallURL)
-                .then(response => response.json())
-                .then(responseData => {
-                    this.setState({currentUserFriends: responseData.data});
-                })
-                .done();
+        this.bindAsArray(usersListRef, 'rows');
 
-            // @hmm: short delay to allow filtering for initial loaded users list
-            // also prevents RCTURLLoader equal priority error
+        // @hmm: speed up by putting fetch here
 
-                currentUserRef && currentUserRef.child('matchingPreferences').on('value', snapshot => {
+        AsyncStorage.getItem('@AsyncStorage:Venture:currentUserFriends')
+            .then((currentUserFriends) => {
+                currentUserFriends = JSON.parse(currentUserFriends);
 
+                if(currentUserFriends) this.setState({currentUserFriends});
+                else {
+                    fetch(this.props.friendsAPICallURL)
+                        .then(response => response.json())
+                        .then(responseData => {
 
-                    let matchingPreferences = snapshot.val(),
-                        filteredUsersArray = [];
+                            AsyncStorage.setItem('@AsyncStorage:Venture:currentUserFriends', JSON.stringify(responseData.data))
+                                .catch(error => console.log(error.message))
+                                .done();
 
-                    _this.setState({maxSearchDistance: matchingPreferences.maxSearchDistance});
+                            this.setState({currentUserFriends: responseData.data});
+                        })
+                        .done();
+                }
+            })
+            .catch(error => console.log(error.message))
+            .done();
 
-                    InteractionManager.runAfterInteractions(() => {
+        // @hmm: short delay to allow filtering for initial loaded users list
+        // also prevents RCTURLLoader equal priority error
 
-                        // @hmm: show users based on filter settings
+        currentUserRef.child('matchingPreferences').on('value', snapshot => {
 
-                        usersListRef.once('value', snapshot => {
-                            snapshot.val() && _.each(snapshot.val(), (user) => {
+            let matchingPreferences = snapshot.val(),
+                filteredUsersArray = [];
 
-                                // @hmm: because of cumulative privacy selection, only have to check for friends+ for both 'friends+' and 'all'
-                                if (matchingPreferences.privacy.indexOf('friends+') > -1) {
+            _this.setState({maxSearchDistance: matchingPreferences.maxSearchDistance});
+
+            InteractionManager.runAfterInteractions(() => {
+
+                // @hmm: show users based on filter settings
+
+                usersListRef.once('value', snapshot => {
+                    snapshot.val() && _.each(snapshot.val(), (user) => {
+
+                        // @hmm: because of cumulative privacy selection, only have to check for friends+ for both 'friends+' and 'all'
+                        if (matchingPreferences.privacy.indexOf('friends+') > -1) {
+                            if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
+                                if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
+                                if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
+                            }
+                        } else if (matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
+                                if (!! _.findWhere(this.state.currentUserFriends, {name: user.name})) {
                                     if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
                                         if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
                                         if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
                                     }
-                                } else if (matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
-                                            InteractionManager.runAfterInteractions(() => {
-
-                                                if (this.state.currentUserFriends && _.findWhere(this.state.currentUserFriends, {name: user.name})) {
-                                                    if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
-                                                        if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
-                                                        if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
-                                                    }
-                                                }
-
-                                                _this.updateRows(_.cloneDeep(_.values(this.state.rows)));
-                                                _this.setState({
-                                                    rows: _.cloneDeep(_.values(this.state.rows)),
-                                                    currentUserRef,
-                                                    usersListRef
-                                                });
-                                            });
                                 }
-                            });
-                            _this.setTimeout(() => {
-                                // important: update with this.state.rows!!!
+                        } else {
+                            if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
+                                if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
+                                if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
+                            }
+                        }
 
-                                _this.updateRows(_.cloneDeep(_.values(this.state.rows)));
-                                _this.setState({
-                                    rows: _.cloneDeep(_.values(this.state.rows)),
-                                    currentUserRef,
-                                    filteredUsersArray,
-                                    usersListRef
-                                });
-                            }, 0)
+                        _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
+                        _this.setState({
+                            rows: _.cloneDeep(_.values(filteredUsersArray)),
+                            currentUserRef,
+                            usersListRef
                         });
-
                     });
+                    _this.setTimeout(() => {
+                        // important: update with this.state.rows!!!
 
+                        _this.updateRows(_.cloneDeep(_.values(this.state.rows)));
+                        _this.setState({
+                            rows: _.cloneDeep(_.values(this.state.rows)),
+                            currentUserRef,
+                            filteredUsersArray,
+                            usersListRef
+                        });
+                    }, 0)
                 });
 
-                this.bindAsArray(usersListRef, 'rows');
-
-                this.setState({currentUserVentureId: this.props.ventureId});
-
-                this.state.firebaseRef.child(`/users/${this.props.ventureId}`).once('value', snapshot => {
-                    _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
-                });
+            });
 
         });
+
+        this.setState({currentUserVentureId: this.props.ventureId});
+
+        this.state.firebaseRef.child(`/users/${this.props.ventureId}`).once('value', snapshot => {
+            _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
+        });
+
     },
 
     _safelyNavigateToHome() {
