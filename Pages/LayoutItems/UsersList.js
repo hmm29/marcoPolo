@@ -44,7 +44,6 @@ var LinearGradient = require('react-native-linear-gradient');
 var Logo = require('../../Partials/Logo');
 var MatchedIcon = require('../../Partials/Icons/MatchedIcon');
 var Modal = require('react-native-swipeable-modal');
-var ReactFireMixin = require('reactfire');
 var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
 var RefreshableListView = require('react-native-refreshable-listview');
 var TimerMixin = require('react-timer-mixin');
@@ -102,11 +101,13 @@ var User = React.createClass({
     },
 
     componentWillReceiveProps(nextProps) {
-        let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
+        let distance = this.calculateDistance(nextProps.currentUserLocationCoords, [nextProps.data.location.coordinates.latitude, nextProps.data.location.coordinates.longitude]),
             _this = this;
 
-        this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
-        && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+        nextProps.firebaseRef && nextProps.data && nextProps.data.ventureId && nextProps.currentUserIDHashed && nextProps.firebaseRef.child(`users/${nextProps.currentUserIDHashed}/match_requests`).child(nextProps.data.ventureId)
+        && (nextProps.firebaseRef).child(`users/${nextProps.currentUserIDHashed}/match_requests`).child(nextProps.data.ventureId).on('value', snapshot => {
+            //@hmm: quickly reset status
+            _this.setState({status: ''})
             _this.setState({
                 distance,
                 status: snapshot.val() && snapshot.val().status,
@@ -390,7 +391,7 @@ var CustomRefreshingIndicator = React.createClass({
 });
 
 var UsersList = React.createClass({
-    mixins: [TimerMixin, ReactFireMixin],
+    mixins: [TimerMixin],
 
     getInitialState() {
         return {
@@ -410,8 +411,6 @@ var UsersList = React.createClass({
         let currentUserRef = this.props.ventureId && this.state.firebaseRef.child(`users/${this.props.ventureId}`),
             usersListRef = this.state.firebaseRef.child('users'),
             _this = this;
-
-        this.bindAsArray(usersListRef, 'rows');
 
         // @hmm: speed up by putting fetch here
 
@@ -439,7 +438,7 @@ var UsersList = React.createClass({
                                 if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
                             }
                         } else if (matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
-                            if (!! _.findWhere(this.props.currentUserFriends, {name: user.name})) {
+                            if (this.props.currentUserFriends && !! _.findWhere(this.props.currentUserFriends, {name: user.name})) {
                                     if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
                                         if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
                                         if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
@@ -459,17 +458,6 @@ var UsersList = React.createClass({
                             usersListRef
                         });
                     });
-                    _this.setTimeout(() => {
-                        // important: update with this.state.rows!!!
-
-                        _this.updateRows(_.cloneDeep(_.values(this.state.rows)));
-                        _this.setState({
-                            rows: _.cloneDeep(_.values(filteredUsersArray)),
-                            currentUserRef,
-                            filteredUsersArray,
-                            usersListRef
-                        });
-                    }, 0)
                 });
 
             });

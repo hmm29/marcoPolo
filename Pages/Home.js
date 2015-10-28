@@ -162,7 +162,34 @@ var Home = React.createClass({
 
     componentDidMount(){
         AsyncStorage.getItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL')
-            .then((friendsAPICallURL) => this.setState({friendsAPICallURL}))
+            .then((friendsAPICallURL) => {
+                this.setState({friendsAPICallURL});
+                return friendsAPICallURL;
+            })
+            .then((friendsAPICallURL) => {
+                AsyncStorage.getItem('@AsyncStorage:Venture:currentUserFriends')
+                    .then((currentUserFriends) => {
+                        currentUserFriends = JSON.parse(currentUserFriends);
+
+                        if(currentUserFriends) this.setState({currentUserFriends});
+
+                        else {
+                            fetch(friendsAPICallURL)
+                                .then(response => response.json())
+                                .then(responseData => {
+
+                                    AsyncStorage.setItem('@AsyncStorage:Venture:currentUserFriends', JSON.stringify(responseData.data))
+                                        .catch(error => console.log(error.message))
+                                        .done();
+
+                                    this.setState({currentUserFriends: responseData.data});
+                                })
+                                .done();
+                        }
+                    })
+                    .catch(error => console.log(error.message))
+                    .done();
+            })
             .catch(error => console.log(error.message))
             .done();
     },
@@ -181,9 +208,19 @@ var Home = React.createClass({
         });
     },
 
-    _createTrendingItem(type, uri,i) {
+    _createTrendingItem(type, uri, i) {
+        if(type === 'user') return (
+            <TouchableOpacity key={i} style={styles.trendingItem}>
+                <Image style={styles.trendingUserImg} source={{uri}}/>
+            </TouchableOpacity>
+        )
+
         return (
-            <TrendingItem type={type} key={i} uri={uri}/>
+            <TouchableOpacity key={i} onPress={() => {
+                        this._safelyNavigateForward({title: 'Events', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, friendsAPICallURL: this.state.friendsAPICallURL, selected: 'events', ventureId: this.state.ventureId}});
+            }} style={styles.trendingItem}>
+                <Image style={styles.trendingEventImg} source={{uri}}/>
+            </TouchableOpacity>
         )
 
     },
@@ -269,7 +306,7 @@ var Home = React.createClass({
         this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
 
         firebaseRef.child(`users/${this.state.ventureId}/activityPreference`).set(activityPreferenceChange);
-        this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {currentUserLocationCoords: this.state.currentUserLocationCoords, friendsAPICallURL: this.state.friendsAPICallURL, selected: 'users', ventureId: this.state.ventureId}});
+        this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, friendsAPICallURL: this.state.friendsAPICallURL, selected: 'users', ventureId: this.state.ventureId}});
     },
 
     _roundDateDownToNearestXMinutes(date, num) {
@@ -531,25 +568,6 @@ var Home = React.createClass({
         );
     }
 });
-
-class TrendingItem extends React.Component {
-    render() {
-
-        if (this.props.type === 'user')
-            return (
-                <TouchableOpacity style={styles.trendingItem}>
-                    <Image style={styles.trendingUserImg} source={{uri:this.props.uri}}/>
-                </TouchableOpacity>
-            );
-
-        else
-            return (
-                <TouchableOpacity style={styles.trendingItem}>
-                    <Image style={styles.trendingEventImg} source={{uri:this.props.uri}}/>
-                </TouchableOpacity>
-            );
-    }
-}
 
 class Title extends React.Component {
     render() {

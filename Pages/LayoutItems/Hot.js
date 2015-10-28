@@ -130,10 +130,6 @@ var Hot = React.createClass({
 
     },
 
-    componentWillUnmount() {
-
-    },
-
     _createTrendingItem(type, uri, i) {
         if(type === 'user') return (
             <TouchableOpacity key={i} style={styles.trendingItem}>

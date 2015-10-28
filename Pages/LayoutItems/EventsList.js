@@ -106,11 +106,11 @@ var User = React.createClass({
     },
 
     componentWillReceiveProps(nextProps) {
-        let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
+        let distance = this.calculateDistance(nextProps.currentUserLocationCoords, [nextProps.data.location.coordinates.latitude, nextProps.data.location.coordinates.longitude]),
             _this = this;
 
-        this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId)
-        && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
+        nextProps.firebaseRef && nextProps.data && nextProps.data.ventureId && nextProps.currentUserIDHashed && nextProps.firebaseRef.child(`users/${nextProps.currentUserIDHashed}/event_invite_match_requests`).child(nextProps.data.ventureId)
+        && (nextProps.firebaseRef).child(`users/${nextProps.currentUserIDHashed}/event_invite_match_requests`).child(nextProps.data.ventureId).on('value', snapshot => {
             _this.setState({
                 distance,
                 status: snapshot.val() && snapshot.val().status,
@@ -484,9 +484,10 @@ var Event = React.createClass({
 
         let _this = this;
 
-        this.props.eventsListRef && this.props.data && this.props.currentUserData
-        && this.props.currentUserIDHashed && this.props.data.id
-        && this.props.eventsListRef.child(`${this.props.data.id}/attendees/${this.props.currentUserIDHashed}`).once('value', snapshot => {
+        nextProps.eventsListRef && nextProps.data && nextProps.currentUserData
+        && nextProps.currentUserIDHashed && nextProps.data.id
+        && nextProps.eventsListRef.child(`${nextProps.data.id}/attendees/${nextProps.currentUserIDHashed}`).once('value', snapshot => {
+            _this.setState({status: ''})
             if(snapshot.val()) _this.setState({status: 'attending'});
             else _this.setState({status: 'notAttending'});
         });

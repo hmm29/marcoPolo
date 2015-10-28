@@ -225,7 +225,7 @@ var EditProfile = React.createClass({
                     autoCorrect={false}
                     onChangeText={(text) => {
                         // @hmm: make sure emojis don't cause error - each emoji counts for 3 characters
-                        if(!text.match(/^[a-zA-Z]+$/) && text.length <= MAX_TEXT_INPUT_VAL_LENGTH + 3 && text.length >= MAX_TEXT_INPUT_VAL_LENGTH - 2) return;
+                        if(!text.match(/^[a-z0-9A-Z \/_?:;.,-]/) && text.length <= MAX_TEXT_INPUT_VAL_LENGTH + 3 && text.length >= MAX_TEXT_INPUT_VAL_LENGTH - 2) return;
                         this.setState({currentBio: text})
                     }}
                     maxLength={MAX_TEXT_INPUT_VAL_LENGTH}

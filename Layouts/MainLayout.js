@@ -36,7 +36,8 @@ var MainLayout = React.createClass({
     },
 
     render() {
-        let currentUserLocationCoords = this.props.passProps && this.props.passProps.currentUserLocationCoords,
+        let currentUserFriends = this.props.passProps && this.props.passProps.currentUserFriends,
+            currentUserLocationCoords = this.props.passProps && this.props.passProps.currentUserLocationCoords,
             friendsAPICallURL = this.props.passProps && this.props.passProps.friendsAPICallURL,
             navigator = this.props.passProps && this.props.navigator,
             selected = this.props.passProps && this.props.passProps.selected,
@@ -49,6 +50,7 @@ var MainLayout = React.createClass({
         }
 
         return <IOSLayout
+            currentUserFriends={currentUserFriends}
             currentUserLocationCoords={currentUserLocationCoords}
             friendsAPICallURL={friendsAPICallURL}
             navigator={navigator}
@@ -73,32 +75,15 @@ var IOSLayout = React.createClass({
             this.setState({chatCount: snapshot.val(), chatCountRef})
         });
 
-        AsyncStorage.getItem('@AsyncStorage:Venture:currentUserFriends')
-            .then((currentUserFriends) => {
-                currentUserFriends = JSON.parse(currentUserFriends);
-
-                if(currentUserFriends) this.setState({currentUserFriends});
-
-                else {
-                    fetch(this.props.friendsAPICallURL)
-                        .then(response => response.json())
-                        .then(responseData => {
-
-                            AsyncStorage.setItem('@AsyncStorage:Venture:currentUserFriends', JSON.stringify(responseData.data))
-                                .catch(error => console.log(error.message))
-                                .done();
-
-                            this.setState({currentUserFriends: responseData.data});
-                        })
-                        .done();
-                }
-            })
-            .catch(error => console.log(error.message))
-            .done();
+        this.setState({currentUserFriends: this.props.currentUserFriends})
     },
 
     componentWillUnmount() {
         this.state.chatCountRef.off();
+
+        AsyncStorage.setItem('@AsyncStorage:Venture:currentUserFriends', 'null')
+            .catch(error => console.log(error.message))
+            .done();
     },
 
     _handleSelectedTabChange(selectedTab:string) {
