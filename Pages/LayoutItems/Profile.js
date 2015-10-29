@@ -314,7 +314,7 @@ var Photo = React.createClass({
                       bottom: 20
                     }
                   }
-                        source={{uri: `https://res.cloudinary.com/dwnyawluh/image/facebook/${this.props.user.userId}.jpg`}}
+                        source={{uri: `https://res.cloudinary.com/dwnyawluh/image/facebook/884164088285624.jpg`}}
                         />
                 </View>
             );

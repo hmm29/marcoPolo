@@ -86,7 +86,7 @@ var User = React.createClass({
     },
 
     componentWillMount() {
-        let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
+        let distance = this.props.currentUserLocationCoords && this.props.data.location.coordinates && this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
             _this = this;
 
         this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
@@ -124,6 +124,9 @@ var User = React.createClass({
         let currentUserIDHashed = this.props.currentUserIDHashed,
             firebaseRef = this.props.firebaseRef,
             currentUserMatchRequestsRef = firebaseRef && firebaseRef.child('users/' + currentUserIDHashed + '/match_requests');
+
+        this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+        && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).off();
 
         currentUserMatchRequestsRef && currentUserMatchRequestsRef.off();
     },
@@ -431,8 +434,9 @@ var UsersList = React.createClass({
             InteractionManager.runAfterInteractions(() => {
 
                 // @hmm: show users based on filter settings
+                _this.setTimeout(() => {
 
-                usersListRef.once('value', snapshot => {
+                    usersListRef.once('value', snapshot => {
                     snapshot.val() && _.each(snapshot.val(), (user) => {
 
                         // @hmm: because of cumulative privacy selection, only have to check for friends+ for both 'friends+' and 'all'
@@ -473,7 +477,9 @@ var UsersList = React.createClass({
 
                 });
 
-            });
+            }, 0)
+
+        });
 
         });
 

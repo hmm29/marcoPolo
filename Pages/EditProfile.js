@@ -43,7 +43,7 @@ var CAMERA_REF = 'camera';
 var CAMERA_ROLL_OPTION = 'Camera Roll';
 var EDIT_GENDER_AUTOCOMPLETE_REF = 'editGenderAutocomplete';
 var EDIT_GENDER_ICON_SIZE = 22;
-var MAX_TEXT_INPUT_VAL_LENGTH = 15;
+var MAX_TEXT_INPUT_VAL_LENGTH = 30;
 var TAKE_PHOTO_OPTION = 'Take Photo';
 
 var BUTTONS = [
@@ -283,7 +283,7 @@ var EditProfile = React.createClass({
                     onTyping={this._onTyping}
                     suggestions={this.state.genderMatches}
                     textAlign='center'
-                    style={[styles.autocomplete, {height: 40, marginRight: (this.state.showBioField ? 0 : 90)}]}
+                    style={[styles.autocomplete, {height: 40, marginRight: (this.state.showBioField ? 0 : SCREEN_WIDTH / 4)}]}
                     />
             </View>
         );

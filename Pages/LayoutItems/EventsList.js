@@ -823,7 +823,7 @@ var styles = StyleSheet.create({
         paddingLeft: SCREEN_WIDTH / 15,
         paddingRight: SCREEN_WIDTH / 9.5,
         textAlign: 'center',
-        right: SCREEN_WIDTH / 20
+        right: SCREEN_WIDTH / 30
     },
     loadingModalActivityIndicatorIOS: {
         height: 80

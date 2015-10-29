@@ -171,7 +171,7 @@ var Hot = React.createClass({
                             style={[styles.scrollView, styles.horizontalScrollView, {marginTop: 10}]}>
                             {this.state.yalies && this.state.yalies.map(this._createTrendingItem.bind(null, 'user'))}
                         </ScrollView>
-                        <View style={[styles.scrollbarArrow, {top: SCREEN_HEIGHT / 10.6, left: SCREEN_WIDTH / 1.25, backgroundColor: 'transparent'}]}>
+                        <View style={[styles.scrollbarArrow, {top: SCREEN_HEIGHT / 10.6, left: SCREEN_WIDTH / 1.20, backgroundColor: 'transparent'}]}>
                             <Animated.View style={{opacity: this.state.fadeAnim}}>
                             <ChevronIcon
                                 color='rgba(255,255,255,0.8)'
@@ -266,11 +266,10 @@ var styles = StyleSheet.create({
         borderRadius: 3
     },
     trendingItemsCarousel: {
-        width: SCREEN_WIDTH / 1.15,
+        width: SCREEN_WIDTH / 1.2,
         alignSelf: 'center',
         justifyContent: 'center',
         marginHorizontal: (SCREEN_WIDTH - (SCREEN_WIDTH / 1.2)) / 2,
-        backgroundColor: '#040A19',
         padding: 10,
         margin: 20,
         borderRadius: 10
