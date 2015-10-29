@@ -197,20 +197,20 @@ var EditProfile = React.createClass({
         this.setState(state);
     },
 
-    _takePicture() {
-        let _this = this;
-
-        this.refs[CAMERA_REF].capture(function (err, data) {
-            console.log(err, data);
-
-            //@hmm: HACK to add base_64 data to camera images
-            // See https://medium.com/@scottdixon/react-native-creating-a-custom-module-to-upload-camera-roll-images-7a3c26bac309
-
-            NativeModules.ReadImageData.readImage(data, (image) => {
-                _this.setState({currentPic: 'data:image/jpeg;base64,' + image, showCamera: false});
-            })
-        });
-    },
+    //_takePicture() {
+    //    let _this = this;
+    //
+    //    this.refs[CAMERA_REF].capture(function (err, data) {
+    //        console.log(err, data);
+    //
+    //        //@hmm: HACK to add base_64 data to camera images
+    //        // See https://medium.com/@scottdixon/react-native-creating-a-custom-module-to-upload-camera-roll-images-7a3c26bac309
+    //
+    //        NativeModules.ReadImageData.readImage(data, (image) => {
+    //            _this.setState({currentPic: 'data:image/jpeg;base64,' + image, showCamera: false});
+    //        })
+    //    });
+    //},
 
     render() {
         let editBio = (
