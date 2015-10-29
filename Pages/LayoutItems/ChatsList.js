@@ -50,7 +50,6 @@ var Swipeout = require('react-native-swipeout');
 
 var EVENT_ID = 'e068e2d69f2b6b69acf181b6889f9db5934901c2b38fe9947850ed4bb033736f';
 var EVENT_TITLE = 'YSO Halloween Show';
-    
 var INITIAL_LIST_SIZE = 8;
 var LOGO_WIDTH = 200;
 var LOGO_HEIGHT = 120;
@@ -91,6 +90,9 @@ var User = React.createClass({
             _this = this;
 
         if(this.props.data && this.props.data.isEventInvite) {
+            this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+            && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId).off();
+
             this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId)
             && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/event_invite_match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
                 _this.setState({
@@ -100,6 +102,9 @@ var User = React.createClass({
                 });
             });
         } else {
+            this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+            && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).off();
+
             this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
             && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
                 _this.setState({
@@ -116,6 +121,10 @@ var User = React.createClass({
             _this = this;
 
         if(nextProps.data && nextProps.data.isEventInvite) {
+            nextProps.firebaseRef && nextProps.data && nextProps.data.ventureId && nextProps.currentUserIDHashed && nextProps.firebaseRef.child(`users/${nextProps.currentUserIDHashed}/match_requests`).child(nextProps.data.ventureId)
+            && (nextProps.firebaseRef).child(`users/${nextProps.currentUserIDHashed}/event_invite_match_requests`).child(nextProps.data.ventureId).off();
+
+
             nextProps.firebaseRef && nextProps.data && nextProps.data.ventureId && nextProps.currentUserIDHashed && nextProps.firebaseRef.child(`users/${nextProps.currentUserIDHashed}/event_invite_match_requests`).child(nextProps.data.ventureId)
             && (nextProps.firebaseRef).child(`users/${nextProps.currentUserIDHashed}/event_invite_match_requests`).child(nextProps.data.ventureId).on('value', snapshot => {
                 _this.setState({status: ''})
@@ -126,6 +135,10 @@ var User = React.createClass({
                 });
             });
         } else {
+            nextProps.firebaseRef && nextProps.data && nextProps.data.ventureId && nextProps.currentUserIDHashed && nextProps.firebaseRef.child(`users/${nextProps.currentUserIDHashed}/match_requests`).child(nextProps.data.ventureId)
+            && (nextProps.firebaseRef).child(`users/${nextProps.currentUserIDHashed}/match_requests`).child(nextProps.data.ventureId).off();
+
+
             nextProps.firebaseRef && nextProps.data && nextProps.data.ventureId && nextProps.currentUserIDHashed && nextProps.firebaseRef.child(`users/${nextProps.currentUserIDHashed}/match_requests`).child(nextProps.data.ventureId)
             && (nextProps.firebaseRef).child(`users/${nextProps.currentUserIDHashed}/match_requests`).child(nextProps.data.ventureId).on('value', snapshot => {
                 _this.setState({status: ''})
@@ -209,7 +222,7 @@ var User = React.createClass({
                 // chatroom reference uses id of the user who accepts the received matchInteraction
 
                 targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
-                    account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                    account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'firstName', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
                     eventId: EVENT_ID,
                     eventTitle: EVENT_TITLE,
                     status: 'matched',
@@ -217,7 +230,7 @@ var User = React.createClass({
                 }, 100);
 
                 currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
-                    account: this.props.data && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                    account: this.props.data && _.assign(_.pick(this.props.data, 'firstName', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
                     eventId: EVENT_ID,
                     eventTitle: EVENT_TITLE,
                     status: 'matched',
@@ -297,7 +310,7 @@ var User = React.createClass({
                     status: 'received'
                 }, 200);
                 currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
-                    account: this.props.data && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                    account: this.props.data && _.assign(_.pick(this.props.data, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
                     eventId: EVENT_ID,
                     eventTitle: EVENT_TITLE,
                     status: 'sent'
@@ -326,15 +339,15 @@ var User = React.createClass({
                 // @hmm: accept the request
                 // chatroom reference uses id of the user who accepts the received matchInteraction
 
-                targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+                targetUserMatchRequestsRef.child(currentUserIDHashed).set({
                     status: 'matched',
                     role: 'recipient'
-                }, 100);
+                });
 
-                currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+                currentUserMatchRequestsRef.child(targetUserIDHashed).set({
                     status: 'matched',
                     role: 'sender'
-                }, 100);
+                });
             }
 
             else if (this.state.status === 'matched') {

@@ -310,7 +310,7 @@ var RecipientInfoBar = React.createClass({
                     <Text style={{fontFamily: 'AvenirNextCondensed-Medium'}}>
                         <Text
                             style={{fontSize: 20}}>{user === currentUserData ? this.state.currentUserActivityPreferenceTitle && this.state.currentUserActivityPreferenceTitle.replace(/[^\w\s]|_/g, '').replace(/\s+/g, ' ') :
-                        this.state.targetUserActivityPreferenceTitle && this.state.targetUserActivityPreferenceTitle.replace(/[^\w\s]|_/g, '').replace(/\s+/g, ' ')}</Text>: {user.activityPreference && (user.activityPreference.start.time || user.activityPreference.status)}
+                        this.state.targetUserActivityPreferenceTitle && this.state.targetUserActivityPreferenceTitle.replace(/[^\w\s]|_/g, '').replace(/\s+/g, ' ')}</Text> {this.props.recipientData.chatRoomEventTitle ? '' : ':' + user.activityPreference && (user.activityPreference.start.time || user.activityPreference.status)}
                         {'\n'}
                     </Text>
                 </Text>
@@ -562,11 +562,13 @@ var TimerBar = React.createClass({
     },
 
     render() {
+        let timerVal = this._getTimerValue(this.state.timerValInMs);
+
         return (
             <View
                 style={styles.timerBar}>
                 <Text
-                    style={styles.timer}>{this._getTimerValue(this.state.timerValInMs)}</Text>
+                    style={[styles.timer, (timerVal && timerVal[0] === '1' ? {color: '#FFF484'} : {}), (timerVal && timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{timerVal}</Text>
             </View>
         )
     }

@@ -81,7 +81,6 @@ var User = React.createClass({
     getInitialState() {
         return {
             dir: 'row',
-            status: '',
             timerVal: ''
         }
     },
@@ -89,6 +88,9 @@ var User = React.createClass({
     componentWillMount() {
         let distance = this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
             _this = this;
+
+        //this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
+        //&& (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).off();
 
         this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
         && (this.props.firebaseRef).child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId).on('value', snapshot => {
@@ -105,9 +107,11 @@ var User = React.createClass({
             _this = this;
 
         nextProps.firebaseRef && nextProps.data && nextProps.data.ventureId && nextProps.currentUserIDHashed && nextProps.firebaseRef.child(`users/${nextProps.currentUserIDHashed}/match_requests`).child(nextProps.data.ventureId)
+        && (nextProps.firebaseRef).child(`users/${nextProps.currentUserIDHashed}/match_requests`).child(nextProps.data.ventureId).off();
+
+        nextProps.firebaseRef && nextProps.data && nextProps.data.ventureId && nextProps.currentUserIDHashed && nextProps.firebaseRef.child(`users/${nextProps.currentUserIDHashed}/match_requests`).child(nextProps.data.ventureId)
         && (nextProps.firebaseRef).child(`users/${nextProps.currentUserIDHashed}/match_requests`).child(nextProps.data.ventureId).on('value', snapshot => {
             //@hmm: quickly reset status
-            _this.setState({status: ''})
             _this.setState({
                 distance,
                 status: snapshot.val() && snapshot.val().status,
@@ -217,12 +221,10 @@ var User = React.createClass({
                         chatRoomRoute = _.findWhere(currentRouteStack, {title: 'Chat', passProps: {_id}});
 
                     if (snapshot.val() === null) {
-
                         chatRoomRef.child('_id').set(_id); // @hmm: set unique chat Id
                         chatRoomRef.child('timer').set({value: 300000}); // @hmm: set timer
                         chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set(this.props.currentUserData.activityPreference.title);
                         chatRoomRef.child('user_activity_preference_titles').child(targetUserIDHashed).set(this.props.data.activityPreference.title);
-
                     }
 
                     firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).once('value', snapshot => {
@@ -269,6 +271,8 @@ var User = React.createClass({
                 status: 'sent'
             }, 300);
         }
+
+        this.props.handleRowsStateChange(this.props.rows);
     },
 
     _onPressItem() {
@@ -458,6 +462,15 @@ var UsersList = React.createClass({
                             usersListRef
                         });
                     });
+                    _this.setTimeout(() => {
+                        _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
+                        _this.setState({
+                            rows: _.cloneDeep(_.values(filteredUsersArray)),
+                            currentUserRef,
+                            usersListRef
+                        });
+                    }, 0)
+
                 });
 
             });
@@ -470,6 +483,10 @@ var UsersList = React.createClass({
             _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
         });
 
+    },
+
+    handleRowsStateChange(rows){
+        this.setState({rows});
     },
 
     _safelyNavigateToHome() {
@@ -505,7 +522,7 @@ var UsersList = React.createClass({
     },
 
     shuffleUsers() {
-        this.updateRows(_.cloneDeep(_.values(_.shuffle(this.state.rows))));
+        this.updateRows(_.shuffle(_.cloneDeep(_.values(this.state.rows))));
     },
 
     updateRows(rows) {
@@ -555,7 +572,10 @@ var UsersList = React.createClass({
                      currentUserLocationCoords={this.props.currentUserLocationCoords}
                      data={user}
                      firebaseRef={this.state.firebaseRef}
-                     navigator={this.props.navigator}/>;
+                     handleRowsStateChange={this.handleRowsStateChange}
+                     navigator={this.props.navigator}
+                     rows={this.state.rows}
+            />;
     },
 
     render() {

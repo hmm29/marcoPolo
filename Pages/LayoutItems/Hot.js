@@ -270,7 +270,7 @@ var styles = StyleSheet.create({
         alignSelf: 'center',
         justifyContent: 'center',
         marginHorizontal: (SCREEN_WIDTH - (SCREEN_WIDTH / 1.2)) / 2,
-        backgroundColor: 'rgba(0,0,0,0.8)',
+        backgroundColor: '#040A19',
         padding: 10,
         margin: 20,
         borderRadius: 10
@@ -283,7 +283,7 @@ var styles = StyleSheet.create({
     },
     trendingEventImg: {
         width: SCREEN_WIDTH / 1.3,
-        height: 94,
+        height: 110,
         resizeMode: 'contain'
     }
 });
