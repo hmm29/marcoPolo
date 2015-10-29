@@ -152,12 +152,12 @@ var Hot = React.createClass({
         if (currentRouteStack.indexOf(homeRoute) > -1) this.props.navigator.jumpTo(homeRoute);
     },
 
-    render: function () {
+    render() {
         return (
             <View style={styles.container}>
                 {this._renderHeader()}
                 <View style={[styles.tabContent, {flex: 1}]}>
-                    <View style={styles.trendingItemsCarousel}>
+                    <View style={[styles.trendingItemsCarousel, {height: SCREEN_HEIGHT / 5}]}>
                         <Title>TRENDING <Text style={{color: '#ee964b'}}>YALIES</Text></Title>
                         <ScrollView
                             automaticallyAdjustContentInsets={false}
@@ -171,7 +171,7 @@ var Hot = React.createClass({
                             style={[styles.scrollView, styles.horizontalScrollView, {marginTop: 10}]}>
                             {this.state.yalies && this.state.yalies.map(this._createTrendingItem.bind(null, 'user'))}
                         </ScrollView>
-                        <View style={[styles.scrollbarArrow, {top: SCREEN_HEIGHT / 10.6}, {left: SCREEN_WIDTH / 1.25}]}>
+                        <View style={[styles.scrollbarArrow, {top: SCREEN_HEIGHT / 10.6, left: SCREEN_WIDTH / 1.25, backgroundColor: 'transparent'}]}>
                             <Animated.View style={{opacity: this.state.fadeAnim}}>
                             <ChevronIcon
                                 color='rgba(255,255,255,0.8)'
@@ -266,7 +266,7 @@ var styles = StyleSheet.create({
         borderRadius: 3
     },
     trendingItemsCarousel: {
-        width: SCREEN_WIDTH / 1.2,
+        width: SCREEN_WIDTH / 1.15,
         alignSelf: 'center',
         justifyContent: 'center',
         marginHorizontal: (SCREEN_WIDTH - (SCREEN_WIDTH / 1.2)) / 2,

@@ -765,7 +765,7 @@ var EventsList = React.createClass({
                             <Text
                                 style={styles.loadingModalFunFactText}>
                                 <Text style={styles.loadingModalFunFactTextTitle}>Did You Know ?</Text>
-                                {'\n\n'} Curiosly, 15% of Yalies don't {'\n'} know why they chose Yale.</Text>
+                                {'\n\n'} The phrase "Let's grab a meal" has a 12% success rate.</Text>
                         </TouchableOpacity>
                     </View>
                 </Modal>
