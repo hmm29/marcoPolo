@@ -274,8 +274,6 @@ var User = React.createClass({
                 status: 'sent'
             }, 300);
         }
-
-        this.props.handleRowsStateChange(this.props.rows);
     },
 
     _onPressItem() {
@@ -437,29 +435,32 @@ var UsersList = React.createClass({
                 _this.setTimeout(() => {
 
                     usersListRef.once('value', snapshot => {
-                    snapshot.val() && _.each(snapshot.val(), (user) => {
+                        _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
+
+                        snapshot.val() && _.each(snapshot.val(), (user) => {
 
                         // @hmm: because of cumulative privacy selection, only have to check for friends+ for both 'friends+' and 'all'
                         if (matchingPreferences.privacy && matchingPreferences.privacy.indexOf('friends+') > -1) {
                             if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
                                 if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
-                                if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
+                                if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1 && user.gender !== 'male' && user.gender !== 'female') filteredUsersArray.push(user);
                             }
                         } else if (matchingPreferences.privacy && matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
                             if (this.props.currentUserFriends && !! _.findWhere(this.props.currentUserFriends, {name: user.name})) {
-                                    if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
-                                        if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
-                                        if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
-                                    }
+                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
+                                    if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
+                                    if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1 && user.gender !== 'male' && user.gender !== 'female') filteredUsersArray.push(user);
                                 }
+                            }
                         } else {
                             if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
                                 if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
-                                if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
+                                if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1 && user.gender !== 'male' && user.gender !== 'female') filteredUsersArray.push(user);
                             }
                         }
 
                         _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
+                        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
                         _this.setState({
                             rows: _.cloneDeep(_.values(filteredUsersArray)),
                             currentUserRef,
@@ -468,6 +469,7 @@ var UsersList = React.createClass({
                     });
                     _this.setTimeout(() => {
                         _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
+                        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
                         _this.setState({
                             rows: _.cloneDeep(_.values(filteredUsersArray)),
                             currentUserRef,
@@ -489,10 +491,6 @@ var UsersList = React.createClass({
             _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
         });
 
-    },
-
-    handleRowsStateChange(rows){
-        this.setState({rows});
     },
 
     _safelyNavigateToHome() {
@@ -529,6 +527,7 @@ var UsersList = React.createClass({
 
     shuffleUsers() {
         this.updateRows(_.shuffle(_.cloneDeep(_.values(this.state.rows))));
+        this.forceUpdate();
     },
 
     updateRows(rows) {
@@ -578,10 +577,7 @@ var UsersList = React.createClass({
                      currentUserLocationCoords={this.props.currentUserLocationCoords}
                      data={user}
                      firebaseRef={this.state.firebaseRef}
-                     handleRowsStateChange={this.handleRowsStateChange}
-                     navigator={this.props.navigator}
-                     rows={this.state.rows}
-            />;
+                     navigator={this.props.navigator}/>;
     },
 
     render() {

@@ -412,8 +412,8 @@ var GuestList = React.createClass({
     },
 
     componentWillUnmount() {
-        this.state.currentUserRef.off();
-        this.state.usersListRef.off();
+        this.state.currentUserRef && this.state.currentUserRef.off();
+        this.state.usersListRef && this.state.usersListRef.off();
     },
 
     updateRows(rows) {

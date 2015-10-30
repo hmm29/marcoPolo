@@ -156,7 +156,7 @@ var Home = React.createClass({
                     })
                     .catch((error) => console.log(error.message))
                     .done();
-            }, 500); //@hmm: this time has to be less than time spent on home page
+            }, 0); //@hmm: this time has to be less than time spent on home page
         });
     },
 

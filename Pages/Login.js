@@ -70,6 +70,12 @@ var Login = React.createClass({
         }
     },
 
+    componentWillMount() {
+        AsyncStorage.setItem('@AsyncStorage:Venture:account', 'null')
+            .catch(error => console.log(error.message))
+            .done();
+    },
+
     _createAccount() {
         let user = this.state.user,
             ventureId = this.state.ventureId,
@@ -131,6 +137,7 @@ var Login = React.createClass({
     _navigateToNextPage() {
         var Home = require('./Home');
 
+        this.props.navigator.popToTop();
         this.props.navigator.replace({title: 'Home', component: Home})
     },
 
