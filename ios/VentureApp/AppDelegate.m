@@ -36,7 +36,7 @@
    * on the same Wi-Fi network.
    */
 
-  // jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/VentureApp.ios.bundle\?platform=ios&dev\=0"];
+  // jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle\?platform=ios&dev\=0"];
 
   /**
    * OPTION 2
@@ -61,8 +61,8 @@
      * $ react-native bundle --minify
      */
 
-    AHBuild *build = [[AppHub buildManager] currentBuild];
-    jsCodeLocation = [build.bundle URLForResource:@"main"
+     AHBuild *build = [[AppHub buildManager] currentBuild];
+     jsCodeLocation = [build.bundle URLForResource:@"main"
                                     withExtension:@"jsbundle"];
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation

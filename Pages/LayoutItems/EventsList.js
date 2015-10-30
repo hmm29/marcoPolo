@@ -57,7 +57,6 @@ var LOGO_HEIGHT = 120;
 var PAGE_SIZE = 10;
 var SCREEN_WIDTH = Display.width;
 var SCREEN_HEIGHT = Display.height;
-var SEARCH_TEXT_INPUT_REF = 'searchTextInput'
 
 var YELLOW_HEX_CODE = '#ffe770';
 var BLACK_HEX_CODE = '#000';
@@ -642,7 +641,6 @@ var EventsList = React.createClass({
             eventsListRef,
             firebaseRef,
             eventsRows: [],
-            searchText: '',
             showGuestListModal: false,
             showLoadingModal: true,
             userRows: [],
@@ -900,18 +898,6 @@ var styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start'
-    },
-    searchTextInput: {
-        color: '#222',
-        backgroundColor: 'white',
-        borderRadius: 3,
-        borderWidth: 1,
-        width: 200,
-        height: 30,
-        paddingLeft: 10,
-        fontSize: 18,
-        fontWeight: 'bold',
-        fontFamily: 'AvenirNextCondensed-Regular'
     },
     thumbnail: {
         width: THUMBNAIL_SIZE,
