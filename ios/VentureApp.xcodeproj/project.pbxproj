@@ -31,6 +31,9 @@
 		427790C31BC54CD800ED919D /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427790BF1BC54CD800ED919D /* FBSDKCoreKit.framework */; settings = {ASSET_TAGS = (); }; };
 		427790C41BC54CD800ED919D /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427790C01BC54CD800ED919D /* FBSDKLoginKit.framework */; settings = {ASSET_TAGS = (); }; };
 		427790C51BC54CD800ED919D /* FBSDKShareKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427790C11BC54CD800ED919D /* FBSDKShareKit.framework */; settings = {ASSET_TAGS = (); }; };
+		427FB1021BE4217900C47F50 /* AppHub.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427FB1011BE4217900C47F50 /* AppHub.framework */; settings = {ASSET_TAGS = (); }; };
+		427FB1131BE421A800C47F50 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427FB1121BE421A800C47F50 /* SystemConfiguration.framework */; };
+		427FB1151BE421B200C47F50 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 427FB1141BE421B200C47F50 /* libz.tbd */; };
 		4290F0F31BB746C80052C1E4 /* Orientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4290F0F21BB746C80052C1E4 /* Orientation.m */; settings = {ASSET_TAGS = (); }; };
 		42E7F88B1BE28C3C00761649 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42E7F88A1BE28C3C00761649 /* LaunchScreen.xib */; settings = {ASSET_TAGS = (); }; };
 		42E8FED71BD42D8500923398 /* libRCTCamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 42E8FECB1BD42D6F00923398 /* libRCTCamera.a */; };
@@ -182,6 +185,9 @@
 		427790BF1BC54CD800ED919D /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		427790C01BC54CD800ED919D /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKLoginKit.framework; sourceTree = "<group>"; };
 		427790C11BC54CD800ED919D /* FBSDKShareKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKShareKit.framework; sourceTree = "<group>"; };
+		427FB1011BE4217900C47F50 /* AppHub.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AppHub.framework; sourceTree = "<group>"; };
+		427FB1121BE421A800C47F50 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		427FB1141BE421B200C47F50 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		4290F0F11BB746C80052C1E4 /* Orientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Orientation.h; sourceTree = "<group>"; };
 		4290F0F21BB746C80052C1E4 /* Orientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Orientation.m; sourceTree = "<group>"; };
 		42E7F88A1BE28C3C00761649 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
@@ -202,6 +208,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				427FB1151BE421B200C47F50 /* libz.tbd in Frameworks */,
+				427FB1131BE421A800C47F50 /* SystemConfiguration.framework in Frameworks */,
+				427FB1021BE4217900C47F50 /* AppHub.framework in Frameworks */,
 				42E8FED71BD42D8500923398 /* libRCTCamera.a in Frameworks */,
 				427790C41BC54CD800ED919D /* FBSDKLoginKit.framework in Frameworks */,
 				427790C21BC54CD800ED919D /* Bolts.framework in Frameworks */,
@@ -426,6 +435,9 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				427FB1141BE421B200C47F50 /* libz.tbd */,
+				427FB1121BE421A800C47F50 /* SystemConfiguration.framework */,
+				427FB1011BE4217900C47F50 /* AppHub.framework */,
 				427790BD1BC54C2A00ED919D /* FacebookSDK */,
 				4260938F1BC0D6C200623EA5 /* ionicons.ttf */,
 				4290F0F01BB746C80052C1E4 /* RCTOrientation */,

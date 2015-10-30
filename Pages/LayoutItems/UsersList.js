@@ -435,7 +435,8 @@ var UsersList = React.createClass({
                 _this.setTimeout(() => {
 
                     usersListRef.once('value', snapshot => {
-                        _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
+                        // @hmm: clear and re-render rows
+                        _this.updateRows([]);
 
                         snapshot.val() && _.each(snapshot.val(), (user) => {
 

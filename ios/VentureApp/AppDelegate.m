@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#import <AppHub/AppHub.h>
 #import "AppDelegate.h"
 #import "RCTRootView.h"
 
@@ -17,6 +18,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [AppHub setApplicationID:@"EZ1vdoRGFMd7fbl7fPPt"];
+
   NSURL *jsCodeLocation;
 
   /**
@@ -33,7 +36,7 @@
    * on the same Wi-Fi network.
    */
 
-  jsCodeLocation = [NSURL URLWithString:@"http://172.27.153.216:8081/VentureApp.ios.bundle\?platform=ios&dev\=0"];
+  // jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/VentureApp.ios.bundle\?platform=ios&dev\=0"];
 
   /**
    * OPTION 2
@@ -45,7 +48,22 @@
    * see http://facebook.github.io/react-native/docs/runningondevice.html
    */
 
-//   jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+    //   jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+
+    /**
+     * OPTION 3 - AppHub
+     *
+     * Load cached code and images from AppHub.
+     *
+     * Make sure to re-generate the static bundle from the
+     * root of your directory by running
+     *
+     * $ react-native bundle --minify
+     */
+
+    AHBuild *build = [[AppHub buildManager] currentBuild];
+    jsCodeLocation = [build.bundle URLForResource:@"main"
+                                    withExtension:@"jsbundle"];
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                       moduleName:@"VentureApp"
