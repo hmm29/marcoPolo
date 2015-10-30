@@ -243,6 +243,11 @@ var Profile = React.createClass({
                                   AsyncStorage.setItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL', 'null')
                                     .catch(error => console.log(error.message))
                                     .done();
+
+                                  AsyncStorage.setItem('@AsyncStorage:Venture:currentUserFriends', 'null')
+                                    .catch(error => console.log(error.message))
+                                    .done();
+
                                 }}
 
                                  onLoginFound={function(data){
