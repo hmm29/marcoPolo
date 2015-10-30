@@ -545,7 +545,7 @@ var User = React.createClass({
                                 source={{uri: this.props.data && this.props.data.picture}}
                                 style={[styles.thumbnail]}>
                                 <View style={(this.state.timerVal ? styles.timerValOverlay : {})}>
-                                    <Text style={[styles.timerValText, (this.state.timerVal && this.state.timerVal[0] === '1' ? {color: '#FFF484'} : {}), (this.state.timerVal && this.state.timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{this.state.timerVal}</Text>
+                                    <Text style={[styles.timerValText, (this.state.timerVal && this.state.timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{this.state.timerVal}</Text>
                                 </View>
                             </Image>
                             {userRowContent}

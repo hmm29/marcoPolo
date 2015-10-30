@@ -360,7 +360,7 @@ var User = React.createClass({
                             style={[styles.thumbnail]}>
                             <View style={(this.state.timerVal ? styles.timerValOverlay : {})}>
                                 <Text
-                                    style={[styles.timerValText, (this.state.timerVal && this.state.timerVal[0] === '1' ? {color: '#FFF484'} : {}), (this.state.timerVal && this.state.timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{this.state.timerVal}</Text>
+                                    style={[styles.timerValText, (this.state.timerVal && this.state.timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{this.state.timerVal}</Text>
                             </View>
                         </Image>
                         <View style={styles.rightContainer}>
@@ -415,7 +415,7 @@ var UsersList = React.createClass({
 
     componentWillMount() {
 
-        let currentUserRef = this.props.ventureId && this.state.firebaseRef.child(`users/${this.props.ventureId}`),
+        let currentUserRef = this.props.ventureId && this.state.firebaseRef && this.state.firebaseRef.child(`users/${this.props.ventureId}`),
             usersListRef = this.state.firebaseRef.child('users'),
             _this = this;
 
@@ -440,22 +440,22 @@ var UsersList = React.createClass({
                     snapshot.val() && _.each(snapshot.val(), (user) => {
 
                         // @hmm: because of cumulative privacy selection, only have to check for friends+ for both 'friends+' and 'all'
-                        if (matchingPreferences.privacy.indexOf('friends+') > -1) {
+                        if (matchingPreferences.privacy && matchingPreferences.privacy.indexOf('friends+') > -1) {
                             if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
-                                if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
-                                if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
+                                if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
+                                if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
                             }
-                        } else if (matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
+                        } else if (matchingPreferences.privacy && matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
                             if (this.props.currentUserFriends && !! _.findWhere(this.props.currentUserFriends, {name: user.name})) {
                                     if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
-                                        if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
-                                        if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
+                                        if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
+                                        if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
                                     }
                                 }
                         } else {
                             if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
-                                if (matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
-                                if (matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
+                                if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
+                                if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1) filteredUsersArray.push(user);
                             }
                         }
 
@@ -621,7 +621,6 @@ var UsersList = React.createClass({
                             logoStyle={styles.logoStyle}/>
                         <ActivityIndicatorIOS
                             color='#fff'
-                            animating={this.state.animating}
                             style={styles.loadingModalActivityIndicatorIOS}
                             size='small'/>
                         <TouchableOpacity activeOpacity={0.8}>

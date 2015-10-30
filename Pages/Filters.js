@@ -56,11 +56,11 @@ var Filters = React.createClass({
             firebaseUserMatchingPreferencesRef.once('value', snapshot =>
                     _this.setState({
                         firebaseUserMatchingPreferencesRef,
-                        distance: snapshot.val() && snapshot.val().maxSearchDistance,
-                        privacy: snapshot.val() && snapshot.val().privacy,
-                        gender: snapshot.val() && snapshot.val().gender,
-                        ageRangeUpper: snapshot.val() && snapshot.val().ageRangeUpper,
-                        ageRangeLower: snapshot.val() && snapshot.val().ageRangeLower,
+                        distance: snapshot.val() && snapshot.val().maxSearchDistance || 1.0,
+                        privacy: snapshot.val() && snapshot.val().privacy || [],
+                        gender: snapshot.val() && snapshot.val().gender || [],
+                        ageRangeUpper: snapshot.val() && snapshot.val().ageRangeUpper || 25,
+                        ageRangeLower: snapshot.val() && snapshot.val().ageRangeLower || 18,
                         ventureId: snapshot.val() && snapshot.val().ventureId
                     })
             );
@@ -78,37 +78,25 @@ var Filters = React.createClass({
     },
 
     saveFilters() {
-        if (this.state.gender.length === 0) {
-            this.setState({
-                gender: ['male', 'female', 'other']
-            })
-        }
-
-        if (this.state.privacy.length === 0) {
-            this.setState({
-                privacy: ['friends', 'friends+', 'all']
-            })
-        }
-
-
-        let _this = this,
+        let defaultGender = ['male', 'female', 'other'],
+            defaultPrivacy = ['friends', 'friends+', 'all'],
+            _this = this,
             filtersChanges = {
                 ageRangeLower: _this.state.ageRangeLower || 18,
                 ageRangeUpper: _this.state.ageRangeUpper || 24,
-                gender: _this.state.gender,
-                maxSearchDistance: _this.state.distance,
-                privacy: _this.state.privacy
+                gender: (_this.state.gender.length && _this.state.gender) || defaultGender,
+                maxSearchDistance: _this.state.distance || 1.0,
+                privacy: (_this.state.privacy.length && _this.state.privacy) || defaultPrivacy
             };
 
-        this.state.firebaseUserMatchingPreferencesRef.set(filtersChanges);
+            this.state.firebaseUserMatchingPreferencesRef.set(filtersChanges);
 
         this._safelyNavigateToMainLayout();
     },
 
     _setButtonState(field:string, value:string) {
-        if (field === 'gender') return (this.state.gender.indexOf(value) > -1 ? styles.tabButtonGenderActive : styles.tabButtonGenderInactive);
-
-        else if (field === 'privacy') return (this.state.privacy.indexOf(value) > -1 ? styles.tabButtonPrivacySettingsActive : styles.tabButtonPrivacySettingsInactive);
+        if (field === 'gender') return (this.state.gender && this.state.gender.indexOf(value) > -1 ? styles.tabButtonGenderActive : styles.tabButtonGenderInactive);
+        else if (field === 'privacy') return (this.state.privacy && this.state.privacy.indexOf(value) > -1 ? styles.tabButtonPrivacySettingsActive : styles.tabButtonPrivacySettingsInactive);
     },
 
     setGendersToIncludeFemale() {

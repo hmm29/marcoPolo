@@ -187,6 +187,7 @@ var Chat = React.createClass({
     render() {
         let messageTextInput = (
             <TextInput
+                autoCorrect={false}
                 ref={MESSAGE_TEXT_INPUT_REF}
                 onBlur={() => {
                     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
@@ -310,7 +311,7 @@ var RecipientInfoBar = React.createClass({
                     <Text style={{fontFamily: 'AvenirNextCondensed-Medium'}}>
                         <Text
                             style={{fontSize: 20}}>{user === currentUserData ? this.state.currentUserActivityPreferenceTitle && this.state.currentUserActivityPreferenceTitle.replace(/[^\w\s]|_/g, '').replace(/\s+/g, ' ') :
-                        this.state.targetUserActivityPreferenceTitle && this.state.targetUserActivityPreferenceTitle.replace(/[^\w\s]|_/g, '').replace(/\s+/g, ' ')}</Text> {this.props.recipientData.chatRoomEventTitle ? '' : ':' + user.activityPreference && (user.activityPreference.start.time || user.activityPreference.status)}
+                        this.state.targetUserActivityPreferenceTitle && this.state.targetUserActivityPreferenceTitle.replace(/[^\w\s]|_/g, '').replace(/\s+/g, ' ')} {this.props.recipientData.chatRoomEventTitle ? '' : ':'}</Text> {this.props.recipientData.chatRoomEventTitle ? '' : user.activityPreference && (user.activityPreference.start.time || user.activityPreference.status)}
                         {'\n'}
                     </Text>
                 </Text>
@@ -336,7 +337,7 @@ var RecipientInfoBar = React.createClass({
                     returnKeyType='default'
                     style={styles.textInput}
                     value={this.state.currentUserActivityPreferenceTitle}/> : <TextInput />}
-                {!this.props.recipientData.chatRoomEventTitle ? tagsSection : <View />}
+                {!this.props.recipientData.chatRoomEventTitle ? tagsSection : <View style={{height: SCREEN_HEIGHT / 18}}/>}
                 <Text
                     style={styles.bio}>{user.bio}</Text>
             </View>
@@ -433,6 +434,8 @@ var TimerBar = React.createClass({
     mixins: [TimerMixin],
 
     _handle: null,
+
+    //@hmm: must be componentWillMount
 
     componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
@@ -568,7 +571,7 @@ var TimerBar = React.createClass({
             <View
                 style={styles.timerBar}>
                 <Text
-                    style={[styles.timer, (timerVal && timerVal[0] === '1' ? {color: '#FFF484'} : {}), (timerVal && timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{timerVal}</Text>
+                    style={[styles.timer, (timerVal && timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{timerVal}</Text>
             </View>
         )
     }

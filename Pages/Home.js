@@ -163,7 +163,6 @@ var Home = React.createClass({
     componentDidMount(){
         AsyncStorage.getItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL')
             .then((friendsAPICallURL) => {
-                this.setState({friendsAPICallURL});
                 return friendsAPICallURL;
             })
             .then((friendsAPICallURL) => {
@@ -217,7 +216,7 @@ var Home = React.createClass({
 
         return (
             <TouchableOpacity key={i} onPress={() => {
-                        this._safelyNavigateForward({title: 'Events', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, friendsAPICallURL: this.state.friendsAPICallURL, selected: 'events', ventureId: this.state.ventureId}});
+                    this._safelyNavigateForward({title: 'Events', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, selected: 'events', ventureId: this.state.ventureId}});
             }} style={styles.trendingItem}>
                 <Image style={styles.trendingEventImg} source={{uri}}/>
             </TouchableOpacity>
@@ -306,7 +305,7 @@ var Home = React.createClass({
         this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
 
         firebaseRef.child(`users/${this.state.ventureId}/activityPreference`).set(activityPreferenceChange);
-        this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, friendsAPICallURL: this.state.friendsAPICallURL, selected: 'users', ventureId: this.state.ventureId}});
+        this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, selected: 'users', ventureId: this.state.ventureId}});
     },
 
     _roundDateDownToNearestXMinutes(date, num) {
@@ -546,13 +545,13 @@ var Home = React.createClass({
                         <ProfilePageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/34, right: 20}}
                                          onPress={() => {
                                             this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
-                                            this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {currentUserLocationCoords: this.state.currentUserLocationCoords, friendsAPICallURL: this.state.friendsAPICallURL, selected: 'profile', ventureId: this.state.ventureId}})
+                                                    this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, selected: 'profile', ventureId: this.state.ventureId}});
                                          }} />
                         <ChatsListPageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/34, left: 20}}
                                            onPress={() => {
                                             this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
                                             // @hmm: pass ventureId to MainLayout
-                                            this._safelyNavigateForward({title: 'Chats', component: MainLayout, passProps: {currentUserLocationCoords: this.state.currentUserLocationCoords, friendsAPICallURL: this.state.friendsAPICallURL, selected: 'chats', ventureId: this.state.ventureId}})
+                                                    this._safelyNavigateForward({title: 'Chats', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, selected: 'chats', ventureId: this.state.ventureId}});
                                            }} />
                     </Header>
                     <Logo

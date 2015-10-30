@@ -93,15 +93,15 @@ var IOSLayout = React.createClass({
     _renderComponent(title:string) {
         switch(title) {
             case 'hot':
-                return <Hot handleSelectedTabChange={this._handleSelectedTabChange} navigator={this.props.navigator} />;
+                return <Hot currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} handleSelectedTabChange={this._handleSelectedTabChange} navigator={this.props.navigator} />;
             case 'events':
-                return <EventsList currentUserLocationCoords={this.props.currentUserLocationCoords} friendsAPICallURL={this.props.friendsAPICallURL} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
+                return <EventsList currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'users':
-                return <UsersList currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} friendsAPICallURL={this.props.friendsAPICallURL} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
+                return <UsersList currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords}  navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'chats':
-                return <ChatsList currentUserLocationCoords={this.props.currentUserLocationCoords} friendsAPICallURL={this.props.friendsAPICallURL} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
+                return <ChatsList currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'profile':
-                return <Profile navigator={this.props.navigator} />;
+                return <Profile currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} navigator={this.props.navigator} />;
         }
 
     },
