@@ -172,17 +172,23 @@ var Home = React.createClass({
                         if(currentUserFriends) this.setState({currentUserFriends});
 
                         else {
-                            fetch(friendsAPICallURL)
-                                .then(response => response.json())
-                                .then(responseData => {
+                            AsyncStorage.getItem('@AsyncStorage:Venture:isOnline')
+                                .then((isOnline) => {
+                                    if(isOnline === 'true') {
+                                        fetch(friendsAPICallURL)
+                                            .then(response => response.json())
+                                            .then(responseData => {
 
-                                    AsyncStorage.setItem('@AsyncStorage:Venture:currentUserFriends', JSON.stringify(responseData.data))
-                                        .catch(error => console.log(error.message))
-                                        .done();
+                                                AsyncStorage.setItem('@AsyncStorage:Venture:currentUserFriends', JSON.stringify(responseData.data))
+                                                    .catch(error => console.log(error.message))
+                                                    .done();
 
-                                    this.setState({currentUserFriends: responseData.data});
+                                                this.setState({currentUserFriends: responseData.data});
+                                            })
+                                            .done();
+                                    }
                                 })
-                                .done();
+                                .done()
                         }
                     })
                     .catch(error => console.log(error.message))
