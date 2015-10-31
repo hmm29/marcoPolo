@@ -209,12 +209,17 @@ var Login = React.createClass({
                                          permissions={['email','user_friends']}
                                          onLogin={function(data){
 
+                                let api = `https://graph.facebook.com/v2.3/${data.credentials && data.credentials.userId}/friends?access_token=${data.credentials && data.credentials.token}`;
                                 _this.setState({user: data.credentials, ventureId: hash(data.credentials.userId)});
+
+                                   AsyncStorage.setItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL', api)
+                                    .catch(error => console.log(error.message))
+                                    .done();
 
                                   AsyncStorage.setItem('@AsyncStorage:Venture:isOnline', 'true')
                                     .then(() => {
-                                        _this._updateUserLoginStatus(true);
                                         _this._navigateToNextPage();
+                                        _this._updateUserLoginStatus(true);
                                     })
                                     .then(() => console.log('Logged in!'))
                                     .catch((error) => console.log(error.message))

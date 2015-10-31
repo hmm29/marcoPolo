@@ -18,6 +18,7 @@ var {
     ActivityIndicatorIOS,
     AsyncStorage,
     Image,
+    LayoutAnimation,
     Navigator,
     StyleSheet,
     Text,
@@ -219,6 +220,7 @@ var Profile = React.createClass({
                                  permissions={['email', 'user_friends']}
                                  onLogin={function(data) {
 
+                                let api = `https://graph.facebook.com/v2.3/${data.credentials && data.credentials.userId}/friends?access_token=${data.credentials && data.credentials.token}`;
                                 _this.setState({user: data.credentials, ventureId: hash(data.credentials.userId)});
 
                                   AsyncStorage.setItem('@AsyncStorage:Venture:isOnline', 'true')
@@ -227,11 +229,16 @@ var Profile = React.createClass({
                                     .catch((error) => console.log(error.message))
                                     .done();
 
+                                  AsyncStorage.setItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL', api)
+                                    .catch(error => console.log(error.message))
+                                    .done();
+
                                 }}
 
                                  onLogout={function(){
 
                                     _this.props.navigator.push({title: 'Login', component: Login});
+                                    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                                     _this.setState({user : null, ventureId: null});
                                     _this._updateUserLoginStatus(false);
 
@@ -253,6 +260,7 @@ var Profile = React.createClass({
                                  onLoginFound={function(data){
 
 
+                                LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                                 _this.setState({ user : data.credentials, ventureId: hash(data.credentials.userId)});
 
                                 console.log("Existing login found.");
@@ -261,6 +269,7 @@ var Profile = React.createClass({
 
                                  onLoginNotFound={function(){
 
+                                LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                                 _this.setState({ user : null, ventureId: null });
 
                                 console.log("No user logged in.");
@@ -356,14 +365,6 @@ var Info = React.createClass({
                     }
                 })
         );
-    },
-
-    componentDidMount() {
-        let api = `https://graph.facebook.com/v2.3/${this.props.user && this.props.user.userId}/friends?access_token=${this.props.user && this.props.user.token}`;
-
-        AsyncStorage.setItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL', api)
-            .catch(error => console.log(error.message))
-            .done();
     },
 
     componentWillUnmount() {

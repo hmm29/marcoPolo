@@ -16,6 +16,7 @@ var React = require('react-native');
 var {
     Animated,
     Image,
+    LayoutAnimation,
     PixelRatio,
     ScrollView,
     StyleSheet,
@@ -131,6 +132,8 @@ var Hot = React.createClass({
     },
 
     _createTrendingItem(type, uri, i) {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+
         if(type === 'user') return (
             <TouchableOpacity key={i} style={styles.trendingItem}>
                 <Image style={styles.trendingUserImg} source={{uri}}/>

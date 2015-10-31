@@ -422,7 +422,7 @@ var UsersList = React.createClass({
         // @hmm: short delay to allow filtering for initial loaded users list
         // also prevents RCTURLLoader equal priority error
 
-        currentUserRef.child('matchingPreferences').on('value', snapshot => {
+        currentUserRef && currentUserRef.child('matchingPreferences').on('value', snapshot => {
 
             let matchingPreferences = snapshot.val(),
                 filteredUsersArray = [];
@@ -431,58 +431,59 @@ var UsersList = React.createClass({
 
             InteractionManager.runAfterInteractions(() => {
 
-                // @hmm: show users based on filter settings
-                _this.setTimeout(() => {
+                // @hmm: prevents unwanted layout animation fade-in
+                this.setTimeout(() => {
 
                     usersListRef.once('value', snapshot => {
                         // @hmm: clear and re-render rows
                         _this.updateRows([]);
 
+                        // @hmm: show users based on filter settings
                         snapshot.val() && _.each(snapshot.val(), (user) => {
 
-                        // @hmm: because of cumulative privacy selection, only have to check for friends+ for both 'friends+' and 'all'
-                        if (matchingPreferences.privacy && matchingPreferences.privacy.indexOf('friends+') > -1) {
-                            if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
-                                if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
-                                if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1 && user.gender !== 'male' && user.gender !== 'female') filteredUsersArray.push(user);
-                            }
-                        } else if (matchingPreferences.privacy && matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
-                            if (this.props.currentUserFriends && !! _.findWhere(this.props.currentUserFriends, {name: user.name})) {
+                            // @hmm: because of cumulative privacy selection, only have to check for friends+ for both 'friends+' and 'all'
+                            if (matchingPreferences.privacy && matchingPreferences.privacy.indexOf('friends+') > -1) {
+                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
+                                    if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
+                                    if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1 && user.gender !== 'male' && user.gender !== 'female') filteredUsersArray.push(user);
+                                }
+                            } else if (matchingPreferences.privacy && matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
+                                if (this.props.currentUserFriends && !!_.findWhere(this.props.currentUserFriends, {name: user.name})) {
+                                    if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
+                                        if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
+                                        if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1 && user.gender !== 'male' && user.gender !== 'female') filteredUsersArray.push(user);
+                                    }
+                                }
+                            } else {
                                 if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
                                     if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
                                     if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1 && user.gender !== 'male' && user.gender !== 'female') filteredUsersArray.push(user);
                                 }
                             }
-                        } else {
-                            if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
-                                if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
-                                if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1 && user.gender !== 'male' && user.gender !== 'female') filteredUsersArray.push(user);
-                            }
-                        }
 
-                        _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
-                        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-                        _this.setState({
-                            rows: _.cloneDeep(_.values(filteredUsersArray)),
-                            currentUserRef,
-                            usersListRef
+                            _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
+                            LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+                            _this.setState({
+                                rows: _.cloneDeep(_.values(filteredUsersArray)),
+                                currentUserRef,
+                                usersListRef
+                            });
                         });
+                        _this.setTimeout(() => {
+                            _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
+                            LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+                            _this.setState({
+                                rows: _.cloneDeep(_.values(filteredUsersArray)),
+                                currentUserRef,
+                                usersListRef
+                            });
+
+                        }, 0)
+
                     });
-                    _this.setTimeout(() => {
-                        _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
-                        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-                        _this.setState({
-                            rows: _.cloneDeep(_.values(filteredUsersArray)),
-                            currentUserRef,
-                            usersListRef
-                        });
-                    }, 0)
 
-                });
-
-            }, 0)
-
-        });
+                }, 0);
+            });
 
         });
 
