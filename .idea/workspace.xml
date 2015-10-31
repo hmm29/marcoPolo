@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2376615d-cff6-4ff3-89a0-7e7afb473618" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/Home.js" afterPath="$PROJECT_DIR$/Pages/Home.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/Login.js" afterPath="$PROJECT_DIR$/Pages/Login.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="VentureApp.iws" />
@@ -24,11 +24,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Home.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Home.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Pages/Home.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.38659793">
-              <caret line="177" column="52" selection-start-line="177" selection-start-column="52" selection-end-line="177" selection-end-column="52" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="189" column="30" selection-start-line="189" selection-start-column="30" selection-end-line="189" selection-end-column="30" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Login.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Pages/Login.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.7113402">
+              <caret line="222" column="44" selection-start-line="222" selection-start-column="44" selection-end-line="222" selection-end-column="44" />
               <folding />
             </state>
           </provider>
@@ -110,11 +120,11 @@
         <option value="$PROJECT_DIR$/Pages/LayoutItems/EventsList.js" />
         <option value="$PROJECT_DIR$/Pages/LayoutItems/Hot.js" />
         <option value="$PROJECT_DIR$/ios/VentureApp/AppDelegate.m" />
-        <option value="$PROJECT_DIR$/Pages/Login.js" />
         <option value="$PROJECT_DIR$/Pages/LayoutItems/Profile.js" />
         <option value="$PROJECT_DIR$/index.ios.js" />
         <option value="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" />
         <option value="$PROJECT_DIR$/Pages/Home.js" />
+        <option value="$PROJECT_DIR$/Pages/Login.js" />
       </list>
     </option>
   </component>
@@ -126,7 +136,7 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-77" />
+    <option name="x" value="80" />
     <option name="y" value="23" />
     <option name="width" value="1352" />
     <option name="height" value="707" />
@@ -399,7 +409,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-77" y="23" width="1352" height="707" extended-state="0" />
+    <frame x="80" y="23" width="1352" height="707" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23441021" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -785,14 +795,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/Login.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.3434904">
-          <caret line="145" column="23" selection-start-line="145" selection-start-column="12" selection-end-line="145" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/Hot.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.81958765">
@@ -819,8 +821,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Pages/Home.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.38659793">
-          <caret line="177" column="52" selection-start-line="177" selection-start-column="52" selection-end-line="177" selection-end-column="52" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="189" column="30" selection-start-line="189" selection-start-column="30" selection-end-line="189" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/Login.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7113402">
+          <caret line="222" column="44" selection-start-line="222" selection-start-column="44" selection-end-line="222" selection-end-column="44" />
           <folding />
         </state>
       </provider>

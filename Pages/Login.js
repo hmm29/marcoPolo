@@ -213,14 +213,16 @@ var Login = React.createClass({
                                 _this.setState({user: data.credentials, ventureId: hash(data.credentials.userId)});
 
                                    AsyncStorage.setItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL', api)
+                                    .then(() => {
+                                       _this._updateUserLoginStatus(true);
+                                    })
+                                     .then(() => {
+                                        _this._navigateToNextPage();
+                                    })
                                     .catch(error => console.log(error.message))
                                     .done();
 
                                   AsyncStorage.setItem('@AsyncStorage:Venture:isOnline', 'true')
-                                    .then(() => {
-                                        _this._navigateToNextPage();
-                                        _this._updateUserLoginStatus(true);
-                                    })
                                     .then(() => console.log('Logged in!'))
                                     .catch((error) => console.log(error.message))
                                     .done();
