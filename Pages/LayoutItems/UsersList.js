@@ -431,9 +431,6 @@ var UsersList = React.createClass({
 
             InteractionManager.runAfterInteractions(() => {
 
-                // @hmm: prevents unwanted layout animation fade-in
-                this.setTimeout(() => {
-
                     usersListRef.once('value', snapshot => {
                         // @hmm: clear and re-render rows
                         _this.updateRows([]);
@@ -481,8 +478,6 @@ var UsersList = React.createClass({
                         }, 0)
 
                     });
-
-                }, 0);
             });
 
         });
