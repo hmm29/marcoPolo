@@ -169,7 +169,7 @@ var Home = React.createClass({
                 AsyncStorage.getItem('@AsyncStorage:Venture:currentUserFriends')
                     .then((currentUserFriends) => {
 
-                        if(currentUserFriends !== 'null') this.setState({currentUserFriends});
+                        if(currentUserFriends !== 'null') this.setState({currentUserFriends: JSON.parse(currentUserFriends)});
 
                         else {
                             fetch(friendsAPICallURL)
