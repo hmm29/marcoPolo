@@ -578,7 +578,7 @@ var ChatsList = React.createClass({
         };
     },
 
-    componentWillMount() {
+    componentDidMount() {
         InteractionManager.runAfterInteractions(() => {
             let eventInvites = [], usersListRef = this.state.firebaseRef.child('users'), _this = this;
 

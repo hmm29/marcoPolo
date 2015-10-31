@@ -24,7 +24,7 @@ var {
 
 var { Icon, } = require('react-native-icons');
 
-var SIZE = 28;
+var SIZE = 25;
 
 var MatchedIcon = React.createClass({
     propTypes: {
@@ -61,7 +61,7 @@ var styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'flex-start',
-        alignItems: 'center'
+        alignItems: 'flex-end'
     },
     caption: {
         fontSize: 14,

@@ -515,7 +515,7 @@ var TimerBar = React.createClass({
 
         // only navigate if still on chat page! :D
 
-        if((currentChatroomRoute.title === 'Chat' && currentChatroomRoute.passProps._id === this.props._id) || this.state.timerValInMs <= 1000) this.props.safelyNavigateToMainLayout();
+        if((currentChatroomRoute.title === 'Chat' && currentChatroomRoute.passProps._id === this.props._id) || this.state.timerValInMs <= 1000 || this.state.timerValInMs > INITIAL_TIMER_VAL_IN_MS || this.state.timerValInMs < 0) this.props.safelyNavigateToMainLayout();
 
         firebaseRef.child(`users/${targetUserIDHashed}/chatCount`).once('value', snapshot => {
             firebaseRef.child(`users/${targetUserIDHashed}/chatCount`).set(snapshot.val() - 1);

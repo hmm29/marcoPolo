@@ -151,7 +151,7 @@ var IOSLayout = React.createClass({
                     {this._renderComponent('users')}
 
                 </TabBarItemIOS>
-                {this.state.chatCount ?
+                {this.state.chatCount > 0 ?
 
                     <TabBarItemIOS
                     iconName={'ion|ios-chatboxes-outline'}

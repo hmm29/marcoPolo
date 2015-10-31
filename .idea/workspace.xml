@@ -2,7 +2,39 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2376615d-cff6-4ff3-89a0-7e7afb473618" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/Login.js" afterPath="$PROJECT_DIR$/Pages/Login.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/LaunchImage.launchimage/HomeBackground_640x1136.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/LaunchImage.launchimage/HomeBackground_640x960.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/Venture Signature_120x120-1.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/Venture Signature_120x120.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/Venture Signature_180x180.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/Venture Signature_58x58.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/Venture Signature_80x80.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/Venture Signature_87x87.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/Contents.json" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/app_icon_120x120.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/app_icon_180x180.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/app_icon_58x58.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/app_icon_80x80.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/LaunchImage.launchimage/Home Page - Launch Screen copy_640x1136.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/LaunchImage.launchimage/Home Page - Launch Screen copy_640x960.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/LaunchScreen.imageset/Contents.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/LaunchScreen.imageset/Home Page - Launch Screen.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/LaunchScreen.imageset/Home Page - Launch Screen@2x.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/LaunchScreen.imageset/Home Page - Launch Screen@3x.png" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ios/VentureApp/AppDelegate.m" afterPath="$PROJECT_DIR$/ios/VentureApp/AppDelegate.m" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Partials/Icons/AwaitingResponseIcon.js" afterPath="$PROJECT_DIR$/Partials/Icons/AwaitingResponseIcon.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/Chat.js" afterPath="$PROJECT_DIR$/Pages/Chat.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js" afterPath="$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/Contents.json" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/AppIcon.appiconset/Contents.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/LaunchImage.launchimage/Contents.json" afterPath="$PROJECT_DIR$/ios/VentureApp/Images.xcassets/LaunchImage.launchimage/Contents.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/Filters.js" afterPath="$PROJECT_DIR$/Pages/Filters.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ios/LaunchScreen.xib" afterPath="$PROJECT_DIR$/ios/LaunchScreen.xib" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Layouts/MainLayout.js" afterPath="$PROJECT_DIR$/Layouts/MainLayout.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Partials/Icons/MatchedIcon.js" afterPath="$PROJECT_DIR$/Partials/Icons/MatchedIcon.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/LayoutItems/Profile.js" afterPath="$PROJECT_DIR$/Pages/LayoutItems/Profile.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" afterPath="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ios/main.jsbundle" afterPath="$PROJECT_DIR$/ios/main.jsbundle" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ios/VentureApp.xcodeproj/project.pbxproj" afterPath="$PROJECT_DIR$/ios/VentureApp.xcodeproj/project.pbxproj" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="VentureApp.iws" />
@@ -24,31 +56,51 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Home.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Pages/Home.js">
+      <file leaf-file-name="UsersList.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/UsersList.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-3.1111112">
+              <caret line="413" column="16" selection-start-line="413" selection-start-column="16" selection-end-line="413" selection-end-column="16" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ChatsList.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="189" column="30" selection-start-line="189" selection-start-column="30" selection-end-line="189" selection-end-column="30" />
+              <caret line="579" column="0" selection-start-line="579" selection-start-column="0" selection-end-line="579" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Login.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Pages/Login.js">
+      <file leaf-file-name="Filters.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Pages/Filters.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7113402">
-              <caret line="222" column="44" selection-start-line="222" selection-start-column="44" selection-end-line="222" selection-end-column="44" />
+            <state vertical-scroll-proportion="0.46907216">
+              <caret line="56" column="15" selection-start-line="56" selection-start-column="15" selection-end-line="56" selection-end-column="15" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Chat.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Pages/Chat.js">
+      <file leaf-file-name="AppDelegate.m" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ios/VentureApp/AppDelegate.m">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-4.4444447">
-              <caret line="501" column="35" selection-start-line="501" selection-start-column="35" selection-end-line="501" selection-end-column="82" />
+            <state vertical-scroll-proportion="2.5925925">
+              <caret line="41" column="13" selection-start-line="41" selection-start-column="13" selection-end-line="41" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MainLayout.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Layouts/MainLayout.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="165" column="20" selection-start-line="165" selection-start-column="20" selection-end-line="165" selection-end-column="20" />
               <folding />
             </state>
           </provider>
@@ -58,7 +110,47 @@
         <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/Profile.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="244" column="56" selection-start-line="244" selection-start-column="56" selection-end-line="244" selection-end-column="86" />
+              <caret line="330" column="115" selection-start-line="330" selection-start-column="115" selection-end-line="330" selection-end-column="115" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="EventsList.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/EventsList.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-4.4444447">
+              <caret line="92" column="13" selection-start-line="92" selection-start-column="4" selection-end-line="92" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AwaitingResponseIcon.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Partials/Icons/AwaitingResponseIcon.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="66" column="25" selection-start-line="66" selection-start-column="25" selection-end-line="66" selection-end-column="25" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MatchedIcon.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Partials/Icons/MatchedIcon.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="63" column="29" selection-start-line="63" selection-start-column="29" selection-end-line="63" selection-end-column="29" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Chat.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Pages/Chat.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-239.03703">
+              <caret line="524" column="96" selection-start-line="524" selection-start-column="96" selection-end-line="524" selection-end-column="96" />
               <folding />
             </state>
           </provider>
@@ -99,32 +191,32 @@
         <option value="$PROJECT_DIR$/ios/VentureApp/AppDelegate.h" />
         <option value="$PROJECT_DIR$/Partials/Icons/BackIcon.js" />
         <option value="$PROJECT_DIR$/Partials/Icons/ClockIcon.js" />
-        <option value="$PROJECT_DIR$/Partials/Icons/AwaitingResponseIcon.js" />
         <option value="$PROJECT_DIR$/Partials/Icons/ReceivedResponseIcon.js" />
         <option value="$PROJECT_DIR$/Partials/Header.js" />
         <option value="$PROJECT_DIR$/Partials/Icons/ProfilePageIcon.js" />
         <option value="$PROJECT_DIR$/Partials/Icons/ChatsListPageIcon.js" />
         <option value="$PROJECT_DIR$/Partials/Icons/FilterModalIcon.js" />
-        <option value="$PROJECT_DIR$/Partials/Icons/MatchedIcon.js" />
         <option value="$PROJECT_DIR$/Partials/Icons/EditProfilePageIcon.js" />
         <option value="$PROJECT_DIR$/Partials/Icons/ChevronIcon.js" />
         <option value="$PROJECT_DIR$/Partials/Icons/CloseIcon.js" />
         <option value="$PROJECT_DIR$/Partials/Icons/CheckboxIcon.js" />
         <option value="$PROJECT_DIR$/VentureApp.ios.js" />
         <option value="$PROJECT_DIR$/Pages/EditProfile.js" />
-        <option value="$PROJECT_DIR$/Layouts/MainLayout.js" />
-        <option value="$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js" />
-        <option value="$PROJECT_DIR$/Pages/Chat.js" />
-        <option value="$PROJECT_DIR$/Pages/Filters.js" />
         <option value="$PROJECT_DIR$/Partials/Icons/HomeIcon.js" />
         <option value="$PROJECT_DIR$/Pages/LayoutItems/EventsList.js" />
         <option value="$PROJECT_DIR$/Pages/LayoutItems/Hot.js" />
-        <option value="$PROJECT_DIR$/ios/VentureApp/AppDelegate.m" />
-        <option value="$PROJECT_DIR$/Pages/LayoutItems/Profile.js" />
         <option value="$PROJECT_DIR$/index.ios.js" />
-        <option value="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" />
         <option value="$PROJECT_DIR$/Pages/Home.js" />
         <option value="$PROJECT_DIR$/Pages/Login.js" />
+        <option value="$PROJECT_DIR$/Pages/LayoutItems/Profile.js" />
+        <option value="$PROJECT_DIR$/Partials/Icons/MatchedIcon.js" />
+        <option value="$PROJECT_DIR$/Partials/Icons/AwaitingResponseIcon.js" />
+        <option value="$PROJECT_DIR$/Layouts/MainLayout.js" />
+        <option value="$PROJECT_DIR$/ios/VentureApp/AppDelegate.m" />
+        <option value="$PROJECT_DIR$/Pages/Chat.js" />
+        <option value="$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js" />
+        <option value="$PROJECT_DIR$/Pages/Filters.js" />
+        <option value="$PROJECT_DIR$/Pages/LayoutItems/UsersList.js" />
       </list>
     </option>
   </component>
@@ -136,8 +228,8 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="80" />
-    <option name="y" value="23" />
+    <option name="x" value="49" />
+    <option name="y" value="106" />
     <option name="width" value="1352" />
     <option name="height" value="707" />
   </component>
@@ -409,7 +501,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="80" y="23" width="1352" height="707" extended-state="0" />
+    <frame x="49" y="106" width="1352" height="707" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23441021" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -617,13 +709,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Partials/Icons/AwaitingResponseIcon.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="35" column="35" selection-start-line="35" selection-start-column="35" selection-end-line="35" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Partials/Icons/ReceivedResponseIcon.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -715,22 +800,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Layouts/MainLayout.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3991228">
-          <caret line="96" column="26" selection-start-line="96" selection-start-column="26" selection-end-line="96" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Partials/Icons/MatchedIcon.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.47807017">
-          <caret line="64" column="6" selection-start-line="64" selection-start-column="6" selection-end-line="64" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Pages/EditProfile.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="1.6578947">
@@ -739,50 +808,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.28374657">
-          <caret line="547" column="70" selection-start-line="547" selection-start-column="70" selection-end-line="547" selection-end-column="70" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/Filters.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3948718">
-          <caret line="79" column="19" selection-start-line="79" selection-start-column="19" selection-end-line="79" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Partials/Icons/HomeIcon.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.81958765">
           <caret line="43" column="29" selection-start-line="43" selection-start-column="29" selection-end-line="43" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/EventsList.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.61218834">
-          <caret line="871" column="22" selection-start-line="871" selection-start-column="22" selection-end-line="871" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/UsersList.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3102493">
-          <caret line="431" column="12" selection-start-line="431" selection-start-column="12" selection-end-line="431" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ios/VentureApp/AppDelegate.m">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.61218834">
-          <caret line="48" column="5" selection-start-line="48" selection-start-column="5" selection-end-line="48" selection-end-column="5" />
           <folding />
         </state>
       </provider>
@@ -803,22 +832,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/Chat.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.4444447">
-          <caret line="501" column="35" selection-start-line="501" selection-start-column="35" selection-end-line="501" selection-end-column="82" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/Profile.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="244" column="56" selection-start-line="244" selection-start-column="56" selection-end-line="244" selection-end-column="86" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Pages/Home.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -829,8 +842,88 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Pages/Login.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7113402">
-          <caret line="222" column="44" selection-start-line="222" selection-start-column="44" selection-end-line="222" selection-end-column="44" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="217" column="22" selection-start-line="217" selection-start-column="22" selection-end-line="217" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Icons/AwaitingResponseIcon.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="66" column="25" selection-start-line="66" selection-start-column="25" selection-end-line="66" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Partials/Icons/MatchedIcon.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="63" column="29" selection-start-line="63" selection-start-column="29" selection-end-line="63" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/Profile.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="330" column="115" selection-start-line="330" selection-start-column="115" selection-end-line="330" selection-end-column="115" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Layouts/MainLayout.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="165" column="20" selection-start-line="165" selection-start-column="20" selection-end-line="165" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ios/VentureApp/AppDelegate.m">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="2.5925925">
+          <caret line="41" column="13" selection-start-line="41" selection-start-column="13" selection-end-line="41" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/EventsList.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.4444447">
+          <caret line="92" column="13" selection-start-line="92" selection-start-column="4" selection-end-line="92" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/Chat.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-239.03703">
+          <caret line="524" column="96" selection-start-line="524" selection-start-column="96" selection-end-line="524" selection-end-column="96" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/UsersList.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.1111112">
+          <caret line="413" column="16" selection-start-line="413" selection-start-column="16" selection-end-line="413" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/LayoutItems/ChatsList.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="579" column="0" selection-start-line="579" selection-start-column="0" selection-end-line="579" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Pages/Filters.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.46907216">
+          <caret line="56" column="15" selection-start-line="56" selection-start-column="15" selection-end-line="56" selection-end-column="15" />
           <folding />
         </state>
       </provider>

@@ -411,7 +411,7 @@ var UsersList = React.createClass({
         };
     },
 
-    componentWillMount() {
+    componentDidMount() {
 
         let currentUserRef = this.props.ventureId && this.state.firebaseRef && this.state.firebaseRef.child(`users/${this.props.ventureId}`),
             usersListRef = this.state.firebaseRef.child('users'),

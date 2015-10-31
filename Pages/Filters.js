@@ -50,6 +50,7 @@ var Filters = React.createClass({
     },
 
     componentWillMount() {
+        InteractionManager.runAfterInteractions(() => {
             let _this = this,
                 firebaseUserMatchingPreferencesRef = this.state.firebaseRef.child(`users/${this.props.passProps.ventureId}/matchingPreferences`);
 
@@ -64,6 +65,7 @@ var Filters = React.createClass({
                         ventureId: snapshot.val() && snapshot.val().ventureId
                     })
             );
+        });
     },
 
     _safelyNavigateToMainLayout() {

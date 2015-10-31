@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="9059" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9049"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -11,21 +11,23 @@
             <rect key="frame" x="0.0" y="0.0" width="480" height="480"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="LaunchScreen" translatesAutoresizingMaskIntoConstraints="NO" id="7g8-vN-wQj">
-                    <rect key="frame" x="51" y="-92" width="375" height="667"/>
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="HomeBackground" translatesAutoresizingMaskIntoConstraints="NO" id="UgQ-6l-ogE">
+                    <rect key="frame" x="120" y="191" width="240" height="128"/>
                 </imageView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
-                <constraint firstAttribute="centerX" secondItem="7g8-vN-wQj" secondAttribute="centerX" constant="1.5" id="aOD-Aw-2f1"/>
-                <constraint firstAttribute="centerY" secondItem="7g8-vN-wQj" secondAttribute="centerY" constant="-1.5" id="qMy-zK-CAO"/>
+                <constraint firstAttribute="bottom" secondItem="UgQ-6l-ogE" secondAttribute="bottom" id="3Wz-qc-RHq"/>
+                <constraint firstAttribute="trailing" secondItem="UgQ-6l-ogE" secondAttribute="trailing" id="80g-vW-HgL"/>
+                <constraint firstItem="UgQ-6l-ogE" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="qr4-Ml-Zha"/>
+                <constraint firstItem="UgQ-6l-ogE" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="z8R-bz-H4a"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="555" y="576"/>
+            <point key="canvasLocation" x="548" y="455"/>
         </view>
     </objects>
     <resources>
-        <image name="LaunchScreen" width="375" height="667"/>
+        <image name="HomeBackground" width="498" height="846"/>
     </resources>
 </document>
