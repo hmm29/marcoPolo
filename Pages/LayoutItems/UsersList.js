@@ -405,6 +405,7 @@ var UsersList = React.createClass({
                 rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
             }),
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
+            maxSearchDistance: null,
             rows: [],
             searchText: '',
             showCurrentUser: false,
@@ -413,12 +414,13 @@ var UsersList = React.createClass({
     },
 
     componentDidMount() {
+        InteractionManager.runAfterInteractions(() => {
 
-        let currentUserRef = this.props.ventureId && this.state.firebaseRef && this.state.firebaseRef.child(`users/${this.props.ventureId}`),
+            let currentUserRef = this.props.ventureId && this.state.firebaseRef && this.state.firebaseRef.child(`users/${this.props.ventureId}`),
             usersListRef = this.state.firebaseRef.child('users'),
             _this = this;
 
-        this.setState({animating: true});
+            this.setState({animating: true});
 
         // @hmm: speed up by putting fetch here
 
@@ -428,13 +430,12 @@ var UsersList = React.createClass({
         currentUserRef && currentUserRef.child('matchingPreferences').on('value', snapshot => {
 
             let matchingPreferences = snapshot.val(),
+                maxSearchDistance = matchingPreferences.maxSearchDistance,
                 filteredUsersArray = [];
 
-            _this.setState({maxSearchDistance: matchingPreferences.maxSearchDistance});
-
             InteractionManager.runAfterInteractions(() => {
-
-                    usersListRef.once('value', snapshot => {
+                
+                usersListRef.once('value', snapshot => {
                         // @hmm: clear and re-render rows
                         _this.updateRows([]);
 
@@ -443,30 +444,24 @@ var UsersList = React.createClass({
 
                             // @hmm: because of cumulative privacy selection, only have to check for friends+ for both 'friends+' and 'all'
                             if (matchingPreferences.privacy && matchingPreferences.privacy.indexOf('friends+') > -1) {
-                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
+                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= maxSearchDistance * 1.609) {
                                     if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
                                     if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1 && user.gender !== 'male' && user.gender !== 'female') filteredUsersArray.push(user);
                                 }
                             } else if (matchingPreferences.privacy && matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
                                 if (this.props.currentUserFriends && !!_.findWhere(this.props.currentUserFriends, {name: user.name})) {
-                                    if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
+                                    if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= maxSearchDistance * 1.609) {
                                         if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
                                         if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1 && user.gender !== 'male' && user.gender !== 'female') filteredUsersArray.push(user);
                                     }
                                 }
                             } else {
-                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= this.state.maxSearchDistance * 1.609) {
+                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= maxSearchDistance * 1.609) {
                                     if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
                                     if (matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1 && user.gender !== 'male' && user.gender !== 'female') filteredUsersArray.push(user);
                                 }
                             }
 
-                            _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
-                            _this.setState({
-                                rows: _.cloneDeep(_.values(filteredUsersArray)),
-                                currentUserRef,
-                                usersListRef
-                            });
                         });
                         _this.setTimeout(() => {
                             _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
@@ -487,6 +482,8 @@ var UsersList = React.createClass({
 
         this.state.firebaseRef.child(`/users/${this.props.ventureId}`).once('value', snapshot => {
             _this.setState({currentUserData: snapshot.val(), showCurrentUser: true});
+        });
+
         });
 
     },

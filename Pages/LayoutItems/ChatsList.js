@@ -612,7 +612,7 @@ var ChatsList = React.createClass({
                     // @hmm: only show easing effect when fun fact reappears
                     if(!this.state.showFunFact) LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 
-                });
+                 });
 
             });
 

@@ -81,7 +81,7 @@ var IOSLayout = React.createClass({
     },
 
     componentWillUnmount() {
-        this.state.chatCountRef.off();
+        this.state.chatCountRef && this.state.chatCountRef.off();
 
         AsyncStorage.setItem('@AsyncStorage:Venture:currentUserFriends', 'null')
             .catch(error => console.log(error.message))
