@@ -42,7 +42,7 @@ var Filters = React.createClass({
         return {
             ageRangeLower: null,
             ageRangeUpper: null,
-            distance: 1.0,
+            distance: 0,
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             gender: ['male', 'female', 'other'],
             privacy: ['friends', 'friends+', 'all']
@@ -50,11 +50,11 @@ var Filters = React.createClass({
     },
 
     componentWillMount() {
-        // InteractionManager.runAfterInteractions(() => {
+        InteractionManager.runAfterInteractions(() => {
             let _this = this,
                 firebaseUserMatchingPreferencesRef = this.state.firebaseRef.child(`users/${this.props.passProps.ventureId}/matchingPreferences`);
 
-            firebaseUserMatchingPreferencesRef.once('value', snapshot =>
+            firebaseUserMatchingPreferencesRef.once('value', snapshot => {
                     _this.setState({
                         firebaseUserMatchingPreferencesRef,
                         distance: snapshot.val() && snapshot.val().maxSearchDistance || 1.0,
@@ -63,20 +63,23 @@ var Filters = React.createClass({
                         ageRangeUpper: snapshot.val() && snapshot.val().ageRangeUpper || 25,
                         ageRangeLower: snapshot.val() && snapshot.val().ageRangeLower || 18,
                         ventureId: snapshot.val() && snapshot.val().ventureId
-                    })
+                    });
+                }
             );
-       //  });
+        });
     },
 
     _safelyNavigateToMainLayout() {
-        let currentRouteStack = this.props.navigator.getCurrentRoutes(),
-        // @hmm navigate back to one of main layout components
-            mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
-                return route && route.passProps && !! route.passProps.selected;
-            });
+        //let currentRouteStack = this.props.navigator.getCurrentRoutes(),
+        //// @hmm navigate back to one of main layout components
+        //    mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
+        //        return route && route.passProps && !! route.passProps.selected;
+        //    });
+        //
+        //if(mainLayoutRoute) this.props.navigator.jumpTo(mainLayoutRoute)
+        //else this.props.navigator.jumpBack();
 
-        if(mainLayoutRoute) this.props.navigator.jumpTo(mainLayoutRoute)
-        else this.props.navigator.jumpBack();
+        this.props.navigator.pop();
     },
 
     saveFilters() {

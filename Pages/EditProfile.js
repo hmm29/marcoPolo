@@ -139,14 +139,16 @@ var EditProfile = React.createClass({
     },
 
     _safelyNavigateToMainLayout() {
-        let currentRouteStack = this.props.navigator.getCurrentRoutes(),
-        // @hmm: navigate back to one of main layout components
-            mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
-                return route && route.passProps && !! route.passProps.selected;
-            });
+        //let currentRouteStack = this.props.navigator.getCurrentRoutes(),
+        //// @hmm: navigate back to one of main layout components
+        //    mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
+        //        return route && route.passProps && !! route.passProps.selected;
+        //    });
+        //
+        //if(mainLayoutRoute) this.props.navigator.jumpTo(mainLayoutRoute)
+        //else this.props.navigator.jumpBack();
 
-        if(mainLayoutRoute) this.props.navigator.jumpTo(mainLayoutRoute)
-        else this.props.navigator.jumpBack();
+        this.props.navigator.pop();
 
         // alert(JSON.stringify(this.props.navigator.getCurrentRoutes()));
     },

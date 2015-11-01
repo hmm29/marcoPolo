@@ -135,6 +135,7 @@ var Login = React.createClass({
     },
 
     _navigateToNextPage() {
+        //@hmm: IMPORTANT, must lazy load home for this to work
         var Home = require('./Home');
 
         this.props.navigator.popToTop();
@@ -214,10 +215,10 @@ var Login = React.createClass({
 
                                    AsyncStorage.setItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL', api)
                                     .then(() => {
-                                       _this._updateUserLoginStatus(true);
-                                    })
-                                     .then(() => {
                                         _this._navigateToNextPage();
+                                    })
+                                    .then(() => {
+                                       _this._updateUserLoginStatus(true);
                                     })
                                     .catch(error => console.log(error.message))
                                     .done();

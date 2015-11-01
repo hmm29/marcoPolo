@@ -81,6 +81,10 @@ var Chat = React.createClass({
         });
     },
 
+    componentWillUnmount() {
+        this.refs[MESSAGE_TEXT_INPUT_REF].blur();
+    },
+
     containerTouched(event) {
         this.refs[MESSAGE_TEXT_INPUT_REF].blur();
         return false;
@@ -156,19 +160,22 @@ var Chat = React.createClass({
         );
     },
 
-    _safelyNavigateToMainLayout() {
-        let currentRouteStack = this.props.navigator.getCurrentRoutes(),
-            mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
-                return route && route.passProps && !! route.passProps.selected;
-            });
-
-        if(mainLayoutRoute) {
-            // alert('main layout back')
-            this.props.navigator.jumpTo(mainLayoutRoute)
-        }
+    _safelyNavigateToMainLayout(willDestroy: boolean) {
+        if(willDestroy) this.props.navigator.pop();
         else {
-            // alert('jumpBack')
-            this.props.navigator.jumpBack();
+            let currentRouteStack = this.props.navigator.getCurrentRoutes(),
+                mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
+                    return route && route.passProps && !!route.passProps.selected;
+                });
+
+            if (mainLayoutRoute) {
+                // alert('main layout back')
+                this.props.navigator.jumpTo(mainLayoutRoute)
+            }
+            else {
+                // alert('jumpBack')
+                this.props.navigator.jumpBack();
+            }
         }
     },
 
@@ -521,7 +528,7 @@ var TimerBar = React.createClass({
 
         // only navigate if still on chat page! :D
 
-        if((currentChatroomRoute.title === 'Chat' && currentChatroomRoute.passProps._id === this.props._id) || this.state.timerValInMs <= 1000 || this.state.timerValInMs > INITIAL_TIMER_VAL_IN_MS || this.state.timerValInMs < 0) this.props.safelyNavigateToMainLayout();
+        if((currentChatroomRoute.title === 'Chat' && currentChatroomRoute.passProps._id === this.props._id) || this.state.timerValInMs <= 1000 || this.state.timerValInMs > INITIAL_TIMER_VAL_IN_MS || this.state.timerValInMs < 0) this.props.safelyNavigateToMainLayout(true);
 
         firebaseRef.child(`users/${targetUserIDHashed}/chatCount`).once('value', snapshot => {
             firebaseRef.child(`users/${targetUserIDHashed}/chatCount`).set(snapshot.val() - 1);
