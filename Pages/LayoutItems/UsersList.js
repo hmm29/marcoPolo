@@ -442,6 +442,8 @@ var UsersList = React.createClass({
                         // @hmm: show users based on filter settings
                         snapshot.val() && _.each(snapshot.val(), (user) => {
 
+                            if(user.status && !user.status.isOnline) return;
+
                             // @hmm: because of cumulative privacy selection, only have to check for friends+ for both 'friends+' and 'all'
                             if (matchingPreferences.privacy && matchingPreferences.privacy.indexOf('friends+') > -1) {
                                 if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= maxSearchDistance * 1.609) {
@@ -591,7 +593,9 @@ var UsersList = React.createClass({
                     loadData={this.shuffleUsers}
                     refreshDescription="Everyday I'm shufflin'..."
                     scrollRenderAheadDistance={600}
-                    refreshingIndictatorComponent={CustomRefreshingIndicator}/>
+                    refreshingIndictatorComponent={CustomRefreshingIndicator}
+                    removeClippedSubviews={true}
+                    />
                 <View style={{height: 48}}></View>
                 <Modal
                     height={SCREEN_HEIGHT}
@@ -772,7 +776,8 @@ var styles = StyleSheet.create({
     },
     userRow: {
         flex: 1,
-        backgroundColor: '#fefefb'
+        backgroundColor: '#fefefb',
+        overflow: 'hidden'
     },
     usersListBaseContainer: {
         flex: 1,

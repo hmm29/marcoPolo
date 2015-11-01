@@ -664,7 +664,7 @@ var ChatsList = React.createClass({
     },
 
     _renderUser(user:Object, sectionID:number, rowID:number) {
-        if (user.ventureId === this.state.currentUserVentureId) return <View />;
+        if (user.ventureId === this.state.currentUserVentureId || (user.status && !user.status.isOnline)) return <View />;
 
         return <User currentUserData={this.state.currentUserData}
                      currentUserIDHashed={this.state.currentUserVentureId}

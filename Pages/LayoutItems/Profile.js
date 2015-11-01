@@ -159,12 +159,22 @@ var Profile = React.createClass({
 
     _updateUserLoginStatus(isOnline:boolean) {
         let ventureId = this.state.ventureId,
-            currentUserRef = this.state.firebaseRef.child(`users/${ventureId}`),
+            usersListRef = this.state.firebaseRef.child('users'),
+            currentUserRef = usersListRef.child(ventureId),
             loginStatusRef = currentUserRef.child(`status/isOnline`),
             _this = this;
 
         if (!isOnline) {
             loginStatusRef.set(false);
+            currentUserRef.child('match_requests').set(null); // @hmm: clear users match interactions
+
+            usersListRef.once('value', snapshot => {
+                snapshot.val() && _.each(snapshot.val(), (user) => {
+                    if(user.match_requests && user.match_requests[ventureId]) {
+                        usersListRef.child(`${user.ventureId}/match_requests/${ventureId}`).set(null);
+                    }
+                });
+            });
 
             AsyncStorage.setItem('@AsyncStorage:Venture:account', 'null')
                 .catch(error => console.log(error.message))
@@ -356,11 +366,11 @@ var Info = React.createClass({
     },
     componentWillMount() {
         let _this = this,
-            firebaseUserData = this.state.firebaseRef.child(`users/${this.props.ventureId}`);
+            firebaseCurrentUserData = this.state.firebaseRef.child(`users/${this.props.ventureId}`);
 
-        firebaseUserData.on('value', snapshot =>
+        firebaseCurrentUserData.on('value', snapshot =>
                 _this.setState({
-                    firebaseUserData,
+                    firebaseCurrentUserData,
                     renderLoadingView: false,
                     info: {
                         firstName: snapshot.val() && snapshot.val().firstName,
@@ -373,7 +383,7 @@ var Info = React.createClass({
     },
 
     componentWillUnmount() {
-      this.state.firebaseUserData && this.state.firebaseUserData.off();
+      this.state.firebaseCurrentUserData && this.state.firebaseCurrentUserData.off();
     },
 
     render() {

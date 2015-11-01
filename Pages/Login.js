@@ -150,6 +150,15 @@ var Login = React.createClass({
 
         if (!isOnline) {
             loginStatusRef.set(false);
+            currentUserRef.child('match_requests').set(null); // @hmm: clear users match interactions
+
+            usersListRef.once('value', snapshot => {
+                snapshot.val() && _.each(snapshot.val(), (user) => {
+                    if(user.match_requests && user.match_requests[ventureId]) {
+                        usersListRef.child(`${user.ventureId}/match_requests/${ventureId}`).set(null);
+                    }
+                });
+            });
 
             AsyncStorage.setItem('@AsyncStorage:Venture:account', 'null')
                 .catch(error => console.log(error.message))
