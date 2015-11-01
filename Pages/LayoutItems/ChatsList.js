@@ -639,8 +639,7 @@ var ChatsList = React.createClass({
         let abbrevRoute = _.omit(route, 'component'),
             currentRouteStack = this.props.navigator.getCurrentRoutes();
 
-        if(currentRouteStack.indexOf(abbrevRoute) > -1) this.props.navigator.jumpTo(abbrevRoute);
-
+        if(!!_.findWhere(currentRouteStack, abbrevRoute)) this.props.navigator.jumpTo(_.findWhere(currentRouteStack, abbrevRoute));
         else {
             currentRouteStack.push(route);
             this.props.navigator.immediatelyResetRouteStack(currentRouteStack)

@@ -138,6 +138,8 @@ var Profile = React.createClass({
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
             homeRoute = currentRouteStack[0];
 
+        // alert(JSON.stringify(currentRouteStack))
+
         if(currentRouteStack.indexOf(homeRoute) > -1) this.props.navigator.jumpTo(homeRoute);
     },
 
@@ -145,8 +147,11 @@ var Profile = React.createClass({
         let abbrevRoute = _.omit(route, 'component'),
             currentRouteStack = this.props.navigator.getCurrentRoutes();
 
-        if(currentRouteStack.indexOf(abbrevRoute) > -1) this.props.navigator.jumpTo(abbrevRoute);
+        if(!!_.findWhere(currentRouteStack, abbrevRoute)) this.props.navigator.jumpTo(_.findWhere(currentRouteStack, abbrevRoute));
         else {
+            // alert('new edit profile: ' + JSON.stringify(this.props.navigator.getCurrentRoutes()))
+            // alert(this.props.navigator.getCurrentRoutes().length)
+
             currentRouteStack.push(route);
             this.props.navigator.immediatelyResetRouteStack(currentRouteStack)
         }

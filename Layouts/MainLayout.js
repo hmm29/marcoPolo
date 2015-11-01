@@ -69,13 +69,15 @@ var IOSLayout = React.createClass({
     },
 
     componentWillMount() {
-        let chatCountRef = this.state.firebaseRef.child(`users/${this.props.ventureId}/chatCount`);
+        InteractionManager.runAfterInteractions(() => {
+            let chatCountRef = this.state.firebaseRef.child(`users/${this.props.ventureId}/chatCount`);
 
-        chatCountRef.on('value', snapshot => {
-            this.setState({chatCount: snapshot.val(), chatCountRef})
+            chatCountRef.on('value', snapshot => {
+                this.setState({chatCount: snapshot.val(), chatCountRef});
+            });
+
+            this.setState({currentUserFriends: this.props.currentUserFriends})
         });
-
-        this.setState({currentUserFriends: this.props.currentUserFriends})
     },
 
     componentWillUnmount() {

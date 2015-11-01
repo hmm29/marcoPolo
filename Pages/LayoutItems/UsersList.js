@@ -400,6 +400,7 @@ var UsersList = React.createClass({
 
     getInitialState() {
         return {
+            animating: false,
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
             }),
@@ -416,6 +417,8 @@ var UsersList = React.createClass({
         let currentUserRef = this.props.ventureId && this.state.firebaseRef && this.state.firebaseRef.child(`users/${this.props.ventureId}`),
             usersListRef = this.state.firebaseRef.child('users'),
             _this = this;
+
+        this.setState({animating: true});
 
         // @hmm: speed up by putting fetch here
 
@@ -459,7 +462,6 @@ var UsersList = React.createClass({
                             }
 
                             _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
-                            LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
                             _this.setState({
                                 rows: _.cloneDeep(_.values(filteredUsersArray)),
                                 currentUserRef,
@@ -468,7 +470,6 @@ var UsersList = React.createClass({
                         });
                         _this.setTimeout(() => {
                             _this.updateRows(_.cloneDeep(_.values(filteredUsersArray)));
-                            LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
                             _this.setState({
                                 rows: _.cloneDeep(_.values(filteredUsersArray)),
                                 currentUserRef,
@@ -501,8 +502,7 @@ var UsersList = React.createClass({
         let abbrevRoute = _.omit(route, 'component'),
             currentRouteStack = this.props.navigator.getCurrentRoutes();
 
-        if (currentRouteStack.indexOf(abbrevRoute) > -1) this.props.navigator.jumpTo(abbrevRoute);
-
+        if(!!_.findWhere(currentRouteStack, abbrevRoute)) this.props.navigator.jumpTo(_.findWhere(currentRouteStack, abbrevRoute));
         else {
             currentRouteStack.push(route);
             this.props.navigator.immediatelyResetRouteStack(currentRouteStack)
@@ -613,6 +613,7 @@ var UsersList = React.createClass({
                             logoContainerStyle={styles.logoContainerStyle}
                             logoStyle={styles.logoStyle}/>
                         <ActivityIndicatorIOS
+                            animating={this.state.animating}
                             color='#fff'
                             style={styles.loadingModalActivityIndicatorIOS}
                             size='small'/>

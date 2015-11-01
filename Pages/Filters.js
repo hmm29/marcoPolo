@@ -80,22 +80,20 @@ var Filters = React.createClass({
     },
 
     saveFilters() {
-        InteractionManager.runAfterInteractions(() => {
-            let defaultGender = ['male', 'female', 'other'],
-                defaultPrivacy = ['friends', 'friends+', 'all'],
-                _this = this,
-                filtersChanges = {
-                    ageRangeLower: _this.state.ageRangeLower || 18,
-                    ageRangeUpper: _this.state.ageRangeUpper || 24,
-                    gender: (_this.state.gender.length && _this.state.gender) || defaultGender,
-                    maxSearchDistance: _this.state.distance || 1.0,
-                    privacy: (_this.state.privacy.length && _this.state.privacy) || defaultPrivacy
-                };
+        let defaultGender = ['male', 'female', 'other'],
+            defaultPrivacy = ['friends', 'friends+', 'all'],
+            _this = this,
+            filtersChanges = {
+                ageRangeLower: _this.state.ageRangeLower || 18,
+                ageRangeUpper: _this.state.ageRangeUpper || 24,
+                gender: (_this.state.gender.length && _this.state.gender) || defaultGender,
+                maxSearchDistance: _this.state.distance || 1.0,
+                privacy: (_this.state.privacy.length && _this.state.privacy) || defaultPrivacy
+            };
 
             this.state.firebaseUserMatchingPreferencesRef.set(filtersChanges);
 
-            this._safelyNavigateToMainLayout();
-        });
+        this._safelyNavigateToMainLayout();
     },
 
     _setButtonState(field:string, value:string) {

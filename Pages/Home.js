@@ -307,10 +307,10 @@ var Home = React.createClass({
         // @hmm: have to manually blur the text input,
         // since were not using navigator.push()
 
-        this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
-
         firebaseRef.child(`users/${this.state.ventureId}/activityPreference`).set(activityPreferenceChange);
         this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, selected: 'users', ventureId: this.state.ventureId}});
+
+        this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
     },
 
     _roundDateDownToNearestXMinutes(date, num) {
@@ -319,11 +319,17 @@ var Home = React.createClass({
     },
 
     _safelyNavigateForward(route:{title:string, component:ReactClass<any,any,any>, passProps?:Object}) {
-        let abbrevRoute = _.omit(route, 'component'),
-            currentRouteStack = this.props.navigator.getCurrentRoutes();
+        let currentRouteStack = this.props.navigator.getCurrentRoutes(),
+            layoutItemRoute = _.findWhere(currentRouteStack, {title: 'Users'}) || _.findWhere(currentRouteStack, {title: 'Chats'}) || _.findWhere(currentRouteStack, {title: 'Events'}) || _.findWhere(currentRouteStack, {title: 'Hot'}) || _.findWhere(currentRouteStack, {title: 'Profile'});
 
-        if(currentRouteStack.indexOf(abbrevRoute) > -1) this.props.navigator.jumpTo(abbrevRoute);
-        else {
+        if(layoutItemRoute) {
+            // alert('already there')
+            let idx = currentRouteStack.indexOf(layoutItemRoute);
+            this.props.navigator.replaceAtIndex(route, idx, () => {
+                this.props.navigator.jumpTo(route);
+            })
+        } else {
+            // alert('push a new route ' + JSON.stringify(route))
             currentRouteStack.push(route);
             this.props.navigator.immediatelyResetRouteStack(currentRouteStack)
         }

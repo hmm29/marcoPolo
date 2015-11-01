@@ -162,8 +162,14 @@ var Chat = React.createClass({
                 return route && route.passProps && !! route.passProps.selected;
             });
 
-        if(mainLayoutRoute) this.props.navigator.jumpTo(mainLayoutRoute)
-        else this.props.navigator.jumpBack();
+        if(mainLayoutRoute) {
+            // alert('main layout back')
+            this.props.navigator.jumpTo(mainLayoutRoute)
+        }
+        else {
+            // alert('jumpBack')
+            this.props.navigator.jumpBack();
+        }
     },
 
     _sendMessage() {
