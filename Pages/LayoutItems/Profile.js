@@ -77,14 +77,14 @@ var Profile = React.createClass({
 
         // alert(JSON.stringify(currentRouteStack))
 
-        if(currentRouteStack.indexOf(homeRoute) > -1) this.props.navigator.jumpTo(homeRoute);
+        if (currentRouteStack.indexOf(homeRoute) > -1) this.props.navigator.jumpTo(homeRoute);
     },
 
     _safelyNavigateForward(route:{title:string, component:ReactClass<any,any,any>, passProps?:Object}) {
         let abbrevRoute = _.omit(route, 'component'),
             currentRouteStack = this.props.navigator.getCurrentRoutes();
 
-        if(!!_.findWhere(currentRouteStack, abbrevRoute)) this.props.navigator.jumpTo(_.findWhere(currentRouteStack, abbrevRoute));
+        if (!!_.findWhere(currentRouteStack, abbrevRoute)) this.props.navigator.jumpTo(_.findWhere(currentRouteStack, abbrevRoute));
         else {
             // alert('new edit profile: ' + JSON.stringify(this.props.navigator.getCurrentRoutes()))
             // alert(this.props.navigator.getCurrentRoutes().length)
@@ -106,7 +106,7 @@ var Profile = React.createClass({
 
             usersListRef.once('value', snapshot => {
                 snapshot.val() && _.each(snapshot.val(), (user) => {
-                    if(user.match_requests && user.match_requests[ventureId]) {
+                    if (user.match_requests && user.match_requests[ventureId]) {
                         usersListRef.child(`${user.ventureId}/match_requests/${ventureId}`).set(null);
                     }
                 });
@@ -119,32 +119,18 @@ var Profile = React.createClass({
             return;
         }
 
-        loginStatusRef.once('value', snapshot => {
-            if (isOnline) loginStatusRef.set(isOnline);
+        if (isOnline) loginStatusRef.set(isOnline);
 
-            currentUserRef.once('value', snapshot => {
-                let asyncObj = _.pick(snapshot.val(), 'ventureId', 'name', 'firstName', 'lastName', 'activityPreference', 'age', 'picture', 'bio', 'gender', 'matchingPreferences');
+        currentUserRef.once('value', snapshot => {
+            let asyncObj = _.pick(snapshot.val(), 'ventureId', 'name', 'firstName', 'lastName', 'activityPreference', 'age', 'picture', 'bio', 'gender', 'matchingPreferences');
 
-                // @hmm: slight defer to allow for snapshot.val()
-                this.setTimeout(() => {
-                    AsyncStorage.setItem('@AsyncStorage:Venture:account', JSON.stringify(asyncObj))
-                        .then(() => {
-                            //@hmm: get current user location & save to firebase object
-                            navigator.geolocation.getCurrentPosition(
-                                (currentPosition) => {
-                                    currentUserRef.child(`location/coordinates`).set(currentPosition.coords)
-                                },
-                                (error) => {
-                                    console.error(error);
-                                },
-                                {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
-                            );
-                        })
-                        .catch(error => console.log(error.message))
-                        .done();
-                }, 0);
-            });
-
+            // @hmm: slight defer to allow for snapshot.val()
+            this.setTimeout(() => {
+                AsyncStorage.setItem('@AsyncStorage:Venture:account', JSON.stringify(asyncObj))
+                    .then(() => this._navigateToNextPage())
+                    .catch(error => console.log(error.message))
+                    .done();
+            }, 0);
         });
     },
 
@@ -230,12 +216,12 @@ var Profile = React.createClass({
     renderHeader() {
         return (
             <Header containerStyle={{backgroundColor: '#040A19'}}>
-                    <HomeIcon onPress={() => {
+                <HomeIcon onPress={() => {
                         this._safelyNavigateToHome();
                     }} style={{right: 14}}/>
                 <Text>MY PROFILE</Text>
-                    <EditProfilePageIcon
-                        onPress={() => {
+                <EditProfilePageIcon
+                    onPress={() => {
                           this._safelyNavigateForward({title: 'EditProfile',component: EditProfile,  passProps: {ventureId: this.state.ventureId}});
                     }} style={{left: 14}}/>
             </Header>
@@ -301,7 +287,7 @@ var Info = React.createClass({
     },
 
     componentWillUnmount() {
-      this.state.firebaseCurrentUserData && this.state.firebaseCurrentUserData.off();
+        this.state.firebaseCurrentUserData && this.state.firebaseCurrentUserData.off();
     },
 
     render() {

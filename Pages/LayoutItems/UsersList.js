@@ -499,6 +499,8 @@ var UsersList = React.createClass({
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
             homeRoute = currentRouteStack[0];
 
+        alert(this.props.navigator.getCurrentRoutes().length);
+
         if (currentRouteStack.indexOf(homeRoute) > -1) this.props.navigator.jumpTo(homeRoute);
     },
 

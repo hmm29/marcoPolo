@@ -38,7 +38,7 @@ var LinearGradient = require('react-native-linear-gradient');
 var ReactFireMixin = require('reactfire');
 var TimerMixin = require('react-timer-mixin');
 
-var INITIAL_TIMER_VAL_IN_MS = 300000;
+var INITIAL_TIMER_VAL_IN_MS = 15000;
 var SCREEN_HEIGHT = Display.height;
 var SCREEN_WIDTH = Display.width;
 var MESSAGE_TEXT_INPUT_REF = 'messageTextInput';
@@ -161,25 +161,22 @@ var Chat = React.createClass({
     },
 
     _safelyNavigateToMainLayout(willDestroy: boolean) {
-        let currentRouteStack = this.props.navigator.getCurrentRoutes(),
-            currentRoute = _.last(currentRouteStack),
-            isCurrentlyInChat = (currentRoute.title === 'Chat' && currentRoute.passProps._id === this.props.passProps._id),
-            _this = this;
+        let currentRouteStack = this.props.navigator.getCurrentRoutes();
 
         // @hmm: if will destroy and currently on chat page, pop to unmount
-        if(willDestroy && isCurrentlyInChat) {
-            this.props.navigator.pop();
+        //if(willDestroy) {
+        //    this.props.navigator.pop();
+        //}
 
-        // @hmm: else if will destroy and not on chat page, replace chat will null route
-        } else if (willDestroy && !isCurrentlyInChat) {
-            let idx = _.findIndex(currentRouteStack, (route) => {
-                return route && route.passProps && route.passProps._id === _this.props.passProps._id;
-            });
-            this.props.navigator.replaceAtIndex(null, idx);
-        }
+        //// @hmm: else if will destroy and not on chat page, replace chat will null route
+        //} else if (willDestroy && !isCurrentlyInChat) {
+        //    let idx = _.findIndex(currentRouteStack, (route) => {
+        //        return route && route.passProps && route.passProps._id === _this.props.passProps._id;
+        //    });
+        //    this.props.navigator.replaceAtIndex(null, idx);
+        //}
 
         // @hmm: else when user navigates away from chat while it exists, just jump to main layout
-        else {
             let mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
                     return route && route.passProps && !!route.passProps.selected;
                 });
@@ -190,7 +187,7 @@ var Chat = React.createClass({
             else {
                 this.props.navigator.jumpBack();
             }
-        }
+
     },
 
     _sendMessage() {

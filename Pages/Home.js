@@ -336,7 +336,7 @@ var Home = React.createClass({
     },
 
     _safelyNavigateToLogin() {
-        this.props.navigator.push({title: 'Login', component: Login});
+        this.props.navigator.immediatelyResetRouteStack([{title: 'Login', component: Login}]);
     },
 
     render() {

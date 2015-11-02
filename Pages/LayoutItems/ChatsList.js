@@ -606,7 +606,7 @@ var ChatsList = React.createClass({
 
                     eventInvites = [];
 
-                    if(!_.isEmpty(usersListSnapshotVal[this.props.ventureId].match_requests) || !_.isEmpty(usersListSnapshotVal[this.props.ventureId].event_invite_match_requests)) this.setState({showFunFact: false});
+                    if(!_.isEmpty(usersListSnapshotVal && usersListSnapshotVal[this.props.ventureId].match_requests) || !_.isEmpty(usersListSnapshotVal && usersListSnapshotVal[this.props.ventureId].event_invite_match_requests)) this.setState({showFunFact: false});
                     else this.setState({showFunFact: true});
 
                     // @hmm: only show easing effect when fun fact reappears

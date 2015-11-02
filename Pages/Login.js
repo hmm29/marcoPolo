@@ -85,7 +85,6 @@ var Login = React.createClass({
                 if(ageRange.max === 17 && ageRange.min === 13) {
                     this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(17);
                     this._setAsyncStorageAccountData();
-                    this._navigateToNextPage();
                 }
 
                 else if(ageRange.max === 20 && ageRange.min === 18) {
@@ -96,17 +95,14 @@ var Login = React.createClass({
                             {text: '18', onPress: () => {
                                 this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(18);
                                 this._setAsyncStorageAccountData();
-                                this._navigateToNextPage();
                             }},
                             {text: '19', onPress: () => {
                                 this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(19);
                                 this._setAsyncStorageAccountData();
-                                this._navigateToNextPage();
                             }},
                             {text: '20', onPress: () => {
                                 this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(20);
                                 this._setAsyncStorageAccountData();
-                                this._navigateToNextPage();
                             }}
                         ]
                     )
@@ -120,32 +116,26 @@ var Login = React.createClass({
                             {text: '21', onPress: () => {
                                 this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(21);
                                 this._setAsyncStorageAccountData();
-                                this._navigateToNextPage();
                             }},
                             {text: '22', onPress: () => {
                                 this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(22);
                                 this._setAsyncStorageAccountData();
-                                this._navigateToNextPage();
                             }},
                             {text: '23', onPress: () => {
                                 this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(23);
                                 this._setAsyncStorageAccountData();
-                                this._navigateToNextPage();
                             }},
                             {text: '24', onPress: () => {
                                 this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(24);
                                 this._setAsyncStorageAccountData();
-                                this._navigateToNextPage();
                             }},
                             {text: '25', onPress: () => {
                                 this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(25);
                                 this._setAsyncStorageAccountData();
-                                this._navigateToNextPage();
                             }},
                             {text: '25+', onPress: () => {
                                 this.state.firebaseRef.child(`users/${ventureId}/age/value`).set('25+');
                                 this._setAsyncStorageAccountData();
-                                this._navigateToNextPage();
                             }}
                         ]
                     )
@@ -243,18 +233,6 @@ var Login = React.createClass({
                     // @hmm: slight defer to allow for snapshot.val()
                     this.setTimeout(() => {
                         AsyncStorage.setItem('@AsyncStorage:Venture:account', JSON.stringify(asyncObj))
-                            .then(() => {
-                                //@hmm: get current user location & save to firebase object
-                                navigator.geolocation.getCurrentPosition(
-                                    (currentPosition) => {
-                                        currentUserRef.child(`location/coordinates`).set(currentPosition.coords)
-                                    },
-                                    (error) => {
-                                        console.error(error);
-                                    },
-                                    {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
-                                );
-                            })
                             .then(() => this._navigateToNextPage())
                             .catch(error => console.log(error.message))
                             .done();
@@ -272,18 +250,7 @@ var Login = React.createClass({
             let asyncObj = _.pick(snapshot.val(), 'ventureId', 'name', 'firstName', 'lastName', 'activityPreference', 'age', 'picture', 'bio', 'gender', 'matchingPreferences');
 
             AsyncStorage.setItem('@AsyncStorage:Venture:account', JSON.stringify(asyncObj))
-                .then(() => {
-                    //@hmm: get current user location & save to firebase object
-                    navigator.geolocation.getCurrentPosition(
-                        (currentPosition) => {
-                            currentUserRef.child(`location/coordinates`).set(currentPosition.coords)
-                        },
-                        (error) => {
-                            console.error(error);
-                        },
-                        {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
-                    );
-                })
+                .then(() => this._navigateToNextPage())
                 .catch(error => console.log(error.message))
                 .done();
         });
@@ -330,8 +297,64 @@ var Login = React.createClass({
                             </Image>
                         </View>
                         <View style={styles.slide}>
+                            <Image
+                                source={require('image!HomeBackground')}
+                                style={styles.backdrop}>
+
+                                <Image source={require('image!VentureLogoWhite')}
+                                       style={styles.ventureLogo}/>
+
+                                <FBLogin style={{ top: 40 }}
+                                         permissions={['email','user_friends']}
+                                         onLogin={function(data){
+
+                                let api = `https://graph.facebook.com/v2.3/${data.credentials && data.credentials.userId}/friends?access_token=${data.credentials && data.credentials.token}`;
+                                _this.setState({user: data.credentials, ventureId: hash(data.credentials.userId)});
+
+                                   AsyncStorage.setItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL', api)
+                                    .then(() => {
+                                       _this._updateUserLoginStatus(true);
+                                    })
+                                    .catch(error => console.log(error.message))
+                                    .done();
+
+                                  AsyncStorage.setItem('@AsyncStorage:Venture:isOnline', 'true')
+                                    .then(() => console.log('Logged in!'))
+                                    .catch((error) => console.log(error.message))
+                                    .done();
+                        }}
+                                    />
+                            </Image>
                         </View>
                         <View style={styles.slide}>
+                            <Image
+                                source={require('image!HomeBackground')}
+                                style={styles.backdrop}>
+
+                                <Image source={require('image!VentureLogoWhite')}
+                                       style={styles.ventureLogo}/>
+
+                                <FBLogin style={{ top: 40 }}
+                                         permissions={['email','user_friends']}
+                                         onLogin={function(data){
+
+                                let api = `https://graph.facebook.com/v2.3/${data.credentials && data.credentials.userId}/friends?access_token=${data.credentials && data.credentials.token}`;
+                                _this.setState({user: data.credentials, ventureId: hash(data.credentials.userId)});
+
+                                   AsyncStorage.setItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL', api)
+                                    .then(() => {
+                                       _this._updateUserLoginStatus(true);
+                                    })
+                                    .catch(error => console.log(error.message))
+                                    .done();
+
+                                  AsyncStorage.setItem('@AsyncStorage:Venture:isOnline', 'true')
+                                    .then(() => console.log('Logged in!'))
+                                    .catch((error) => console.log(error.message))
+                                    .done();
+                        }}
+                                    />
+                            </Image>
                         </View>
                     </Swiper>
             </View>

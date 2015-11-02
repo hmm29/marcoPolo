@@ -21,6 +21,7 @@ var {
     View
     } = React;
 
+var _ = require('lodash');
 var ChatsList = require('../Pages/LayoutItems/ChatsList');
 var EventsList = require('../Pages/LayoutItems/EventsList');
 var Firebase = require('firebase');
@@ -70,13 +71,21 @@ var IOSLayout = React.createClass({
 
     componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
-            let chatCountRef = this.state.firebaseRef.child(`users/${this.props.ventureId}/chatCount`);
+            let chatCountRef = this.state.firebaseRef.child(`users/${this.props.ventureId}/chatCount`),
+                currentRouteStack = this.props.navigator.getCurrentRoutes();
+
+            this.setState({currentUserFriends: this.props.currentUserFriends});
 
             chatCountRef.on('value', snapshot => {
                 this.setState({chatCount: snapshot.val(), chatCountRef});
-            });
 
-            this.setState({currentUserFriends: this.props.currentUserFriends})
+                if(snapshot.val() <= 0 && _.findWhere(currentRouteStack, {title: 'Chat'})) {
+                    _.remove(currentRouteStack, (route) => {
+                        return route && route.title === 'Chat';
+                    });
+                    this.props.navigator.immediatelyResetRouteStack(currentRouteStack);
+                }
+            });
         });
     },
 

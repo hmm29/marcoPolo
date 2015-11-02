@@ -312,7 +312,6 @@
 		13B07FAE1A68108700A75B9A /* VentureApp */ = {
 			isa = PBXGroup;
 			children = (
-				42328EF01BE5747700E05B15 /* LaunchScreen.xib */,
 				4260946D1BC1BD0100623EA5 /* DisplayDeviceUtil.h */,
 				4260946E1BC1BD0100623EA5 /* DisplayDeviceUtil.m */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -320,6 +319,7 @@
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
+				42328EF01BE5747700E05B15 /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
 			);
 			name = VentureApp;
