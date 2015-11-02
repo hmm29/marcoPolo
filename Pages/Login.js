@@ -18,6 +18,7 @@ var {
     AlertIOS,
     AsyncStorage,
     Image,
+    LayoutAnimation,
     PixelRatio,
     StyleSheet,
     Text,
@@ -111,7 +112,8 @@ var Login = React.createClass({
                 else if (ageRange.min === 21) {
                     AlertIOS.alert(
                         'Venture: Specify Your Age',
-                        'Users who specify their age have better experiences finding activity partners.',
+                        'Users who specify their age have better experiences finding activity partners. \n' +
+                        'Your age will be part of your public profile.',
                         [
                             {text: '21', onPress: () => {
                                 this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(21);
@@ -193,6 +195,7 @@ var Login = React.createClass({
         //@hmm: IMPORTANT, must lazy load home for this to work
         var Home = require('./Home');
 
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         this.props.navigator.popToTop();
         this.props.navigator.replace({title: 'Home', component: Home})
     },
@@ -244,7 +247,7 @@ var Login = React.createClass({
 
     _setAsyncStorageAccountData() {
       let ventureId = this.state.ventureId,
-          currentUserRef = this.state.firebaseRef.child(`users/${ventureId}`);
+          currentUserRef = this.state.firebaseRef && this.state.firebaseRef.child(`users/${ventureId}`);
 
         currentUserRef.once('value', snapshot => {
             let asyncObj = _.pick(snapshot.val(), 'ventureId', 'name', 'firstName', 'lastName', 'activityPreference', 'age', 'picture', 'bio', 'gender', 'matchingPreferences');
@@ -297,64 +300,8 @@ var Login = React.createClass({
                             </Image>
                         </View>
                         <View style={styles.slide}>
-                            <Image
-                                source={require('image!HomeBackground')}
-                                style={styles.backdrop}>
-
-                                <Image source={require('image!VentureLogoWhite')}
-                                       style={styles.ventureLogo}/>
-
-                                <FBLogin style={{ top: 40 }}
-                                         permissions={['email','user_friends']}
-                                         onLogin={function(data){
-
-                                let api = `https://graph.facebook.com/v2.3/${data.credentials && data.credentials.userId}/friends?access_token=${data.credentials && data.credentials.token}`;
-                                _this.setState({user: data.credentials, ventureId: hash(data.credentials.userId)});
-
-                                   AsyncStorage.setItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL', api)
-                                    .then(() => {
-                                       _this._updateUserLoginStatus(true);
-                                    })
-                                    .catch(error => console.log(error.message))
-                                    .done();
-
-                                  AsyncStorage.setItem('@AsyncStorage:Venture:isOnline', 'true')
-                                    .then(() => console.log('Logged in!'))
-                                    .catch((error) => console.log(error.message))
-                                    .done();
-                        }}
-                                    />
-                            </Image>
                         </View>
                         <View style={styles.slide}>
-                            <Image
-                                source={require('image!HomeBackground')}
-                                style={styles.backdrop}>
-
-                                <Image source={require('image!VentureLogoWhite')}
-                                       style={styles.ventureLogo}/>
-
-                                <FBLogin style={{ top: 40 }}
-                                         permissions={['email','user_friends']}
-                                         onLogin={function(data){
-
-                                let api = `https://graph.facebook.com/v2.3/${data.credentials && data.credentials.userId}/friends?access_token=${data.credentials && data.credentials.token}`;
-                                _this.setState({user: data.credentials, ventureId: hash(data.credentials.userId)});
-
-                                   AsyncStorage.setItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL', api)
-                                    .then(() => {
-                                       _this._updateUserLoginStatus(true);
-                                    })
-                                    .catch(error => console.log(error.message))
-                                    .done();
-
-                                  AsyncStorage.setItem('@AsyncStorage:Venture:isOnline', 'true')
-                                    .then(() => console.log('Logged in!'))
-                                    .catch((error) => console.log(error.message))
-                                    .done();
-                        }}
-                                    />
-                            </Image>
                         </View>
                     </Swiper>
             </View>

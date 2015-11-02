@@ -95,8 +95,12 @@ var Profile = React.createClass({
     },
 
     _updateUserLoginStatus(isOnline:boolean) {
+        if(!this.state.firebaseRef) {
+            this.setState({firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/')})
+        }
+
         let ventureId = this.state.ventureId,
-            usersListRef = this.state.firebaseRef.child('users'),
+            usersListRef = this.state.firebaseRef && this.state.firebaseRef.child('users'),
             currentUserRef = usersListRef.child(ventureId),
             loginStatusRef = currentUserRef.child(`status/isOnline`);
 

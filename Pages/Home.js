@@ -336,6 +336,7 @@ var Home = React.createClass({
     },
 
     _safelyNavigateToLogin() {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         this.props.navigator.immediatelyResetRouteStack([{title: 'Login', component: Login}]);
     },
 
