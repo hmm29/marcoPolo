@@ -112,8 +112,7 @@ var Login = React.createClass({
                 else if (ageRange.min === 21) {
                     AlertIOS.alert(
                         'Venture: Specify Your Age',
-                        'Users who specify their age have better experiences finding activity partners. \n' +
-                        'Your age will be part of your public profile.',
+                        'Users who specify their age have better experiences finding activity partners.',
                         [
                             {text: '21', onPress: () => {
                                 this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(21);
@@ -183,7 +182,8 @@ var Login = React.createClass({
                     },
                     match_requests: {},
                     events: [],
-                    event_invite_match_requests: {}
+                    event_invite_match_requests: {},
+                    createdAt: new Date()
                 };
 
                 this.state.firebaseRef.child(`users/${ventureId}`).set(newUserData);
@@ -267,14 +267,14 @@ var Login = React.createClass({
                     <Swiper style={styles.wrapper}
                             dot={<View style={{backgroundColor:'rgba(255,255,255,.3)', width: 13, height: 13,borderRadius: 7, top: SCREEN_HEIGHT / 30, marginLeft: 7, marginRight: 7,}} />}
                             activeDot={<View style={{backgroundColor: '#fff', width: 13, height: 13, borderRadius: 7, top: SCREEN_HEIGHT / 30, marginLeft: 7, marginRight: 7}} />}
-                            paginationStyle={{bottom: 70,}}
+                            paginationStyle={{bottom: 40,}}
                             loop={false}>
                         <View style={styles.slide}>
                             <Image
-                                source={require('image!HomeBackground')}
+                                source={{uri: 'https://res.cloudinary.com/dwnyawluh/image/upload/v1446504067/onboarding slider image 1.png'}}
                                 style={styles.backdrop}>
 
-                                <Image source={require('image!VentureLogoWhite')}
+                                <Image
                                        style={styles.ventureLogo}/>
 
                                 <FBLogin style={{ top: 40 }}
@@ -328,7 +328,7 @@ var styles = StyleSheet.create({
     ventureLogo: {
         bottom: 54,
         width: 120,
-        height: 92.62,
+        height: 122.62,
         backgroundColor: 'transparent'
     },
     wrapper: {

@@ -75,8 +75,6 @@ var Profile = React.createClass({
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
             homeRoute = currentRouteStack[0];
 
-        // alert(JSON.stringify(currentRouteStack))
-
         if (currentRouteStack.indexOf(homeRoute) > -1) this.props.navigator.jumpTo(homeRoute);
     },
 
@@ -101,8 +99,8 @@ var Profile = React.createClass({
 
         let ventureId = this.state.ventureId,
             usersListRef = this.state.firebaseRef && this.state.firebaseRef.child('users'),
-            currentUserRef = usersListRef.child(ventureId),
-            loginStatusRef = currentUserRef.child(`status/isOnline`);
+            currentUserRef = usersListRef && usersListRef.child(ventureId),
+            loginStatusRef = currentUserRef && currentUserRef.child(`status/isOnline`);
 
         if (!isOnline) {
             loginStatusRef.set(false);

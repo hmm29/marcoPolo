@@ -48,8 +48,6 @@ var ReactFireMixin = require('reactfire');
 var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
 var Swipeout = require('react-native-swipeout');
 
-var EVENT_ID = 'e068e2d69f2b6b69acf181b6889f9db5934901c2b38fe9947850ed4bb033736f';
-var EVENT_TITLE = 'YSO Halloween Show';
 var INITIAL_LIST_SIZE = 8;
 var LOGO_WIDTH = 200;
 var LOGO_HEIGHT = 120;
@@ -211,29 +209,24 @@ var User = React.createClass({
                 // @hmm: accept the request
                 // chatroom reference uses id of the user who accepts the received matchInteraction
 
-                targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
-                    account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'firstName', 'picture', 'ventureId', 'bio', 'age', 'location'), {isEventInvite: true}),
-                    eventId: EVENT_ID,
-                    eventTitle: EVENT_TITLE,
+                targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).update({
                     status: 'matched',
                     role: 'recipient'
-                }, 100);
+                });
 
-                currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
-                    account: this.props.data && _.assign(_.pick(this.props.data, 'firstName', 'picture', 'ventureId', 'bio', 'age', 'location'), {isEventInvite: true}),
-                    eventId: EVENT_ID,
-                    eventTitle: EVENT_TITLE,
+                currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).update({
                     status: 'matched',
                     role: 'sender'
-                }, 100);
+                });
             }
 
             else if (this.state.status === 'matched') {
-                let chatRoomEventTitle = EVENT_TITLE,
+                let chatRoomEventTitle,
                     distance = this.state.distance + ' mi',
                     _id;
 
                 currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).once('value', snapshot => {
+                    chatRoomEventTitle = snapshot.val() && snapshot.val().eventTitle;
 
                     if (snapshot.val() && snapshot.val().role === 'sender') {
                         _id = 'EVENT_INVITE_' + targetUserIDHashed + '_TO_' + currentUserIDHashed;
@@ -251,8 +244,8 @@ var User = React.createClass({
 
                             chatRoomRef.child('_id').set(_id); // @hmm: set unique chat Id
                             chatRoomRef.child('timer').set({value: 300000}); // @hmm: set timer
-                            chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set(EVENT_TITLE);
-                            chatRoomRef.child('user_activity_preference_titles').child(targetUserIDHashed).set(EVENT_TITLE);
+                            chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set(chatRoomEventTitle);
+                            chatRoomRef.child('user_activity_preference_titles').child(targetUserIDHashed).set(chatRoomEventTitle);
 
                         }
 
@@ -290,21 +283,6 @@ var User = React.createClass({
                         });
                     })
                 });
-            }
-
-            else {
-                targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
-                    account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'age', 'location'), {isEventInvite: true}),
-                    eventId: EVENT_ID,
-                    eventTitle: EVENT_TITLE,
-                    status: 'received'
-                }, 200);
-                currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
-                    account: this.props.data && _.assign(_.pick(this.props.data, 'name', 'picture', 'ventureId', 'bio', 'age', 'location'), {isEventInvite: true}),
-                    eventId: EVENT_ID,
-                    eventTitle: EVENT_TITLE,
-                    status: 'sent'
-                }, 300);
             }
         } else {
 
@@ -464,10 +442,12 @@ var User = React.createClass({
                             | {'\t'}
                             <Text style={styles.profileModalActivityInfo}>
                                 <Text
-                                    style={styles.profileModalActivityPreference}>YSO Halloween Show</Text>
+                                    style={styles.profileModalActivityPreference}>{this.props.data && this.props.data.eventTitle}</Text>
                                 {'\t'} {this.props.data && this.props.data.activityPreference && (this.props.data.activityPreference.start.time || this.props.data.activityPreference.status)} {'\n'}
                             </Text>
                         </Text>
+                        <Text
+                            style={[styles.profileModalSectionTitle, {textAlign: 'center'}]}>{this.props.data && this.props.data.eventLogistics}</Text>
                         <Text
                             style={styles.profileModalBio}>{this.props.data && this.props.data.bio}</Text>
                     </View>
@@ -479,7 +459,7 @@ var User = React.createClass({
                     <Text
                         style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
                     <Text style={styles.eventTitle}>
-                        YSO HALLOWEEN SHOW?
+                        {this.props.data && this.props.data.eventTitle} ?
                     </Text>
                     <View style={{top: 10, right: 10}}>{this._renderStatusIcon()}</View>
                 </View>
