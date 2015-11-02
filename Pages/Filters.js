@@ -42,7 +42,7 @@ var Filters = React.createClass({
         return {
             ageRangeLower: null,
             ageRangeUpper: null,
-            distance: 0,
+            distance: null,
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             gender: ['male', 'female', 'other'],
             privacy: ['friends', 'friends+', 'all']
@@ -50,7 +50,6 @@ var Filters = React.createClass({
     },
 
     componentWillMount() {
-        InteractionManager.runAfterInteractions(() => {
             let _this = this,
                 firebaseUserMatchingPreferencesRef = this.state.firebaseRef.child(`users/${this.props.passProps.ventureId}/matchingPreferences`);
 
@@ -66,20 +65,17 @@ var Filters = React.createClass({
                     });
                 }
             );
-        });
     },
 
     _safelyNavigateToMainLayout() {
-        //let currentRouteStack = this.props.navigator.getCurrentRoutes(),
-        //// @hmm navigate back to one of main layout components
-        //    mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
-        //        return route && route.passProps && !! route.passProps.selected;
-        //    });
-        //
-        //if(mainLayoutRoute) this.props.navigator.jumpTo(mainLayoutRoute)
-        //else this.props.navigator.jumpBack();
+        let currentRouteStack = this.props.navigator.getCurrentRoutes(),
+        // @hmm navigate back to one of main layout components
+            mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
+                return route && route.passProps && !! route.passProps.selected;
+            });
 
-        this.props.navigator.pop();
+        if(mainLayoutRoute) this.props.navigator.jumpTo(mainLayoutRoute)
+        else this.props.navigator.jumpBack();
     },
 
     saveFilters() {

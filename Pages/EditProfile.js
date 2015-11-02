@@ -83,7 +83,7 @@ var EditProfile = React.createClass({
         this.state.firebaseRef.child(`users/${ventureId}`).once('value', snapshot => {
 
             this.setState({
-                currentAge: snapshot.val() && snapshot.val().ageRange && snapshot.val().ageRange.min,
+                currentAge: snapshot.val() && snapshot.val().age && snapshot.val().age.value,
                 currentBio: snapshot.val() && snapshot.val().bio,
                 currentGender: snapshot.val() && snapshot.val().gender,
                 currentFirstName: snapshot.val() && snapshot.val().firstName,
@@ -139,18 +139,14 @@ var EditProfile = React.createClass({
     },
 
     _safelyNavigateToMainLayout() {
-        //let currentRouteStack = this.props.navigator.getCurrentRoutes(),
-        //// @hmm: navigate back to one of main layout components
-        //    mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
-        //        return route && route.passProps && !! route.passProps.selected;
-        //    });
-        //
-        //if(mainLayoutRoute) this.props.navigator.jumpTo(mainLayoutRoute)
-        //else this.props.navigator.jumpBack();
+        let currentRouteStack = this.props.navigator.getCurrentRoutes(),
+        // @hmm: navigate back to one of main layout components
+            mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
+                return route && route.passProps && !! route.passProps.selected;
+            });
 
-        this.props.navigator.pop();
-
-        // alert(JSON.stringify(this.props.navigator.getCurrentRoutes()));
+        if(mainLayoutRoute) this.props.navigator.jumpTo(mainLayoutRoute)
+        else this.props.navigator.jumpBack();
     },
 
     saveData() {

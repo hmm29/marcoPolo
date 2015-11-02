@@ -185,7 +185,7 @@ var User = React.createClass({
             // chatroom reference uses id of the user who accepts the received matchInteraction
 
             targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
-                account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'firstName', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'firstName', 'picture', 'ventureId', 'bio', 'age', 'location'), {isEventInvite: true}),
                 eventId: this.props.eventId,
                 eventTitle: this.props.eventTitle,
                 status: 'matched',
@@ -193,7 +193,7 @@ var User = React.createClass({
             }, 100);
 
             currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
-                account: this.props.data && _.assign(_.pick(this.props.data, 'firstName', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                account: this.props.data && _.assign(_.pick(this.props.data, 'firstName', 'picture', 'ventureId', 'bio', 'age', 'location'), {isEventInvite: true}),
                 eventId: this.props.eventId,
                 eventTitle: this.props.eventTitle,
                 status: 'matched',
@@ -267,13 +267,13 @@ var User = React.createClass({
 
         else {
             targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
-                account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'firstName', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'firstName', 'picture', 'ventureId', 'bio', 'age', 'location'), {isEventInvite: true}),
                 eventId: this.props.eventId,
                 eventTitle: this.props.eventTitle,
                 status: 'received'
             }, 200);
             currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
-                account: this.props.data && _.assign(_.pick(this.props.data, 'firstName', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                account: this.props.data && _.assign(_.pick(this.props.data, 'firstName', 'picture', 'ventureId', 'bio', 'age', 'location'), {isEventInvite: true}),
                 eventId: this.props.eventId,
                 eventTitle: this.props.eventTitle,
                 status: 'sent'
@@ -319,7 +319,7 @@ var User = React.createClass({
                         source={{uri: this.props.data && this.props.data.picture}}
                         style={styles.profileModalUserPicture}/>
                     <Text
-                        style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'}
+                        style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.age && this.props.data.age.value} {'\t'}
                         | {'\t'}
                         <Text style={styles.profileModalActivityInfo}>
                             <Text
@@ -533,7 +533,7 @@ var Event = React.createClass({
 
         if (this.state.status === 'notAttending') {
             this.setState({status: 'attending'});
-            this.props.eventsListRef && this.props.data && this.props.currentUserData && this.props.currentUserIDHashed && this.props.data.id && this.props.eventsListRef.child(`${this.props.data.id}/attendees/${this.props.currentUserIDHashed}`).set(_.pick(this.props.currentUserData, 'firstName', 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'))
+            this.props.eventsListRef && this.props.data && this.props.currentUserData && this.props.currentUserIDHashed && this.props.data.id && this.props.eventsListRef.child(`${this.props.data.id}/attendees/${this.props.currentUserIDHashed}`).set(_.pick(this.props.currentUserData, 'firstName', 'name', 'picture', 'ventureId', 'bio', 'age', 'location'))
             this.props.usersListRef && this.props.data && this.props.currentUserIDHashed && this.props.data.id && this.props.usersListRef.child(`${this.props.currentUserIDHashed}/events/${this.props.data.id}`).set(_.pick(this.props.data, 'id', 'title', 'description', 'location', 'start'));
 
         }

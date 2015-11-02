@@ -212,7 +212,7 @@ var User = React.createClass({
                 // chatroom reference uses id of the user who accepts the received matchInteraction
 
                 targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
-                    account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'firstName', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                    account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'firstName', 'picture', 'ventureId', 'bio', 'age', 'location'), {isEventInvite: true}),
                     eventId: EVENT_ID,
                     eventTitle: EVENT_TITLE,
                     status: 'matched',
@@ -220,7 +220,7 @@ var User = React.createClass({
                 }, 100);
 
                 currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
-                    account: this.props.data && _.assign(_.pick(this.props.data, 'firstName', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                    account: this.props.data && _.assign(_.pick(this.props.data, 'firstName', 'picture', 'ventureId', 'bio', 'age', 'location'), {isEventInvite: true}),
                     eventId: EVENT_ID,
                     eventTitle: EVENT_TITLE,
                     status: 'matched',
@@ -294,13 +294,13 @@ var User = React.createClass({
 
             else {
                 targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
-                    account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                    account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'name', 'picture', 'ventureId', 'bio', 'age', 'location'), {isEventInvite: true}),
                     eventId: EVENT_ID,
                     eventTitle: EVENT_TITLE,
                     status: 'received'
                 }, 200);
                 currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
-                    account: this.props.data && _.assign(_.pick(this.props.data, 'name', 'picture', 'ventureId', 'bio', 'ageRange', 'location'), {isEventInvite: true}),
+                    account: this.props.data && _.assign(_.pick(this.props.data, 'name', 'picture', 'ventureId', 'bio', 'age', 'location'), {isEventInvite: true}),
                     eventId: EVENT_ID,
                     eventTitle: EVENT_TITLE,
                     status: 'sent'
@@ -460,7 +460,7 @@ var User = React.createClass({
                             source={{uri: this.props.data && this.props.data.picture}}
                             style={styles.profileModalUserPicture}/>
                         <Text
-                            style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'}
+                            style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.age && this.props.data.age.value} {'\t'}
                             | {'\t'}
                             <Text style={styles.profileModalActivityInfo}>
                                 <Text
@@ -493,7 +493,7 @@ var User = React.createClass({
                             source={{uri: this.props.data && this.props.data.picture}}
                             style={styles.profileModalUserPicture}/>
                         <Text
-                            style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.ageRange && this.props.data.ageRange.exactVal} {'\t'} | {'\t'}
+                            style={styles.profileModalNameAgeInfo}>{this.props.data && this.props.data.firstName}, {this.props.data && this.props.data.age && this.props.data.age.value} {'\t'} | {'\t'}
                             <Text style={styles.profileModalActivityInfo}>
                                 <Text
                                     style={styles.profileModalActivityPreference}>{this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title && this.props.data.activityPreference.title.slice(0,-1)} </Text>:
@@ -622,11 +622,9 @@ var ChatsList = React.createClass({
         });
     },
 
-    componentWillUnmount() {
-        let usersListRef = this.state.firebaseRef.child('users');
-
-        usersListRef.off();
-    },
+    //componentWillUnmount() {
+    //    this.state.usersListRef && this.state.usersListRef.off();
+    //},
 
     _safelyNavigateToHome() {
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),

@@ -15,6 +15,7 @@
 var React = require('react-native');
 
 var {
+    AlertIOS,
     AsyncStorage,
     Image,
     PixelRatio,
@@ -49,11 +50,6 @@ var getInitialAgeRangeLimits = (ageVal:number, lim:string) => {
 
 var hash = (msg:string) => sha256(sha256(sha256(msg)));
 
-var prepAgeRangeVal = (ageRangeObj:Object):{max:number, min: number, exactVal: number} => {
-    if (!ageRangeObj.max) _.assign(ageRangeObj, {max: ageRangeObj.min, exactVal: ageRangeObj.min});
-    return ageRangeObj;
-};
-
 var Login = React.createClass({
     statics: {
         title: '<Login>',
@@ -79,12 +75,81 @@ var Login = React.createClass({
     _createAccount() {
         let user = this.state.user,
             ventureId = this.state.ventureId,
-            pixelRatioCalc = PixelRatio.getPixelSizeForLayoutSize(200),
             api = `https://graph.facebook.com/v2.3/${user && user.userId}?fields=name,email,gender,age_range&access_token=${user.token}`;
 
         fetch(api)
             .then(response => response.json())
             .then(responseData => {
+                let ageRange = responseData.age_range;
+
+                if(ageRange.max === 17 && ageRange.min === 13) {
+                    this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(17);
+                    this._setAsyncStorageAccountData();
+                    this._navigateToNextPage();
+                }
+
+                else if(ageRange.max === 20 && ageRange.min === 18) {
+                    AlertIOS.alert(
+                        'Venture: Specify Your Age',
+                        'Users who specify their age have better experiences finding activity partners.',
+                        [
+                            {text: '18', onPress: () => {
+                                this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(18);
+                                this._setAsyncStorageAccountData();
+                                this._navigateToNextPage();
+                            }},
+                            {text: '19', onPress: () => {
+                                this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(19);
+                                this._setAsyncStorageAccountData();
+                                this._navigateToNextPage();
+                            }},
+                            {text: '20', onPress: () => {
+                                this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(20);
+                                this._setAsyncStorageAccountData();
+                                this._navigateToNextPage();
+                            }}
+                        ]
+                    )
+                }
+
+                else if (ageRange.min === 21) {
+                    AlertIOS.alert(
+                        'Venture: Specify Your Age',
+                        'Users who specify their age have better experiences finding activity partners.',
+                        [
+                            {text: '21', onPress: () => {
+                                this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(21);
+                                this._setAsyncStorageAccountData();
+                                this._navigateToNextPage();
+                            }},
+                            {text: '22', onPress: () => {
+                                this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(22);
+                                this._setAsyncStorageAccountData();
+                                this._navigateToNextPage();
+                            }},
+                            {text: '23', onPress: () => {
+                                this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(23);
+                                this._setAsyncStorageAccountData();
+                                this._navigateToNextPage();
+                            }},
+                            {text: '24', onPress: () => {
+                                this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(24);
+                                this._setAsyncStorageAccountData();
+                                this._navigateToNextPage();
+                            }},
+                            {text: '25', onPress: () => {
+                                this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(25);
+                                this._setAsyncStorageAccountData();
+                                this._navigateToNextPage();
+                            }},
+                            {text: '25+', onPress: () => {
+                                this.state.firebaseRef.child(`users/${ventureId}/age/value`).set('25+');
+                                this._setAsyncStorageAccountData();
+                                this._navigateToNextPage();
+                            }}
+                        ]
+                    )
+                }
 
                 let newUserData = {
                     ventureId,
@@ -92,7 +157,7 @@ var Login = React.createClass({
                     firstName: responseData.name.split(' ')[0],
                     lastName: responseData.name.split(' ')[1],
                     activityPreference: {
-                        title: 'explore',
+                        title: 'EXPLORE?',
                         status: 'now',
                         start: {
                             time: '',
@@ -103,11 +168,10 @@ var Login = React.createClass({
                         created: new Date(),
                         updated: new Date()
                     },
-                    picture: `https://res.cloudinary.com/dwnyawluh/image/facebook/w_${pixelRatioCalc},h_${pixelRatioCalc}/${this.state.user.userId}.jpg`,
+                    picture: `https://res.cloudinary.com/dwnyawluh/image/facebook/${this.state.user.userId}.jpg`,
                     gender: responseData.gender,
                     bio: 'New to Venture!',
                     email: responseData.email,
-                    ageRange: prepAgeRangeVal(responseData.age_range),
                     location: {
                         type: 'Point',
                         coordinates: []
@@ -126,7 +190,8 @@ var Login = React.createClass({
                         isOnline: true
                     },
                     match_requests: {},
-                    events: []
+                    events: [],
+                    event_invite_match_requests: {}
                 };
 
                 this.state.firebaseRef.child(`users/${ventureId}`).set(newUserData);
@@ -169,31 +234,58 @@ var Login = React.createClass({
 
         loginStatusRef.once('value', snapshot => {
             if (snapshot.val() === null) _this._createAccount(ventureId);
-            else if (isOnline) loginStatusRef.set(isOnline);
+            else if (isOnline) {
+                loginStatusRef.set(isOnline);
 
-            currentUserRef.once('value', snapshot => {
-                let asyncObj = _.pick(snapshot.val(), 'ventureId', 'name', 'firstName', 'lastName', 'activityPreference', 'age', 'picture', 'bio', 'gender', 'matchingPreferences');
+                currentUserRef.once('value', snapshot => {
+                    let asyncObj = _.pick(snapshot.val(), 'ventureId', 'name', 'firstName', 'lastName', 'activityPreference', 'age', 'picture', 'bio', 'gender', 'matchingPreferences');
 
-                // @hmm: slight defer to allow for snapshot.val()
-                this.setTimeout(() => {
-                    AsyncStorage.setItem('@AsyncStorage:Venture:account', JSON.stringify(asyncObj))
-                        .then(() => {
-                            //@hmm: get current user location & save to firebase object
-                            navigator.geolocation.getCurrentPosition(
-                                (currentPosition) => {
-                                    currentUserRef.child(`location/coordinates`).set(currentPosition.coords)
-                                },
-                                (error) => {
-                                    console.error(error);
-                                },
-                                {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
-                            );
-                        })
-                        .catch(error => console.log(error.message))
-                        .done();
-                }, 0);
-            });
+                    // @hmm: slight defer to allow for snapshot.val()
+                    this.setTimeout(() => {
+                        AsyncStorage.setItem('@AsyncStorage:Venture:account', JSON.stringify(asyncObj))
+                            .then(() => {
+                                //@hmm: get current user location & save to firebase object
+                                navigator.geolocation.getCurrentPosition(
+                                    (currentPosition) => {
+                                        currentUserRef.child(`location/coordinates`).set(currentPosition.coords)
+                                    },
+                                    (error) => {
+                                        console.error(error);
+                                    },
+                                    {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
+                                );
+                            })
+                            .then(() => this._navigateToNextPage())
+                            .catch(error => console.log(error.message))
+                            .done();
+                    }, 0);
+                });
+            }
+        });
+    },
 
+    _setAsyncStorageAccountData() {
+      let ventureId = this.state.ventureId,
+          currentUserRef = this.state.firebaseRef.child(`users/${ventureId}`);
+
+        currentUserRef.once('value', snapshot => {
+            let asyncObj = _.pick(snapshot.val(), 'ventureId', 'name', 'firstName', 'lastName', 'activityPreference', 'age', 'picture', 'bio', 'gender', 'matchingPreferences');
+
+            AsyncStorage.setItem('@AsyncStorage:Venture:account', JSON.stringify(asyncObj))
+                .then(() => {
+                    //@hmm: get current user location & save to firebase object
+                    navigator.geolocation.getCurrentPosition(
+                        (currentPosition) => {
+                            currentUserRef.child(`location/coordinates`).set(currentPosition.coords)
+                        },
+                        (error) => {
+                            console.error(error);
+                        },
+                        {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
+                    );
+                })
+                .catch(error => console.log(error.message))
+                .done();
         });
     },
 
@@ -223,9 +315,6 @@ var Login = React.createClass({
                                 _this.setState({user: data.credentials, ventureId: hash(data.credentials.userId)});
 
                                    AsyncStorage.setItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL', api)
-                                    .then(() => {
-                                        _this._navigateToNextPage();
-                                    })
                                     .then(() => {
                                        _this._updateUserLoginStatus(true);
                                     })

@@ -55,11 +55,6 @@ var getInitialAgeRangeLimits = (ageVal:number, lim:string) => {
 
 var hash = (msg:string) => sha256(sha256(sha256(msg)));
 
-var prepAgeRangeVal = (ageRangeObj:Object):{max:number, min: number, exactVal: number} => {
-    if (!ageRangeObj.max) _.assign(ageRangeObj, {max: ageRangeObj.min});
-    return _.assign(ageRangeObj, {exactVal: ageRangeObj.min});
-};
-
 var Profile = React.createClass({
     statics: {
         title: '<Profile>',
@@ -74,64 +69,6 @@ var Profile = React.createClass({
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             user: null
         }
-    },
-
-    _createAccount() {
-        let user = this.state.user,
-            ventureId = this.state.ventureId,
-            api = `https://graph.facebook.com/v2.3/${user && user.userId}?fields=name,email,gender,age_range&access_token=${user.token}`;
-
-        fetch(api)
-            .then(response => response.json())
-            .then(responseData => {
-
-                let newUserData = {
-                    ventureId,
-                    name: responseData.name,
-                    firstName: responseData.name.split(' ')[0],
-                    lastName: responseData.name.split(' ')[1],
-                    activityPreference: {
-                        title: 'EXPLORE?',
-                        status: 'now',
-                        start: {
-                            time: '',
-                            dateTime: '',
-                            timeZoneOffsetInHours: ''
-                        },
-                        tags: [],
-                        created: new Date(),
-                        updated: new Date()
-                    },
-                    picture: `https://res.cloudinary.com/dwnyawluh/image/facebook/${this.state.user.userId}.jpg`,
-                    gender: responseData.gender,
-                    bio: 'New to Venture!',
-                    email: responseData.email,
-                    ageRange: prepAgeRangeVal(responseData.age_range),
-                    location: {
-                        type: 'Point',
-                        coordinates: []
-                    },
-                    matchingPreferences: {
-                        maxSearchDistance: 10.0,
-                        ageRangeLower: getInitialAgeRangeLimits(responseData.age_range.min, 'lower'),
-                        ageRangeUpper: getInitialAgeRangeLimits(responseData.age_range.min, 'upper'),
-                        gender: ['male', 'female', 'other'],
-                        privacy: ['friends', 'friends+', 'all']
-                    },
-                    discoveryPreferences: {
-                        genderInclusions: [responseData.gender]
-                    },
-                    status: {
-                        isOnline: true
-                    },
-                    match_requests: {},
-                    events: [],
-                    event_invite_match_requests: {}
-                };
-
-                this.state.firebaseRef.child(`users/${ventureId}`).set(newUserData);
-            })
-            .done();
     },
 
     _safelyNavigateToHome() {
@@ -161,8 +98,7 @@ var Profile = React.createClass({
         let ventureId = this.state.ventureId,
             usersListRef = this.state.firebaseRef.child('users'),
             currentUserRef = usersListRef.child(ventureId),
-            loginStatusRef = currentUserRef.child(`status/isOnline`),
-            _this = this;
+            loginStatusRef = currentUserRef.child(`status/isOnline`);
 
         if (!isOnline) {
             loginStatusRef.set(false);
@@ -184,8 +120,7 @@ var Profile = React.createClass({
         }
 
         loginStatusRef.once('value', snapshot => {
-            if (snapshot.val() === null) _this._createAccount(ventureId);
-            else if (isOnline) loginStatusRef.set(isOnline);
+            if (isOnline) loginStatusRef.set(isOnline);
 
             currentUserRef.once('value', snapshot => {
                 let asyncObj = _.pick(snapshot.val(), 'ventureId', 'name', 'firstName', 'lastName', 'activityPreference', 'age', 'picture', 'bio', 'gender', 'matchingPreferences');
@@ -233,26 +168,9 @@ var Profile = React.createClass({
 
                         <FBLogin style={styles.FBLoginButton}
                                  permissions={['email', 'user_friends']}
-                                 onLogin={function(data) {
-
-                                let api = `https://graph.facebook.com/v2.3/${data.credentials && data.credentials.userId}/friends?access_token=${data.credentials && data.credentials.token}`;
-                                _this.setState({user: data.credentials, ventureId: hash(data.credentials.userId)});
-
-                                  AsyncStorage.setItem('@AsyncStorage:Venture:isOnline', 'true')
-                                    .then(() => _this._updateUserLoginStatus(true))
-                                    .then(() => console.log('Logged in!'))
-                                    .catch((error) => console.log(error.message))
-                                    .done();
-
-                                  AsyncStorage.setItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL', api)
-                                    .catch(error => console.log(error.message))
-                                    .done();
-
-                                }}
-
                                  onLogout={function(){
 
-                                    _this.props.navigator.push({title: 'Login', component: Login});
+                                    _this.props.navigator.immediatelyResetRouteStack([{title: 'Login', component: Login}]);
                                     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                                     _this.setState({user : null, ventureId: null});
                                     _this._updateUserLoginStatus(false);
@@ -375,7 +293,7 @@ var Info = React.createClass({
                     info: {
                         firstName: snapshot.val() && snapshot.val().firstName,
                         gender: snapshot.val() && snapshot.val().gender,
-                        ageRange: snapshot.val() && snapshot.val().ageRange,
+                        age: snapshot.val() && snapshot.val().age,
                         bio: snapshot.val() && snapshot.val().bio
                     }
                 })
@@ -396,7 +314,7 @@ var Info = React.createClass({
         return (
             <View style={styles.infoContent}>
                 <Text
-                    style={[styles.infoText, styles.infoTextNameAge]}>{ info && (info.firstName + ', ') } { info && info.ageRange && info.ageRange.min }</Text>
+                    style={[styles.infoText, styles.infoTextNameAge]}>{ info && (info.firstName + ', ') } { info && info.age && info.age.value }</Text>
                 <Text
                     style={[styles.infoText, styles.infoTextGender]}>{ info && info.gender && info.gender.capitalize() }</Text>
                 <Text style={[styles.infoText, styles.infoTextBio]}>{ info && info.bio }</Text>
@@ -442,6 +360,10 @@ var styles = StyleSheet.create({
         color: 'white',
         fontSize: 18,
         fontFamily: 'AvenirNextCondensed-Medium'
+    },
+    infoTextBio: {
+        width: SCREEN_WIDTH / 2,
+        textAlign: 'left'
     },
     infoTextNameAge: {
         fontSize: 24

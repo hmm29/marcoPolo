@@ -62,7 +62,7 @@ var Chat = React.createClass({
         };
     },
 
-    componentDidMount() {
+    componentWillMount() {
         InteractionManager.runAfterInteractions(() => {
             let chatRoomMessagesRef = this.props.passProps.chatRoomRef.child('messages'), _this = this;
 
@@ -104,7 +104,7 @@ var Chat = React.createClass({
 
         return (
             <Header containerStyle={{backgroundColor: '#040A19'}}>
-                <TouchableOpacity onPress={this._safelyNavigateToMainLayout} style={{right: 10, bottom: 5}}>
+                <TouchableOpacity onPress={() => this._safelyNavigateToMainLayout()} style={{right: 10, bottom: 5}}>
                     <Icon
                         color="#fff"
                         name="ion|ios-arrow-thin-left"
@@ -161,19 +161,33 @@ var Chat = React.createClass({
     },
 
     _safelyNavigateToMainLayout(willDestroy: boolean) {
-        if(willDestroy) this.props.navigator.pop();
+        let currentRouteStack = this.props.navigator.getCurrentRoutes(),
+            currentRoute = _.last(currentRouteStack),
+            isCurrentlyInChat = (currentRoute.title === 'Chat' && currentRoute.passProps._id === this.props.passProps._id),
+            _this = this;
+
+        // @hmm: if will destroy and currently on chat page, pop to unmount
+        if(willDestroy && isCurrentlyInChat) {
+            this.props.navigator.pop();
+
+        // @hmm: else if will destroy and not on chat page, replace chat will null route
+        } else if (willDestroy && !isCurrentlyInChat) {
+            let idx = _.findIndex(currentRouteStack, (route) => {
+                return route && route.passProps && route.passProps._id === _this.props.passProps._id;
+            });
+            this.props.navigator.replaceAtIndex(null, idx);
+        }
+
+        // @hmm: else when user navigates away from chat while it exists, just jump to main layout
         else {
-            let currentRouteStack = this.props.navigator.getCurrentRoutes(),
-                mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
+            let mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
                     return route && route.passProps && !!route.passProps.selected;
                 });
 
             if (mainLayoutRoute) {
-                // alert('main layout back')
                 this.props.navigator.jumpTo(mainLayoutRoute)
             }
             else {
-                // alert('jumpBack')
                 this.props.navigator.jumpBack();
             }
         }
@@ -320,7 +334,7 @@ var RecipientInfoBar = React.createClass({
                        style={{width: SCREEN_WIDTH/2, height: SCREEN_WIDTH/2, borderRadius: SCREEN_WIDTH/4, alignSelf: 'center', marginVertical: SCREEN_WIDTH/18}}/>
                 <Text
                     style={{color: '#222', fontSize: 20, fontFamily: 'AvenirNextCondensed-Medium', textAlign: 'center'}}>
-                    {user.firstName}, {user.ageRange && user.ageRange.exactVal} {'\t'} |{'\t'}
+                    {user.firstName}, {user.age && user.age.value} {'\t'} |{'\t'}
                     <Text style={{fontFamily: 'AvenirNextCondensed-Medium'}}>
                         <Text
                             style={{fontSize: 20}}>{user === currentUserData ? this.state.currentUserActivityPreferenceTitle && this.state.currentUserActivityPreferenceTitle.replace(/[^\w\s]|_/g, '').replace(/\s+/g, ' ') :
@@ -512,7 +526,7 @@ var TimerBar = React.createClass({
     },
 
     _destroyChatroom(chatRoomRef:string) {
-        let currentChatroomRoute = _.last(this.props.navigator.getCurrentRoutes()),
+        let currentRoute = _.last(this.props.navigator.getCurrentRoutes()),
             currentUserData = this.props.currentUserData,
             currentUserIDHashed = currentUserData.ventureId,
             firebaseRef = this.state.firebaseRef,
@@ -528,7 +542,7 @@ var TimerBar = React.createClass({
 
         // only navigate if still on chat page! :D
 
-        if((currentChatroomRoute.title === 'Chat' && currentChatroomRoute.passProps._id === this.props._id) || this.state.timerValInMs <= 1000 || this.state.timerValInMs > INITIAL_TIMER_VAL_IN_MS || this.state.timerValInMs < 0) this.props.safelyNavigateToMainLayout(true);
+        if((currentRoute.title === 'Chat' && currentRoute.passProps._id === this.props._id) || this.state.timerValInMs <= 1000 || this.state.timerValInMs > INITIAL_TIMER_VAL_IN_MS || this.state.timerValInMs < 0) this.props.safelyNavigateToMainLayout(true);
 
         firebaseRef.child(`users/${targetUserIDHashed}/chatCount`).once('value', snapshot => {
             firebaseRef.child(`users/${targetUserIDHashed}/chatCount`).set(snapshot.val() - 1);
