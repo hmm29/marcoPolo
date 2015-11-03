@@ -43,7 +43,7 @@ var Filters = React.createClass({
             ageRangeLower: null,
             ageRangeUpper: null,
             distance: null,
-            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
+            firebaseRef: this.props.passProps.firebaseRef,
             gender: ['male', 'female', 'other'],
             privacy: ['friends', 'friends+', 'all']
         };

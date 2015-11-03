@@ -66,7 +66,7 @@ var EditProfile = React.createClass({
     getInitialState() {
         return {
             cameraType: Camera.constants.Type.back,
-            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
+            firebaseRef: this.props.passProps.firebaseRef,
             hasKeyboardSpace: false,
             showAutocomplete: false,
             showGenderAutocompleteLabel: true,

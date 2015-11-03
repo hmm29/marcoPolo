@@ -29,7 +29,6 @@ var _ = require('lodash');
 var Display = require('react-native-device-display');
 var FBLogin = require('react-native-facebook-login');
 var Firebase = require('firebase');
-var Home = require('./Home');
 var sha256 = require('sha256');
 var Swiper = require('react-native-swiper');
 var TimerMixin = require('react-timer-mixin');
@@ -159,7 +158,7 @@ var Login = React.createClass({
                         created: new Date(),
                         updated: new Date()
                     },
-                    picture: `https://res.cloudinary.com/dwnyawluh/image/facebook/${this.state.user.userId}.jpg`,
+                    picture: `https://res.cloudinary.com/dwnyawluh/image/facebook/q_80/${this.state.user.userId}.jpg`,
                     gender: responseData.gender,
                     bio: 'New to Venture!',
                     email: responseData.email,
@@ -205,25 +204,6 @@ var Login = React.createClass({
             currentUserRef = this.state.firebaseRef.child(`users/${ventureId}`),
             loginStatusRef = currentUserRef.child(`status/isOnline`),
             _this = this;
-
-        if (!isOnline) {
-            loginStatusRef.set(false);
-            currentUserRef.child('match_requests').set(null); // @hmm: clear users match interactions
-
-            usersListRef.once('value', snapshot => {
-                snapshot.val() && _.each(snapshot.val(), (user) => {
-                    if(user.match_requests && user.match_requests[ventureId]) {
-                        usersListRef.child(`${user.ventureId}/match_requests/${ventureId}`).set(null);
-                    }
-                });
-            });
-
-            AsyncStorage.setItem('@AsyncStorage:Venture:account', 'null')
-                .catch(error => console.log(error.message))
-                .done();
-
-            return;
-        }
 
         loginStatusRef.once('value', snapshot => {
             if (snapshot.val() === null) _this._createAccount(ventureId);
@@ -271,13 +251,13 @@ var Login = React.createClass({
                             loop={false}>
                         <View style={styles.slide}>
                             <Image
-                                source={{uri: 'https://res.cloudinary.com/dwnyawluh/image/upload/v1446504067/onboarding slider image 1.png'}}
+                                source={require('image!OnboardingFindActivityPartners')}
                                 style={styles.backdrop}>
 
                                 <Image
                                        style={styles.ventureLogo}/>
 
-                                <FBLogin style={{ top: 40 }}
+                                <FBLogin style={{ top: 80 }}
                                          permissions={['email','user_friends']}
                                          onLogin={function(data){
 

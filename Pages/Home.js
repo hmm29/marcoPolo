@@ -55,20 +55,6 @@ var SCREEN_HEIGHT = Display.height;
 var SCREEN_WIDTH = Display.width;
 var TAG_TEXT_INPUT_PADDING = 3;
 
-var YALIES = [
-    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_56,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206258/Harrison%20Miller.png`,
-    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_52,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442206076/Noah%20Cho.png`,
-    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,q_46,w_${PixelRatio.getPixelSizeForLayoutSize(64)}/v1442205943/Sophie%20Dillon.png`];
-var EVENTS = [
-    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Frozen%20Four%20(Center%20-%20Big%20Text).png`,
-    `https://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_48,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442894669/Event%20-%20Freshman%20Screw%20(Center%20-%20Big%20Text).png`,
-    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Venture%20Launch%20Party.png`,
-    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Swab%20A%20Cheek.png`,
-    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20The%20Game%20(Center%20-%20Big%20Text).png`,
-    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20Freshman%20Screw%20(Center%20-%20Big%20Text).png`,
-    `http://res.cloudinary.com/dwnyawluh/image/upload/c_scale,h_${PixelRatio.getPixelSizeForLayoutSize(84)},q_78,w_${PixelRatio.getPixelSizeForLayoutSize(240)}/v1442898929/Event%20-%20YSO%20Halloween%20(Center%20-%20Big%20Text).png`
-];
-
 var Home = React.createClass({
     statics: {
         title: '<Home>',
@@ -221,7 +207,7 @@ var Home = React.createClass({
 
         return (
             <TouchableOpacity key={i} onPress={() => {
-                    this._safelyNavigateForward({title: 'Events', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, selected: 'events', ventureId: this.state.ventureId}});
+                    this._safelyNavigateForward({title: 'Events', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, firebaseRef: this.state.firebaseRef, selected: 'events', ventureId: this.state.ventureId}});
             }} style={styles.trendingItem}>
                 <Image style={styles.trendingEventImg} source={{uri}}/>
             </TouchableOpacity>
@@ -308,7 +294,7 @@ var Home = React.createClass({
         // since were not using navigator.push()
 
         firebaseRef.child(`users/${this.state.ventureId}/activityPreference`).set(activityPreferenceChange);
-        this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, selected: 'users', ventureId: this.state.ventureId}});
+        this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, firebaseRef: this.state.firebaseRef, selected: 'users', ventureId: this.state.ventureId}});
 
         this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
     },
@@ -557,13 +543,13 @@ var Home = React.createClass({
                         <ProfilePageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/34, right: 20}}
                                          onPress={() => {
                                             this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
-                                                    this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, selected: 'profile', ventureId: this.state.ventureId}});
+                                                    this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, firebaseRef: this.state.firebaseRef, selected: 'profile', ventureId: this.state.ventureId}});
                                          }} />
                         <ChatsListPageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/34, left: 20}}
                                            onPress={() => {
                                             this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
                                             // @hmm: pass ventureId to MainLayout
-                                                    this._safelyNavigateForward({title: 'Chats', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, selected: 'chats', ventureId: this.state.ventureId}});
+                                                    this._safelyNavigateForward({title: 'Chats', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, firebaseRef: this.state.firebaseRef, selected: 'chats', ventureId: this.state.ventureId}});
                                            }} />
                     </Header>
                     <Logo

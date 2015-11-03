@@ -39,7 +39,7 @@ var MainLayout = React.createClass({
     render() {
         let currentUserFriends = this.props.passProps && this.props.passProps.currentUserFriends,
             currentUserLocationCoords = this.props.passProps && this.props.passProps.currentUserLocationCoords,
-            friendsAPICallURL = this.props.passProps && this.props.passProps.friendsAPICallURL,
+            firebaseRef = this.props.passProps && this.props.passProps.firebaseRef,
             navigator = this.props.passProps && this.props.navigator,
             selected = this.props.passProps && this.props.passProps.selected,
             ventureId = this.props.passProps && this.props.passProps.ventureId;
@@ -53,7 +53,7 @@ var MainLayout = React.createClass({
         return <IOSLayout
             currentUserFriends={currentUserFriends}
             currentUserLocationCoords={currentUserLocationCoords}
-            friendsAPICallURL={friendsAPICallURL}
+            firebaseRef={firebaseRef}
             navigator={navigator}
             selected={selected}
             ventureId={ventureId} />;
@@ -64,7 +64,7 @@ var IOSLayout = React.createClass({
     getInitialState() {
         return {
             currentUserFriends: [],
-            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
+            firebaseRef: this.props.firebaseRef,
             selectedTab: this.props.selected
         }
     },
@@ -104,15 +104,15 @@ var IOSLayout = React.createClass({
     _renderComponent(title:string) {
         switch(title) {
             case 'hot':
-                return <Hot currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} handleSelectedTabChange={this._handleSelectedTabChange} navigator={this.props.navigator} />;
+                return <Hot currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} firebaseRef={this.props.firebaseRef} handleSelectedTabChange={this._handleSelectedTabChange} navigator={this.props.navigator} />;
             case 'events':
-                return <EventsList currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
+                return <EventsList currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} firebaseRef={this.props.firebaseRef} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'users':
-                return <UsersList currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords}  navigator={this.props.navigator} ventureId={this.props.ventureId} />;
+                return <UsersList currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} firebaseRef={this.props.firebaseRef} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'chats':
-                return <ChatsList currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
+                return <ChatsList currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} firebaseRef={this.props.firebaseRef} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'profile':
-                return <Profile currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} navigator={this.props.navigator} />;
+                return <Profile currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} firebaseRef={this.props.firebaseRef} navigator={this.props.navigator} />;
         }
 
     },

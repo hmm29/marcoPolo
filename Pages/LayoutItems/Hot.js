@@ -57,7 +57,7 @@ var Hot = React.createClass({
         return {
             events: [],
             fadeAnim: new Animated.Value(0),
-            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
+            firebaseRef: this.props.firebaseRef,
             trendingItems: {},
             yalies: []
         };

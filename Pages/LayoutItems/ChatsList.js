@@ -543,7 +543,7 @@ var ChatsList = React.createClass({
     watchID: null,
 
     getInitialState() {
-        let firebaseRef = new Firebase('https://ventureappinitial.firebaseio.com/'),
+        let firebaseRef = this.props.firebaseRef,
             usersListRef = firebaseRef.child('users');
 
         return {
@@ -635,7 +635,7 @@ var ChatsList = React.createClass({
                 <HomeIcon onPress={() => this._safelyNavigateToHome()} style={{right: 14}} />
                 <Text>MY CHATS</Text>
                 <FilterModalIcon
-                    onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}
+                    onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {firebaseRef: this.state.firebaseRef, ventureId: this.state.currentUserVentureId}})}
                     style={{left: 14}} />
             </Header>
         )
@@ -643,6 +643,8 @@ var ChatsList = React.createClass({
 
     _renderUser(user:Object, sectionID:number, rowID:number) {
         if (user.ventureId === this.state.currentUserVentureId || (user.status && !user.status.isOnline)) return <View />;
+
+        if(this.state.visibleRows && this.state.visibleRows[sectionID] && this.state.visibleRows[sectionID][rowID] && !this.state.visibleRows[sectionID][rowID]) return <View />;
 
         return <User currentUserData={this.state.currentUserData}
                      currentUserIDHashed={this.state.currentUserVentureId}
@@ -673,6 +675,7 @@ var ChatsList = React.createClass({
                     dataSource={this.state.dataSource}
                     renderRow={this._renderUser}
                     initialListSize={INITIAL_LIST_SIZE}
+                    onChangeVisibleRows={(visibleRows, changedRows) => this.setState({visibleRows, changedRows})}
                     pageSize={PAGE_SIZE}
                     automaticallyAdjustContentInsets={false}
                     scrollRenderAheadDistance={200}/>

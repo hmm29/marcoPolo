@@ -404,7 +404,7 @@ var UsersList = React.createClass({
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
             }),
-            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
+            firebaseRef: this.props.firebaseRef,
             maxSearchDistance: null,
             rows: [],
             searchText: '',
@@ -499,7 +499,7 @@ var UsersList = React.createClass({
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
             homeRoute = currentRouteStack[0];
 
-        alert(this.props.navigator.getCurrentRoutes().length);
+        // alert(this.props.navigator.getCurrentRoutes().length);
 
         if (currentRouteStack.indexOf(homeRoute) > -1) this.props.navigator.jumpTo(homeRoute);
     },
@@ -564,7 +564,7 @@ var UsersList = React.createClass({
                     returnKeyType='done'
                     style={styles.searchTextInput}/>
                 <FilterModalIcon
-                    onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {ventureId: this.state.currentUserVentureId}})}
+                    onPress={() => this._safelyNavigateForward({title: 'Filters', component: Filters, sceneConfig: Navigator.SceneConfigs.FloatFromBottom, passProps: {firebaseRef: this.state.firebaseRef, ventureId: this.state.currentUserVentureId}})}
                     style={{left: 14}}/>
                 <Text />
             </Header>
@@ -575,12 +575,14 @@ var UsersList = React.createClass({
     _renderUser(user:Object, sectionID:number, rowID:number) {
         if (user.ventureId === this.state.currentUserVentureId) return <View />;
 
-        return <User currentUserData={this.state.currentUserData}
-                     currentUserIDHashed={this.state.currentUserVentureId}
-                     currentUserLocationCoords={this.props.currentUserLocationCoords}
-                     data={user}
-                     firebaseRef={this.state.firebaseRef}
-                     navigator={this.props.navigator}/>;
+        if(this.state.visibleRows && this.state.visibleRows[sectionID] && this.state.visibleRows[sectionID][rowID] && !this.state.visibleRows[sectionID][rowID]) return <View />;
+
+            return <User currentUserData={this.state.currentUserData}
+                         currentUserIDHashed={this.state.currentUserVentureId}
+                         currentUserLocationCoords={this.props.currentUserLocationCoords}
+                         data={user}
+                         firebaseRef={this.state.firebaseRef}
+                         navigator={this.props.navigator}/>;
     },
 
     render() {
@@ -598,6 +600,7 @@ var UsersList = React.createClass({
                     minPulldownDistance={5}
                     automaticallyAdjustContentInsets={false}
                     loadData={this.shuffleUsers}
+                    onChangeVisibleRows={(visibleRows, changedRows) => this.setState({visibleRows, changedRows})}
                     refreshDescription="Everyday I'm shufflin'..."
                     scrollRenderAheadDistance={600}
                     refreshingIndictatorComponent={CustomRefreshingIndicator}

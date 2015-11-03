@@ -20,8 +20,6 @@ var {
   View
 } = React;
 
-var Home = require('./Pages/Home');
-
 import type { NavigationContext } from 'NavigationContext';
 
 type Navigator = {
@@ -33,6 +31,7 @@ var VentureApp = React.createClass({
 
     componentDidMount() {
         var Orientation = require('react-native-orientation');
+
         Orientation.lockToPortrait();
 
         StatusBarIOS.setStyle('light-content', true);
@@ -52,8 +51,10 @@ var VentureApp = React.createClass({
   },
 
   render: function() {
-    return (
-         <Navigator 
+      var Home = require('./Pages/Home');
+
+      return (
+         <Navigator
           style={styles.container}
           renderScene={this.renderScene}
           configureScene={(route) => {

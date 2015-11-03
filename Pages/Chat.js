@@ -36,6 +36,7 @@ var { Icon, } = require('react-native-icons');
 var InvertibleScrollView = require('react-native-invertible-scroll-view');
 var LinearGradient = require('react-native-linear-gradient');
 var ReactFireMixin = require('reactfire');
+var SGListView = require('react-native-sglistview');
 var TimerMixin = require('react-timer-mixin');
 
 var INITIAL_TIMER_VAL_IN_MS = 15000;
@@ -120,7 +121,9 @@ var Chat = React.createClass({
         );
     },
 
-    _renderMessage(message:Object) {
+    _renderMessage(message:Object, sectionID:number, rowID:number) {
+        if(this.state.visibleRows && this.state.visibleRows[sectionID] && this.state.visibleRows[sectionID][rowID] && !this.state.visibleRows[sectionID][rowID]) return <View />;
+
         var recipient = this.props.passProps.recipient,
             currentUserData = this.props.passProps.currentUserData,
             currentUserIDHashed = this.props.passProps.currentUserData.ventureId,
@@ -242,11 +245,12 @@ var Chat = React.createClass({
                                       navigator={this.props.navigator}
                                       recipientData={this.props.passProps}
                                       safelyNavigateToMainLayout={this._safelyNavigateToMainLayout}/>
-                    <ListView
+                    <SGListView
                         ref={MESSAGES_LIST_REF}
                         contentOffset={{x: 0, y: this.state.contentOffsetYValue}}
                         dataSource={this.state.dataSource}
                         renderRow={this._renderMessage}
+                        onChangeVisibleRows={(visibleRows, changedRows) => this.setState({visibleRows, changedRows})}
                         renderScrollComponent={props => <InvertibleScrollView {...props} />}
                         initialListSize={15}
                         pageSize={15}

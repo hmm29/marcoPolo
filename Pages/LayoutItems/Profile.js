@@ -66,7 +66,7 @@ var Profile = React.createClass({
     getInitialState() {
         return {
             asyncObj: null,
-            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
+            firebaseRef: this.props.firebaseRef,
             user: null
         }
     },
@@ -224,7 +224,7 @@ var Profile = React.createClass({
                 <Text>MY PROFILE</Text>
                 <EditProfilePageIcon
                     onPress={() => {
-                          this._safelyNavigateForward({title: 'EditProfile',component: EditProfile,  passProps: {ventureId: this.state.ventureId}});
+                          this._safelyNavigateForward({title: 'EditProfile',component: EditProfile,  passProps: {firebaseRef: this.state.firebaseRef, ventureId: this.state.ventureId}});
                     }} style={{left: 14}}/>
             </Header>
         )
@@ -249,7 +249,7 @@ var Photo = React.createClass({
                       bottom: 20
                     }
                   }
-                        source={{uri: `https://res.cloudinary.com/dwnyawluh/image/facebook/${this.props.user.userId}.jpg`}}
+                        source={{uri: `https://res.cloudinary.com/dwnyawluh/image/facebook/q_80/${this.props.user.userId}.jpg`}}
                         />
                 </View>
             );

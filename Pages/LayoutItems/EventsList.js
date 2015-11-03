@@ -717,6 +717,7 @@ var EventsList = React.createClass({
 
 
     _renderEvent(event:Object, sectionID:number, rowID:number) {
+        if(this.state.visibleRows && this.state.visibleRows[sectionID] && this.state.visibleRows[sectionID][rowID] && !this.state.visibleRows[sectionID][rowID]) return <View />;
 
         return <Event currentUserData={this.state.currentUserData}
                       currentUserIDHashed={this.state.currentUserVentureId}
@@ -741,6 +742,7 @@ var EventsList = React.createClass({
                     renderRow={this._renderEvent}
                     initialListSize={INITIAL_LIST_SIZE}
                     pageSize={PAGE_SIZE}
+                    onChangeVisibleRows={(visibleRows, changedRows) => this.setState({visibleRows, changedRows})}
                     automaticallyAdjustContentInsets={false}
                     scrollRenderAheadDistance={200}/>
                 <View style={{height: 48}}></View>
