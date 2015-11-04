@@ -21,14 +21,6 @@ var {
     View
     } = React;
 
-var _ = require('lodash');
-var ChatsList = require('../Pages/LayoutItems/ChatsList');
-var EventsList = require('../Pages/LayoutItems/EventsList');
-var Firebase = require('firebase');
-var Hot = require('../Pages/LayoutItems/Hot');
-var Profile = require('../Pages/LayoutItems/Profile');
-var UsersList = require('../Pages/LayoutItems/UsersList');
-
 var TAB_BAR_ICON_SIZE = 22;
 
 var MainLayout = React.createClass({
@@ -70,6 +62,8 @@ var IOSLayout = React.createClass({
     },
 
     componentWillMount() {
+        var _ = require('lodash');
+
         InteractionManager.runAfterInteractions(() => {
             let chatCountRef = this.state.firebaseRef.child(`users/${this.props.ventureId}/chatCount`),
                 currentRouteStack = this.props.navigator.getCurrentRoutes();
@@ -102,6 +96,13 @@ var IOSLayout = React.createClass({
     },
 
     _renderComponent(title:string) {
+        var ChatsList = require('../Pages/LayoutItems/ChatsList');
+        var EventsList = require('../Pages/LayoutItems/EventsList');
+        var Hot = require('../Pages/LayoutItems/Hot');
+        var Profile = require('../Pages/LayoutItems/Profile');
+        var UsersList = require('../Pages/LayoutItems/UsersList');
+
+
         switch(title) {
             case 'hot':
                 return <Hot currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} firebaseRef={this.props.firebaseRef} handleSelectedTabChange={this._handleSelectedTabChange} navigator={this.props.navigator} />;

@@ -192,11 +192,13 @@ var User = React.createClass({
             // chatroom reference uses id of the user who accepts the received matchInteraction
 
             targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
+                _id: currentUserIDHashed,
                 status: 'matched',
                 role: 'recipient'
             }, 100);
 
             currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
+                _id: targetUserIDHashed,
                 status: 'matched',
                 role: 'sender'
             }, 100);
@@ -404,7 +406,7 @@ var UsersList = React.createClass({
             dataSource: new ListView.DataSource({
                 rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
             }),
-            firebaseRef: this.props.firebaseRef,
+            firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             maxSearchDistance: null,
             rows: [],
             searchText: '',
@@ -491,15 +493,14 @@ var UsersList = React.createClass({
 
     },
 
-    //componentWillUnmount() {
-    //    this.state.usersListRef && this.state.usersListRef.off();
-    //},
+    componentWillUnmount() {
+        this.state.usersListRef && this.state.usersListRef.off();
+        this.state.firebaseRef.off();
+    },
 
     _safelyNavigateToHome() {
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
             homeRoute = currentRouteStack[0];
-
-        // alert(this.props.navigator.getCurrentRoutes().length);
 
         if (currentRouteStack.indexOf(homeRoute) > -1) this.props.navigator.jumpTo(homeRoute);
     },

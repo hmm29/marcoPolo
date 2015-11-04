@@ -71,6 +71,10 @@ var Profile = React.createClass({
         }
     },
 
+    componentWillUnmount() {
+        this.state.firebaseRef.off();
+    },
+
     _safelyNavigateToHome() {
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
             homeRoute = currentRouteStack[0];
@@ -114,10 +118,6 @@ var Profile = React.createClass({
                 });
             });
 
-            AsyncStorage.setItem('@AsyncStorage:Venture:account', 'null')
-                .catch(error => console.log(error.message))
-                .done();
-
             return;
         }
 
@@ -159,23 +159,14 @@ var Profile = React.createClass({
                                  onLogout={function(){
 
                                     _this.props.navigator.immediatelyResetRouteStack([{title: 'Login', component: Login}]);
+
                                     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                                     _this.setState({user : null, ventureId: null});
                                     _this._updateUserLoginStatus(false);
 
-                                  AsyncStorage.setItem('@AsyncStorage:Venture:isOnline', 'false')
-                                    .then(() => console.log('Logged out!'))
-                                    .catch((error) => console.log(error.message))
-                                    .done();
-
-                                  AsyncStorage.setItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL', 'null')
-                                    .catch(error => console.log(error.message))
-                                    .done();
-
-                                  AsyncStorage.setItem('@AsyncStorage:Venture:currentUserFriends', 'null')
-                                    .catch(error => console.log(error.message))
-                                    .done();
-
+                                     AsyncStorage.multiRemove(['@AsyncStorage:Venture:account', '@AsyncStorage:Venture:currentUser:friendsAPICallURL', '@AsyncStorage:Venture:currentUserFriends', '@AsyncStorage:Venture:isOnline'])
+                                        .catch(error => console.log(error.message))
+                                        .done();
                                 }}
 
                                  onLoginFound={function(data){

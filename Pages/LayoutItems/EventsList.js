@@ -186,6 +186,7 @@ var User = React.createClass({
                 account: this.props.currentUserData && _.assign(_.pick(this.props.currentUserData, 'firstName', 'picture', 'ventureId', 'bio', 'age', 'location'), {isEventInvite: true, eventTitle: this.props.eventTitle, eventId: this.props.eventId, eventLogistics: this.props.eventLogistics}),
                 eventId: this.props.eventId,
                 eventTitle: this.props.eventTitle,
+                _id: currentUserIDHashed,
                 status: 'matched',
                 role: 'recipient'
             }, 100);
@@ -194,6 +195,7 @@ var User = React.createClass({
                 account: this.props.data && _.assign(_.pick(this.props.data, 'firstName', 'picture', 'ventureId', 'bio', 'age', 'location'), {isEventInvite: true, eventTitle: this.props.eventTitle, eventId: this.props.eventId, eventLogistics: this.props.eventLogistics}),
                 eventId: this.props.eventId,
                 eventTitle: this.props.eventTitle,
+                _id: targetUserIDHashed,
                 status: 'matched',
                 role: 'sender'
             }, 100);
@@ -676,8 +678,8 @@ var EventsList = React.createClass({
         let eventsListRef = this.state.eventsListRef,
             usersListRef = this.state.usersListRef;
 
-        eventsListRef.off();
-        usersListRef.off();
+        eventsListRef && eventsListRef.off();
+        eventsListRef && usersListRef.off();
     },
 
     _openGuestListModal() {

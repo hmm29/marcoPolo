@@ -30,23 +30,8 @@ var {
     } = React;
 
 var _ = require('lodash');
-var AwaitingResponseIcon = require('../../Partials/Icons/AwaitingResponseIcon');
-var Chat = require('../Chat');
-var ChevronIcon = require('../../Partials/Icons/ChevronIcon');
 var Display = require('react-native-device-display');
-var FilterModalIcon = require('../../Partials/Icons/FilterModalIcon');
-var Filters = require('../Filters');
-var Firebase = require('firebase');
-var GeoFire = require('geofire');
-var Header = require('../../Partials/Header');
-var HomeIcon = require('../../Partials/Icons/HomeIcon');
-var LinearGradient = require('react-native-linear-gradient');
-var Logo = require('../../Partials/Logo');
-var MatchedIcon = require('../../Partials/Icons/MatchedIcon');
-var Modal = require('react-native-swipeable-modal');
 var ReactFireMixin = require('reactfire');
-var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
-var Swipeout = require('react-native-swipeout');
 
 var INITIAL_LIST_SIZE = 8;
 var LOGO_WIDTH = 200;
@@ -151,6 +136,8 @@ var User = React.createClass({
     },
 
     calculateDistance(location1:Array, location2:Array) {
+        var GeoFire = require('geofire');
+
         return location1 && location2 && (GeoFire.distance(location1, location2) * 0.621371).toFixed(1);
     },
 
@@ -210,11 +197,13 @@ var User = React.createClass({
                 // chatroom reference uses id of the user who accepts the received matchInteraction
 
                 targetUserEventInviteMatchRequestsRef.child(currentUserIDHashed).update({
+                    _id: currentUserIDHashed,
                     status: 'matched',
                     role: 'recipient'
                 });
 
                 currentUserEventInviteMatchRequestsRef.child(targetUserIDHashed).update({
+                    _id: targetUserIDHashed,
                     status: 'matched',
                     role: 'sender'
                 });
@@ -235,6 +224,7 @@ var User = React.createClass({
                     }
 
                     firebaseRef.child(`chat_rooms/${_id}`).once('value', snapshot => {
+                        var Chat = require('../Chat');
 
                         let chatRoomRef = firebaseRef.child(`chat_rooms/${_id}`),
                             currentRouteStack = this.props.navigator.getCurrentRoutes(),
@@ -308,11 +298,13 @@ var User = React.createClass({
                 // chatroom reference uses id of the user who accepts the received matchInteraction
 
                 targetUserMatchRequestsRef.child(currentUserIDHashed).set({
+                    _id: currentUserIDHashed,
                     status: 'matched',
                     role: 'recipient'
                 });
 
                 currentUserMatchRequestsRef.child(targetUserIDHashed).set({
+                    _id: targetUserIDHashed,
                     status: 'matched',
                     role: 'sender'
                 });
@@ -402,6 +394,11 @@ var User = React.createClass({
     },
 
     _renderStatusIcon() {
+        var AwaitingResponseIcon = require('../../Partials/Icons/AwaitingResponseIcon');
+        var ChevronIcon = require('../../Partials/Icons/ChevronIcon');
+        var MatchedIcon = require('../../Partials/Icons/MatchedIcon');
+        var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
+
         switch (this.state.status) {
             case 'sent':
                 return <AwaitingResponseIcon
@@ -425,6 +422,8 @@ var User = React.createClass({
     },
 
     render() {
+        var LinearGradient = require('react-native-linear-gradient');
+
         if(this.state.status === null) return <View />;
 
         let profileModal, userRowContent;
@@ -543,7 +542,9 @@ var ChatsList = React.createClass({
     watchID: null,
 
     getInitialState() {
-        let firebaseRef = this.props.firebaseRef,
+        var Firebase = require('firebase');
+
+        let firebaseRef = new Firebase('https://ventureappinitial.firebaseio.com/'),
             usersListRef = firebaseRef.child('users');
 
         return {
@@ -602,9 +603,10 @@ var ChatsList = React.createClass({
         });
     },
 
-    //componentWillUnmount() {
-    //    this.state.usersListRef && this.state.usersListRef.off();
-    //},
+    componentWillUnmount() {
+        this.state.usersListRef && this.state.usersListRef.off();
+        this.state.firebaseRef.off();
+    },
 
     _safelyNavigateToHome() {
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
@@ -630,6 +632,11 @@ var ChatsList = React.createClass({
         });
     },
     _renderHeader() {
+        var FilterModalIcon = require('../../Partials/Icons/FilterModalIcon');
+        var Filters = require('../Filters');
+        var Header = require('../../Partials/Header');
+        var HomeIcon = require('../../Partials/Icons/HomeIcon');
+
         return (
             <Header containerStyle={{position: 'relative'}}>
                 <HomeIcon onPress={() => this._safelyNavigateToHome()} style={{right: 14}} />
@@ -655,6 +662,9 @@ var ChatsList = React.createClass({
     },
 
     render() {
+        var Logo = require('../../Partials/Logo');
+        var Modal = require('react-native-swipeable-modal');
+
         let funFact = (
             <View style={{alignSelf: 'center', bottom: SCREEN_HEIGHT/2.5}}>
                 <TouchableOpacity>

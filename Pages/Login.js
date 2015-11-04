@@ -67,7 +67,7 @@ var Login = React.createClass({
     },
 
     componentWillMount() {
-        AsyncStorage.setItem('@AsyncStorage:Venture:account', 'null')
+        AsyncStorage.removeItem('@AsyncStorage:Venture:account')
             .catch(error => console.log(error.message))
             .done();
     },

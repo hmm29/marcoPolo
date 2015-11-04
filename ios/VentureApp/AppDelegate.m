@@ -9,10 +9,16 @@
 
 #import <AppHub/AppHub.h>
 #import "AppDelegate.h"
+#import "RCTBridge.h"
+#import "RCTJavaScriptLoader.h"
 #import "RCTRootView.h"
 
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
+
+@interface AppDelegate() <RCTBridgeDelegate>
+
+@end
 
 @implementation AppDelegate
 
@@ -62,7 +68,7 @@
      */
 
      // AHBuild *build = [[AppHub buildManager] currentBuild];
-     // jsCodeLocation = [build.bundle URLForResource:@"main"
+     //jsCodeLocation = [build.bundle URLForResource:@"main"
      //                               withExtension:@"jsbundle"];
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
@@ -98,6 +104,13 @@
 #endif
 {
   return UIInterfaceOrientationMaskPortrait;
+}
+
+- (void)loadSourceForBridge:(RCTBridge *)bridge
+                  withBlock:(RCTSourceLoadBlock)loadCallback
+{
+  [RCTJavaScriptLoader loadBundleAtURL:[self sourceURLForBridge:bridge]
+                            onComplete:loadCallback];
 }
 
 @end

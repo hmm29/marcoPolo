@@ -31,17 +31,10 @@ var {
     } = React;
 
 var _ = require('lodash');
-var ChatsListPageIcon = require('../Partials/Icons/ChatsListPageIcon');
 var CheckBoxIcon = require('../Partials/Icons/CheckBoxIcon');
 var ChevronIcon = require('../Partials/Icons/ChevronIcon');
 var ClockIcon = require('../Partials/Icons/ClockIcon');
 var Display = require('react-native-device-display');
-var Header = require('../Partials/Header');
-var { Icon, } = require('react-native-icons');
-var Login = require('../Pages/Login');
-var Logo = require('../Partials/Logo');
-var MainLayout = require('../Layouts/MainLayout');
-var ProfilePageIcon = require('../Partials/Icons/ProfilePageIcon');
 var TimerMixin = require('react-timer-mixin');
 
 var ADD_INFO_BUTTON_SIZE = 28;
@@ -64,6 +57,8 @@ var Home = React.createClass({
     mixins: [TimerMixin],
 
     getInitialState() {
+        var Firebase = require('firebase');
+
         return {
             activeTimeOption: 'now',
             activityTitleInput: '',
@@ -108,8 +103,10 @@ var Home = React.createClass({
                             return;
                         }
 
-                        let currentUserRef = this.state.firebaseRef.child(`users/${account.ventureId}`),
-                            trendingItemsRef = this.state.firebaseRef.child('trending'),
+                        let currentUserRef = this.state.firebaseRef && this.state.firebaseRef.child(`users/${account.ventureId}`),
+                            trendingItemsRef = this.state.firebaseRef && this.state.firebaseRef.child('trending'),
+                            usersListRef = this.state.firebaseRef && this.state.firebaseRef.child('users'),
+                            chatRoomsRef = this.state.firebaseRef && this.state.firebaseRef.child('chat_rooms'),
                             _this = this;
 
                         //@hmm: get current user location & save to firebase object
@@ -134,6 +131,30 @@ var Home = React.createClass({
                                 })
                             }
                         );
+
+                        // @hmm: at restart reset all timer vals & chats
+
+                        currentUserRef.child('match_requests').once('value', snapshot => {
+                            snapshot.val() && _.each(snapshot.val(), (match) => {
+                                if (match && match.timerVal) {
+                                    currentUserRef.child(`match_requests/${match._id}/timerVal`).set(null);
+                                    usersListRef.child(`${match._id}/match_requests/${account.ventureId}/timerVal`).set(null);
+                                    usersListRef.child(`${match._id}/chatCount`).once('value', snapshot => {
+                                        usersListRef.child(`${match._id}/chatCount`).set(snapshot.val() - 1);
+                                    });
+
+                                }
+                            });
+                            currentUserRef.child('chatCount').set(0);
+                        });
+
+                        chatRoomsRef.once('value', snapshot => {
+                            snapshot.val() && _.each(snapshot.val(), (chatRoom) => {
+                                if (chatRoom._id && chatRoom._id.indexOf(account.ventureId) > -1) {
+                                    chatRoomsRef.child(chatRoom._id).set(null);
+                                }
+                            });
+                        });
 
                         this.setState({ventureId: account.ventureId});
 
@@ -204,6 +225,8 @@ var Home = React.createClass({
                 <Image style={styles.trendingUserImg} source={{uri}}/>
             </TouchableOpacity>
         )
+
+        let MainLayout = require('../Layouts/MainLayout');
 
         return (
             <TouchableOpacity key={i} onPress={() => {
@@ -293,6 +316,8 @@ var Home = React.createClass({
         // @hmm: have to manually blur the text input,
         // since were not using navigator.push()
 
+        let MainLayout = require('../Layouts/MainLayout');
+
         firebaseRef.child(`users/${this.state.ventureId}/activityPreference`).set(activityPreferenceChange);
         this._safelyNavigateForward({title: 'Users', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, firebaseRef: this.state.firebaseRef, selected: 'users', ventureId: this.state.ventureId}});
 
@@ -322,11 +347,15 @@ var Home = React.createClass({
     },
 
     _safelyNavigateToLogin() {
+        var Login = require('../Pages/Login');
+
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         this.props.navigator.immediatelyResetRouteStack([{title: 'Login', component: Login}]);
     },
 
     render() {
+        var { Icon, } = require('react-native-icons');
+
         let content,
             isAtScrollViewStart = this.state.contentOffsetXVal === 0,
             isAtTrendingScrollViewStart = this.state.trendingContentOffsetXVal === 0,
@@ -532,7 +561,11 @@ var Home = React.createClass({
             </View>
         );
 
+        var ChatsListPageIcon = require('../Partials/Icons/ChatsListPageIcon');
+        var Header = require('../Partials/Header');
+        var Logo = require('../Partials/Logo');
         let MainLayout = require('../Layouts/MainLayout');
+        var ProfilePageIcon = require('../Partials/Icons/ProfilePageIcon');
 
         return (
             <View style={styles.container}>
