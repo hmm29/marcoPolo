@@ -28,9 +28,7 @@ var {
 var _ = require('lodash');
 var Display = require('react-native-device-display');
 var FBLogin = require('react-native-facebook-login');
-var Firebase = require('firebase');
 var sha256 = require('sha256');
-var Swiper = require('react-native-swiper');
 var TimerMixin = require('react-timer-mixin');
 
 var SCREEN_WIDTH = Display.width;
@@ -59,6 +57,8 @@ var Login = React.createClass({
     mixins: [TimerMixin],
 
     getInitialState() {
+        var Firebase = require('firebase');
+
         return {
             asyncObj: null,
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
@@ -90,7 +90,7 @@ var Login = React.createClass({
                 else if(ageRange.max === 20 && ageRange.min === 18) {
                     AlertIOS.alert(
                         'Venture: Specify Your Age',
-                        'Users who specify their age have better experiences finding activity partners.',
+                        'Venture uses age to give you the best experience with activity partners.',
                         [
                             {text: '18', onPress: () => {
                                 this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(18);
@@ -111,7 +111,7 @@ var Login = React.createClass({
                 else if (ageRange.min === 21) {
                     AlertIOS.alert(
                         'Venture: Specify Your Age',
-                        'Users who specify their age have better experiences finding activity partners.',
+                        'Venture uses age to give you the best experience with activity partners.',
                         [
                             {text: '21', onPress: () => {
                                 this.state.firebaseRef.child(`users/${ventureId}/age/value`).set(21);
@@ -240,6 +240,7 @@ var Login = React.createClass({
     },
 
     render() {
+        var Swiper = require('react-native-swiper');
         let _this = this;
 
         return (
@@ -247,7 +248,7 @@ var Login = React.createClass({
                     <Swiper style={styles.wrapper}
                             dot={<View style={{backgroundColor:'rgba(255,255,255,.3)', width: 13, height: 13,borderRadius: 7, top: SCREEN_HEIGHT / 30, marginLeft: 7, marginRight: 7,}} />}
                             activeDot={<View style={{backgroundColor: '#fff', width: 13, height: 13, borderRadius: 7, top: SCREEN_HEIGHT / 30, marginLeft: 7, marginRight: 7}} />}
-                            paginationStyle={{bottom: 40,}}
+                            paginationStyle={{bottom: 30}}
                             loop={false}>
                         <View style={styles.slide}>
                             <Image

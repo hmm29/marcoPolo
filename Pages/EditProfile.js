@@ -18,7 +18,6 @@ var {
     Image,
     InteractionManager,
     LayoutAnimation,
-    NativeModules,
     StyleSheet,
     Text,
     TextInput,
@@ -29,14 +28,9 @@ var {
 var _ = require('lodash');
 var AutoComplete = require('react-native-autocomplete');
 var BackIcon = require('../Partials/Icons/BackIcon');
-var Camera = require('react-native-camera');
 var Display = require('react-native-device-display');
 var Firebase = require('firebase');
-var GenderList = require('../data/genders.json').genders;
-var Header = require('../Partials/Header');
 var { Icon, } = require('react-native-icons');
-var MainLayout = require('../Layouts/MainLayout');
-var Profile = require('../Pages/LayoutItems/Profile');
 
 var CAMERA_ICON_SIZE = 48;
 var CAMERA_REF = 'camera';
@@ -65,7 +59,7 @@ var EditProfile = React.createClass({
 
     getInitialState() {
         return {
-            cameraType: Camera.constants.Type.back,
+            // cameraType: Camera.constants.Type.back,
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             hasKeyboardSpace: false,
             showAutocomplete: false,
@@ -132,6 +126,8 @@ var EditProfile = React.createClass({
 
 
     _onTyping(text:string) {
+        var GenderList = require('../data/genders.json').genders;
+
         let genderMatches =
             _.filter(GenderList, n => _.startsWith(n.toLowerCase(), text.toLowerCase()));
 
@@ -170,32 +166,32 @@ var EditProfile = React.createClass({
         this._onBlurGender()
     },
 
-    _showActionSheet() {
-        ActionSheetIOS.showActionSheetWithOptions({
-                options: BUTTONS,
-                cancelButtonIndex: CANCEL_INDEX
-            },
-            (buttonIndex) => {
+    //_showActionSheet() {
+    //    ActionSheetIOS.showActionSheetWithOptions({
+    //            options: BUTTONS,
+    //            cancelButtonIndex: CANCEL_INDEX
+    //        },
+    //        (buttonIndex) => {
+    //
+    //            if (BUTTONS[buttonIndex] === TAKE_PHOTO_OPTION) {
+    //                //@hmm: open React Native camera
+    //                this.setState({showCamera: true});
+    //            }
+    //
+    //            if (BUTTONS[buttonIndex] == CAMERA_ROLL_OPTION) {
+    //                //@hmm: show camera roll
+    //                // alert('show camera roll');
+    //            }
+    //
+    //        });
+    //},
 
-                if (BUTTONS[buttonIndex] === TAKE_PHOTO_OPTION) {
-                    //@hmm: open React Native camera
-                    this.setState({showCamera: true});
-                }
-
-                if (BUTTONS[buttonIndex] == CAMERA_ROLL_OPTION) {
-                    //@hmm: show camera roll
-                    // alert('show camera roll');
-                }
-
-            });
-    },
-
-    _switchCamera() {
-        let state = this.state;
-        state.cameraType = state.cameraType === Camera.constants.Type.back
-            ? Camera.constants.Type.front : Camera.constants.Type.back;
-        this.setState(state);
-    },
+    //_switchCamera() {
+    //    let state = this.state;
+    //    state.cameraType = state.cameraType === Camera.constants.Type.back
+    //        ? Camera.constants.Type.front : Camera.constants.Type.back;
+    //    this.setState(state);
+    //},
 
     //_takePicture() {
     //    let _this = this;
@@ -291,29 +287,7 @@ var EditProfile = React.createClass({
 
         return this.state.showCamera ?
 
-            <Camera
-                ref={CAMERA_REF}
-                style={styles.cameraContainer}
-                type={this.state.cameraType}>
-                <View style={{flexDirection: 'row'}}>
-                    <TouchableOpacity onPress={this._takePicture}>
-                        <Icon
-                            color="#fff"
-                            name="ion|ios-camera"
-                            size={CAMERA_ICON_SIZE}
-                            style={{width: CAMERA_ICON_SIZE, height: CAMERA_ICON_SIZE, paddingHorizontal: SCREEN_WIDTH/5}}
-                            />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={this._switchCamera}>
-                        <Icon
-                            color="#fff"
-                            name="ion|ios-reverse-camera"
-                            size={CAMERA_ICON_SIZE}
-                            style={{width: CAMERA_ICON_SIZE, height: CAMERA_ICON_SIZE, paddingHorizontal: SCREEN_WIDTH/5}}
-                            />
-                    </TouchableOpacity>
-                </View>
-            </Camera>
+            <View />
 
             :
 
@@ -345,6 +319,8 @@ var EditProfile = React.createClass({
     },
 
     _renderHeader() {
+        var Header = require('../Partials/Header');
+
         return (
             <Header containerStyle={{backgroundColor: '#040A19'}}>
                 <TouchableOpacity onPress={this._safelyNavigateToMainLayout} style={{right: 40, bottom: 2}}>

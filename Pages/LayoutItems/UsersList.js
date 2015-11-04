@@ -30,22 +30,10 @@ var {
     } = React;
 
 var _ = require('lodash');
-var AwaitingResponseIcon = require('../../Partials/Icons/AwaitingResponseIcon');
 var Chat = require('../Chat');
-var ChevronIcon = require('../../Partials/Icons/ChevronIcon');
 var Display = require('react-native-device-display');
-var FilterModalIcon = require('../../Partials/Icons/FilterModalIcon');
-var Filters = require('../Filters');
 var Firebase = require('firebase');
 var GeoFire = require('geofire');
-var Header = require('../../Partials/Header');
-var HomeIcon = require('../../Partials/Icons/HomeIcon');
-var LinearGradient = require('react-native-linear-gradient');
-var Logo = require('../../Partials/Logo');
-var MatchedIcon = require('../../Partials/Icons/MatchedIcon');
-var Modal = require('react-native-swipeable-modal');
-var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
-var RefreshableListView = require('react-native-refreshable-listview');
 var TimerMixin = require('react-timer-mixin');
 
 var INITIAL_LIST_SIZE = 8;
@@ -284,6 +272,11 @@ var User = React.createClass({
     },
 
     _renderStatusIcon() {
+        var AwaitingResponseIcon = require('../../Partials/Icons/AwaitingResponseIcon');
+        var ChevronIcon = require('../../Partials/Icons/ChevronIcon');
+        var MatchedIcon = require('../../Partials/Icons/MatchedIcon');
+        var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
+
         switch (this.state.status) {
             case 'sent':
                 return <AwaitingResponseIcon
@@ -308,6 +301,7 @@ var User = React.createClass({
     },
 
     render() {
+        var LinearGradient = require('react-native-linear-gradient');
 
         let profileModal = (
             <View style={styles.profileModalContainer}>
@@ -551,6 +545,12 @@ var UsersList = React.createClass({
     },
 
     _renderHeader() {
+        var FilterModalIcon = require('../../Partials/Icons/FilterModalIcon');
+        var Filters = require('../Filters');
+        var Header = require('../../Partials/Header');
+        var HomeIcon = require('../../Partials/Icons/HomeIcon');
+
+
         return (
             <Header>
                 <HomeIcon onPress={() => this._safelyNavigateToHome()} style={{right: 14}}/>
@@ -587,6 +587,10 @@ var UsersList = React.createClass({
     },
 
     render() {
+        var Logo = require('../../Partials/Logo');
+        var Modal = require('react-native-swipeable-modal');
+        var RefreshableListView = require('react-native-refreshable-listview');
+
         return (
             <View style={styles.usersListBaseContainer}>
                 <View>

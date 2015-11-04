@@ -30,6 +30,7 @@ var {
     } = React;
 
 var _ = require('lodash');
+var Chat = require('../Chat');
 var Display = require('react-native-device-display');
 var ReactFireMixin = require('reactfire');
 
@@ -224,7 +225,6 @@ var User = React.createClass({
                     }
 
                     firebaseRef.child(`chat_rooms/${_id}`).once('value', snapshot => {
-                        var Chat = require('../Chat');
 
                         let chatRoomRef = firebaseRef.child(`chat_rooms/${_id}`),
                             currentRouteStack = this.props.navigator.getCurrentRoutes(),

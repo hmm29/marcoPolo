@@ -541,12 +541,12 @@ var Event = React.createClass({
     },
 
     _onPressItem() {
+        this.props.handleSelectedEventStateChange(this.props.data);
+
         LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
         this.setState({dir: this.state.dir === 'row' ? 'column' : 'row'});
         // @hmm: set to selected event for guest list
         // have to press item to access guest list so makes sense to change selected event here
-
-        this.props.handleSelectedEventStateChange(this.props.data);
     },
 
     _renderEventAttendanceStatusIcon() {
