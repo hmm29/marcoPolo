@@ -29,6 +29,7 @@ var {
     } = React;
 
 var _ = require('lodash');
+var BackIcon = require('../Partials/Icons/BackIcon');
 var Display = require('react-native-device-display');
 var Firebase = require('firebase');
 var Header = require('../Partials/Header');
@@ -39,7 +40,7 @@ var ReactFireMixin = require('reactfire');
 var SGListView = require('react-native-sglistview');
 var TimerMixin = require('react-timer-mixin');
 
-var INITIAL_TIMER_VAL_IN_MS = 15000;
+var INITIAL_TIMER_VAL_IN_MS = 300000;
 var SCREEN_HEIGHT = Display.height;
 var SCREEN_WIDTH = Display.width;
 var MESSAGE_TEXT_INPUT_REF = 'messageTextInput';
@@ -527,7 +528,8 @@ var TimerBar = React.createClass({
     },
 
     _destroyChatroom(chatRoomRef:string) {
-        let currentRoute = _.last(this.props.navigator.getCurrentRoutes()),
+        let currentRouteStack = this.props.navigator.getCurrentRoutes(),
+            currentRoute = _.last(currentRouteStack),
             currentUserData = this.props.currentUserData,
             currentUserIDHashed = currentUserData.ventureId,
             firebaseRef = this.state.firebaseRef,
@@ -544,6 +546,8 @@ var TimerBar = React.createClass({
         // only navigate if still on chat page! :D
 
         if((currentRoute.title === 'Chat' && currentRoute.passProps._id === this.props._id) || this.state.timerValInMs <= 1000 || this.state.timerValInMs > INITIAL_TIMER_VAL_IN_MS || this.state.timerValInMs < 0) this.props.safelyNavigateToMainLayout(true);
+
+        this.props.navigator.replaceAtIndex({title: 'Chat', component: BackIcon, passProps: {_id: null}}, _.findLastIndex(currentRouteStack, (route) => route.passProps._id === this.props._id));
 
         firebaseRef.child(`users/${targetUserIDHashed}/chatCount`).once('value', snapshot => {
             firebaseRef.child(`users/${targetUserIDHashed}/chatCount`).set(snapshot.val() - 1);

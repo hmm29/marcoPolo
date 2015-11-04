@@ -251,13 +251,13 @@ var Login = React.createClass({
                             loop={false}>
                         <View style={styles.slide}>
                             <Image
-                                source={require('image!OnboardingFindActivityPartners')}
+                                source={require('image!OnboardingFacebookSignUp')}
                                 style={styles.backdrop}>
 
                                 <Image
                                        style={styles.ventureLogo}/>
 
-                                <FBLogin style={{ top: 80 }}
+                                <FBLogin style={{ top: 68 }}
                                          permissions={['email','user_friends']}
                                          onLogin={function(data){
 
@@ -280,8 +280,28 @@ var Login = React.createClass({
                             </Image>
                         </View>
                         <View style={styles.slide}>
+                            <Image
+                                source={require('image!OnboardingWhatDoYouWantToDo')}
+                                style={styles.backdrop}>
+                            </Image>
                         </View>
                         <View style={styles.slide}>
+                            <Image
+                                source={require('image!OnboardingFindActivityPartners')}
+                                style={styles.backdrop}>
+                            </Image>
+                        </View>
+                        <View style={styles.slide}>
+                            <Image
+                                source={require('image!OnboardingShareActivities')}
+                                style={styles.backdrop}>
+                            </Image>
+                        </View>
+                        <View style={styles.slide}>
+                            <Image
+                                source={require('image!OnboardingMakeNewConnections')}
+                                style={styles.backdrop}>
+                            </Image>
                         </View>
                     </Swiper>
             </View>

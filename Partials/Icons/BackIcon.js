@@ -40,10 +40,7 @@ var BackIcon = React.createClass({
         return (
             <View style={styles.container}>
                 <TouchableOpacity
-                    onPress={() =>  InteractionManager.runAfterInteractions(() => {
-                        this.props.onPress();
-                    })}
-                    stlye={this.props.style}>
+                    style={this.props.style}>
                     <Icon
                         color={this.props.color || "#fff"}
                         name="ion|ios-arrow-thin-left"
