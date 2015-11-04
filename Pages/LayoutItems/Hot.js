@@ -27,7 +27,6 @@ var {
 
 var ChevronIcon = require('../../Partials/Icons/ChevronIcon');
 var Display = require('react-native-device-display');
-var Firebase = require('firebase');
 var Header = require('../../Partials/Header');
 var HomeIcon = require('../../Partials/Icons/HomeIcon');
 var { Icon, } = require('react-native-icons');
