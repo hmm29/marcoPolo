@@ -581,7 +581,6 @@ var Event = React.createClass({
                     </Text>
                     <Text style={styles.profileModalSectionTitle}>EVENT DESCRIPTION:</Text>
                     <Text style={[styles.profileModalBio, {width: SCREEN_WIDTH / 1.4}]}>{this.props.data && this.props.data.description} {'\n'}</Text>
-                    <Text style={styles.profileModalSectionTitle}>EVENT DESCRIPTION: {'\n'}</Text>
                     <TouchableOpacity onPress={() => {
                         this.props.openGuestListModal();
                     }} style={{backgroundColor: 'rgba(0,0,0,0.001)'}}><Text style={{color: '#3F7CFF', fontFamily: 'AvenirNextCondensed-Medium', fontSize: 20, paddingHorizontal: 40, paddingBottoml: 10}}>WHO'S GOING?</Text></TouchableOpacity>
