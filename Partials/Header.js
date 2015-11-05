@@ -20,10 +20,10 @@ var {
     View
     } = React;
 
-var Display = require('react-native-device-display');
+var Dimensions = require('Dimensions');
 
-var SCREEN_WIDTH = Display.width;
-var SCREEN_HEIGHT = Display.height;
+var SCREEN_WIDTH = Dimensions.get('window').width;
+var SCREEN_HEIGHT = Dimensions.get('window').height;
 
 var Header = React.createClass({
     propTypes: {

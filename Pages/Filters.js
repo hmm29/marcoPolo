@@ -27,11 +27,11 @@ var {
 
 var _ = require('lodash');
 var CloseIcon = require('../Partials/Icons/CloseIcon');
-var Display = require('react-native-device-display');
+var Dimensions = require('Dimensions');
 var Header = require('../Partials/Header');
 var MainLayout = require('../Layouts/MainLayout');
 
-var SCREEN_HEIGHT = Display.height;
+var SCREEN_HEIGHT = Dimensions.get('window').height;
 
 var Filters = React.createClass({
     propTypes: {

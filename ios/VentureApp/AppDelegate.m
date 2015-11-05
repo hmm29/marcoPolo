@@ -9,16 +9,10 @@
 
 #import <AppHub/AppHub.h>
 #import "AppDelegate.h"
-#import "RCTBridge.h"
-#import "RCTJavaScriptLoader.h"
 #import "RCTRootView.h"
 
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
-
-@interface AppDelegate() <RCTBridgeDelegate>
-
-@end
 
 @implementation AppDelegate
 
@@ -42,7 +36,7 @@
    * on the same Wi-Fi network.
    */
 
-  // jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle\?platform=ios&dev\=0"];
+  // jsCodeLocation = [NSURL URLWithString:@"http://192.168.1.50:8081/index.ios.bundle\?platform=ios&dev\=1"];
 
   /**
    * OPTION 2
@@ -81,6 +75,7 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  // return YES;
   return [[FBSDKApplicationDelegate sharedInstance] application:application
                                       didFinishLaunchingWithOptions:launchOptions];
 }
@@ -104,13 +99,6 @@
 #endif
 {
   return UIInterfaceOrientationMaskPortrait;
-}
-
-- (void)loadSourceForBridge:(RCTBridge *)bridge
-                  withBlock:(RCTSourceLoadBlock)loadCallback
-{
-  [RCTJavaScriptLoader loadBundleAtURL:[self sourceURLForBridge:bridge]
-                            onComplete:loadCallback];
 }
 
 @end

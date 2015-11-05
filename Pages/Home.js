@@ -34,7 +34,7 @@ var _ = require('lodash');
 var CheckBoxIcon = require('../Partials/Icons/CheckBoxIcon');
 var ChevronIcon = require('../Partials/Icons/ChevronIcon');
 var ClockIcon = require('../Partials/Icons/ClockIcon');
-var Display = require('react-native-device-display');
+var Dimensions = require('Dimensions');
 var TimerMixin = require('react-timer-mixin');
 
 var ADD_INFO_BUTTON_SIZE = 28;
@@ -44,8 +44,8 @@ var LOGO_WIDTH = 200;
 var LOGO_HEIGHT = 120;
 var MAX_TEXT_INPUT_VAL_LENGTH = 15;
 var NEXT_BUTTON_SIZE = 28;
-var SCREEN_HEIGHT = Display.height;
-var SCREEN_WIDTH = Display.width;
+var SCREEN_HEIGHT = Dimensions.get('window').height;
+var SCREEN_WIDTH = Dimensions.get('window').width;
 var TAG_TEXT_INPUT_PADDING = 3;
 
 var Home = React.createClass({

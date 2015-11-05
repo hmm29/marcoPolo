@@ -31,15 +31,15 @@ var {
 
 var _ = require('lodash');
 var Chat = require('../Chat');
-var Display = require('react-native-device-display');
+var Dimensions = require('Dimensions');
 var ReactFireMixin = require('reactfire');
 
 var INITIAL_LIST_SIZE = 8;
 var LOGO_WIDTH = 200;
 var LOGO_HEIGHT = 120;
 var PAGE_SIZE = 10;
-var SCREEN_WIDTH = Display.width;
-var SCREEN_HEIGHT = Display.height;
+var SCREEN_WIDTH = Dimensions.get('window').width;
+var SCREEN_HEIGHT = Dimensions.get('window').height;
 var THUMBNAIL_SIZE = 50;
 
 var YELLOW_HEX_CODE = '#ffe770';

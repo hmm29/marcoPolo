@@ -28,7 +28,7 @@ var {
 var _ = require('lodash');
 var AutoComplete = require('react-native-autocomplete');
 var BackIcon = require('../Partials/Icons/BackIcon');
-var Display = require('react-native-device-display');
+var Dimensions = require('Dimensions');
 var Firebase = require('firebase');
 var { Icon, } = require('react-native-icons');
 
@@ -46,8 +46,8 @@ var BUTTONS = [
     'Cancel'
 ];
 var CANCEL_INDEX = 3;
-var SCREEN_WIDTH = Display.width;
-var SCREEN_HEIGHT = Display.height;
+var SCREEN_WIDTH = Dimensions.get('window').width;
+var SCREEN_HEIGHT = Dimensions.get('window').height;
 
 String.prototype.capitalize = () => this.replace(/(?:^|\s)\S/g, a => a.toUpperCase());
 

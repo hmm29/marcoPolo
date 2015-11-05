@@ -26,15 +26,15 @@ var {
     } = React;
 
 var ChevronIcon = require('../../Partials/Icons/ChevronIcon');
-var Display = require('react-native-device-display');
+var Dimensions = require('Dimensions');
 var Header = require('../../Partials/Header');
 var HomeIcon = require('../../Partials/Icons/HomeIcon');
 var { Icon, } = require('react-native-icons');
 var ReactFireMixin = require('reactfire');
 var TimerMixin = require('react-timer-mixin');
 
-var SCREEN_HEIGHT = Display.height;
-var SCREEN_WIDTH = Display.width;
+var SCREEN_HEIGHT = Dimensions.get('window').height;
+var SCREEN_WIDTH = Dimensions.get('window').width;
 
 class Title extends React.Component {
     render() {

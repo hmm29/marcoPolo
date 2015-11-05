@@ -25,14 +25,12 @@
 		426094621BC0E63E00623EA5 /* libReactNativeIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 426094611BC0E62000623EA5 /* libReactNativeIcons.a */; };
 		426094651BC0E64B00623EA5 /* ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4260938F1BC0D6C200623EA5 /* ionicons.ttf */; };
 		4260946C1BC10CDA00623EA5 /* libRCTAutoComplete.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4260946B1BC10CD000623EA5 /* libRCTAutoComplete.a */; };
-		4260946F1BC1BD0100623EA5 /* DisplayDeviceUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 4260946E1BC1BD0100623EA5 /* DisplayDeviceUtil.m */; };
 		427790B51BC302B600ED919D /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 427790A81BC302A000ED919D /* libBVLinearGradient.a */; };
 		427790BC1BC54AEB00ED919D /* libRCTFBLogin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 427790BB1BC54AD700ED919D /* libRCTFBLogin.a */; };
 		427FB1021BE4217900C47F50 /* AppHub.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427FB1011BE4217900C47F50 /* AppHub.framework */; };
 		427FB1131BE421A800C47F50 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427FB1121BE421A800C47F50 /* SystemConfiguration.framework */; };
 		427FB1151BE421B200C47F50 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 427FB1141BE421B200C47F50 /* libz.tbd */; };
 		4290F0F31BB746C80052C1E4 /* Orientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4290F0F21BB746C80052C1E4 /* Orientation.m */; };
-		42E8FED71BD42D8500923398 /* libRCTCamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 42E8FECB1BD42D6F00923398 /* libRCTCamera.a */; };
 		42EC20921BE9CFDB007E15B3 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EC208E1BE9CFDB007E15B3 /* Bolts.framework */; };
 		42EC20931BE9CFDB007E15B3 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EC208F1BE9CFDB007E15B3 /* FBSDKCoreKit.framework */; };
 		42EC20941BE9CFDB007E15B3 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42EC20901BE9CFDB007E15B3 /* FBSDKLoginKit.framework */; };
@@ -132,13 +130,6 @@
 			remoteGlobalIDString = 4F3A6B5B1ACFBCC500CA65F7;
 			remoteInfo = RCTFBLogin;
 		};
-		42E8FECA1BD42D6F00923398 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 42E8FEC31BD42D6F00923398 /* RCTCamera.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 4107012F1ACB723B00C6AA39;
-			remoteInfo = RCTCamera;
-		};
 		78C398B81ACF4ADC00677621 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */;
@@ -178,8 +169,6 @@
 		4260938F1BC0D6C200623EA5 /* ionicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ionicons.ttf; sourceTree = "<group>"; };
 		4260945C1BC0E62000623EA5 /* ReactNativeIcons.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeIcons.xcodeproj; path = "../node_modules/react-native-icons/ios/ReactNativeIcons.xcodeproj"; sourceTree = "<group>"; };
 		426094661BC10CCF00623EA5 /* RCTAutoComplete.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAutoComplete.xcodeproj; path = "../node_modules/react-native-autocomplete/RCTAutoComplete.xcodeproj"; sourceTree = "<group>"; };
-		4260946D1BC1BD0100623EA5 /* DisplayDeviceUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DisplayDeviceUtil.h; path = "../node_modules/react-native-device-display/DisplayDeviceUtil.h"; sourceTree = "<group>"; };
-		4260946E1BC1BD0100623EA5 /* DisplayDeviceUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DisplayDeviceUtil.m; path = "../node_modules/react-native-device-display/DisplayDeviceUtil.m"; sourceTree = "<group>"; };
 		427790A31BC302A000ED919D /* BVLinearGradient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BVLinearGradient.xcodeproj; path = "../node_modules/react-native-linear-gradient/BVLinearGradient.xcodeproj"; sourceTree = "<group>"; };
 		427790B61BC54AD600ED919D /* RCTFBLogin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTFBLogin.xcodeproj; path = "../node_modules/react-native-facebook-login/RCTFBLogin.xcodeproj"; sourceTree = "<group>"; };
 		427FB1011BE4217900C47F50 /* AppHub.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AppHub.framework; sourceTree = "<group>"; };
@@ -187,7 +176,6 @@
 		427FB1141BE421B200C47F50 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		4290F0F11BB746C80052C1E4 /* Orientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Orientation.h; sourceTree = "<group>"; };
 		4290F0F21BB746C80052C1E4 /* Orientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Orientation.m; sourceTree = "<group>"; };
-		42E8FEC31BD42D6F00923398 /* RCTCamera.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTCamera.xcodeproj; path = "../node_modules/react-native-camera/ios/RCTCamera.xcodeproj"; sourceTree = "<group>"; };
 		42EC208E1BE9CFDB007E15B3 /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bolts.framework; sourceTree = "<group>"; };
 		42EC208F1BE9CFDB007E15B3 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		42EC20901BE9CFDB007E15B3 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKLoginKit.framework; sourceTree = "<group>"; };
@@ -212,7 +200,6 @@
 				42EC20921BE9CFDB007E15B3 /* Bolts.framework in Frameworks */,
 				427FB1131BE421A800C47F50 /* SystemConfiguration.framework in Frameworks */,
 				427FB1021BE4217900C47F50 /* AppHub.framework in Frameworks */,
-				42E8FED71BD42D8500923398 /* libRCTCamera.a in Frameworks */,
 				42EC20931BE9CFDB007E15B3 /* FBSDKCoreKit.framework in Frameworks */,
 				42EC20951BE9CFDB007E15B3 /* FBSDKShareKit.framework in Frameworks */,
 				427790BC1BC54AEB00ED919D /* libRCTFBLogin.a in Frameworks */,
@@ -312,8 +299,6 @@
 		13B07FAE1A68108700A75B9A /* VentureApp */ = {
 			isa = PBXGroup;
 			children = (
-				4260946D1BC1BD0100623EA5 /* DisplayDeviceUtil.h */,
-				4260946E1BC1BD0100623EA5 /* DisplayDeviceUtil.m */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -386,14 +371,6 @@
 			path = "../node_modules/react-native-orientation/RCTOrientation";
 			sourceTree = "<group>";
 		};
-		42E8FEC41BD42D6F00923398 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				42E8FECB1BD42D6F00923398 /* libRCTCamera.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		78C398B11ACF4ADC00677621 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -405,7 +382,6 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				42E8FEC31BD42D6F00923398 /* RCTCamera.xcodeproj */,
 				427790B61BC54AD600ED919D /* RCTFBLogin.xcodeproj */,
 				427790A31BC302A000ED919D /* BVLinearGradient.xcodeproj */,
 				426094661BC10CCF00623EA5 /* RCTAutoComplete.xcodeproj */,
@@ -535,10 +511,6 @@
 				{
 					ProductGroup = 426094671BC10CCF00623EA5 /* Products */;
 					ProjectRef = 426094661BC10CCF00623EA5 /* RCTAutoComplete.xcodeproj */;
-				},
-				{
-					ProductGroup = 42E8FEC41BD42D6F00923398 /* Products */;
-					ProjectRef = 42E8FEC31BD42D6F00923398 /* RCTCamera.xcodeproj */;
 				},
 				{
 					ProductGroup = 427790B71BC54AD600ED919D /* Products */;
@@ -678,13 +650,6 @@
 			remoteRef = 427790BA1BC54AD700ED919D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		42E8FECB1BD42D6F00923398 /* libRCTCamera.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libRCTCamera.a;
-			remoteRef = 42E8FECA1BD42D6F00923398 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		78C398B91ACF4ADC00677621 /* libRCTLinking.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -737,7 +702,6 @@
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				4260946F1BC1BD0100623EA5 /* DisplayDeviceUtil.m in Sources */,
 				4290F0F31BB746C80052C1E4 /* Orientation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

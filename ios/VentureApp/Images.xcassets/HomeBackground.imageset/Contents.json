@@ -2,8 +2,8 @@
   "images" : [
     {
       "idiom" : "universal",
-      "scale" : "1x",
-      "filename" : "HomeBackground.png"
+      "filename" : "HomeBackground_750x1134.png",
+      "scale" : "1x"
     },
     {
       "idiom" : "universal",

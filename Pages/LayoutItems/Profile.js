@@ -27,7 +27,7 @@ var {
     } = React;
 
 var _ = require('lodash');
-var Display = require('react-native-device-display');
+var Dimensions = require('Dimensions');
 var EditProfilePageIcon = require('../../Partials/Icons/EditProfilePageIcon');
 var EditProfile = require('../EditProfile');
 var FBLogin = require('react-native-facebook-login');
@@ -38,8 +38,8 @@ var Login = require('../Login');
 var sha256 = require('sha256');
 var TimerMixin = require('react-timer-mixin');
 
-var SCREEN_WIDTH = Display.width;
-var SCREEN_HEIGHT = Display.height;
+var SCREEN_WIDTH = Dimensions.get('window').width;
+var SCREEN_HEIGHT = Dimensions.get('window').height;
 
 String.prototype.capitalize = () => this.replace(/(?:^|\s)\S/g, a => a.toUpperCase());
 

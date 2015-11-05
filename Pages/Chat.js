@@ -30,7 +30,7 @@ var {
 
 var _ = require('lodash');
 var BackIcon = require('../Partials/Icons/BackIcon');
-var Display = require('react-native-device-display');
+var Dimensions = require('Dimensions');
 var Firebase = require('firebase');
 var Header = require('../Partials/Header');
 var { Icon, } = require('react-native-icons');
@@ -41,8 +41,8 @@ var SGListView = require('react-native-sglistview');
 var TimerMixin = require('react-timer-mixin');
 
 var INITIAL_TIMER_VAL_IN_MS = 300000;
-var SCREEN_HEIGHT = Display.height;
-var SCREEN_WIDTH = Display.width;
+var SCREEN_HEIGHT = Dimensions.get('window').height;
+var SCREEN_WIDTH = Dimensions.get('window').width;
 var MESSAGE_TEXT_INPUT_REF = 'messageTextInput';
 var MESSAGES_LIST_REF = 'messagesList';
 
