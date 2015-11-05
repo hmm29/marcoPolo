@@ -28,6 +28,6 @@
         </view>
     </objects>
     <resources>
-        <image name="HomeBackground" width="498" height="846"/>
+        <image name="HomeBackground" width="750" height="1134"/>
     </resources>
 </document>
