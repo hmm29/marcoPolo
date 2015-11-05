@@ -109,27 +109,29 @@ var Home = React.createClass({
                             chatRoomsRef = this.state.firebaseRef && this.state.firebaseRef.child('chat_rooms'),
                             _this = this;
 
-                        //@hmm: get current user location & save to firebase object
-                        // make sure this fires before navigating away!
-                        navigator.geolocation.getCurrentPosition(
-                            (currentPosition) => {
-                                currentUserRef.child(`location/coordinates`).set(currentPosition.coords);
-                                this.setState({currentUserLocationCoords: [currentPosition.coords.latitude, currentPosition.coords.longitude], currentUserRef});
-                            },
-                            (error) => {
-                                console.error(error);
-                            },
-                            {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
-                        );
-
                         trendingItemsRef.once('value', snapshot => {
                                 LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
                                 _this.setState({
+                                    currentUserRef,
                                     events: snapshot.val() && snapshot.val().events && _.slice(snapshot.val().events, 0, 1),
                                     yalies: snapshot.val() && snapshot.val().yalies  && _.slice(snapshot.val().yalies, 0, 3),
                                     showTrendingItems: true
                                 })
                             }
+                        );
+
+                        //@hmm: get current user location & save to firebase object
+                        // make sure this fires before navigating away!
+
+                        navigator.geolocation.getCurrentPosition(
+                            (currentPosition) => {
+                                currentUserRef.child(`location/coordinates`).set(currentPosition.coords);
+                                this.setState({currentUserLocationCoords: [currentPosition.coords.latitude, currentPosition.coords.longitude]});
+                            },
+                            (error) => {
+                                console.error(error);
+                            },
+                            {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
                         );
 
                         // @hmm: at restart reset all timer vals & chats
@@ -278,7 +280,7 @@ var Home = React.createClass({
                 (error) => {
                     console.error(error);
                 },
-                {enableHighAccuracy: true, timeout: 1000, maximumAge: 1000}
+                {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
             );
         }
     },

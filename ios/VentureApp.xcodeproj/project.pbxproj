@@ -773,8 +773,9 @@
 				INFOPLIST_FILE = VentureApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.id13v9d7z1mmlohv1y89org;
 				PRODUCT_NAME = VentureApp;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -795,8 +796,9 @@
 				INFOPLIST_FILE = VentureApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.id13v9d7z1mmlohv1y89org;
 				PRODUCT_NAME = VentureApp;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
