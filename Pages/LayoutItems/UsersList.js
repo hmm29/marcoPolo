@@ -752,9 +752,9 @@ var styles = StyleSheet.create({
     tag: {
         backgroundColor: 'rgba(4,22,43,0.5)',
         borderRadius: 12,
-        paddingHorizontal: Display.width / 80,
-        marginHorizontal: Display.width / 70,
-        paddingVertical: Display.width / 170,
+        paddingHorizontal: Dimensions.get('window').width / 80,
+        marginHorizontal: Dimensions.get('window').width / 70,
+        paddingVertical: Dimensions.get('window').width / 170,
         borderWidth: 0.5,
         borderColor: 'rgba(255,255,255,0.4)'
     },
@@ -810,8 +810,8 @@ var styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'space-around',
         alignItems: 'center',
-        width: Display.width,
-        height: Display.height
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height
     },
     container: {
         flex: 1,

@@ -954,8 +954,8 @@ var styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'space-around',
         alignItems: 'center',
-        width: Display.width,
-        height: Display.height
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height
     },
     container: {
         flex: 1,
