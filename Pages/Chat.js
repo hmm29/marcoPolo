@@ -589,9 +589,12 @@ var TimerBar = React.createClass({
         // @hmm: Hack for maintaining timer when app goes in background
         // Background tasks are currently not supported in React Native
 
-        if(currentAppState === 'background') this.setState({
-            activeToBackgroundTimeRecordInMs: (new Date()).getTime()
-        });
+        if(currentAppState === 'background') {
+            this.setState({
+                activeToBackgroundTimeRecordInMs: (new Date()).getTime()
+            });
+            this.props.closeKeyboard();
+        }
 
         if(previousAppState === 'background' && currentAppState === 'active') {
             let currentTimeInMs = (new Date()).getTime(),
