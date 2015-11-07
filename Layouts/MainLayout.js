@@ -104,14 +104,15 @@ var IOSLayout = React.createClass({
 
 
         switch(title) {
+            //@hmm: currently, only hot and profile pages get firebaseRef prop
             case 'hot':
                 return <Hot currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} firebaseRef={this.props.firebaseRef} handleSelectedTabChange={this._handleSelectedTabChange} navigator={this.props.navigator} />;
             case 'events':
-                return <EventsList currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} firebaseRef={this.props.firebaseRef} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
+                return <EventsList currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'users':
-                return <UsersList currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} firebaseRef={this.props.firebaseRef} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
+                return <UsersList currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'chats':
-                return <ChatsList currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} firebaseRef={this.props.firebaseRef} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
+                return <ChatsList currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} navigator={this.props.navigator} ventureId={this.props.ventureId} />;
             case 'profile':
                 return <Profile currentUserFriends={this.state.currentUserFriends} currentUserLocationCoords={this.props.currentUserLocationCoords} firebaseRef={this.props.firebaseRef} navigator={this.props.navigator} />;
         }

@@ -134,6 +134,14 @@ var Home = React.createClass({
                             {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
                         );
 
+                        chatRoomsRef.once('value', snapshot => {
+                            snapshot.val() && _.each(snapshot.val(), (chatRoom) => {
+                                if (chatRoom._id && chatRoom._id.indexOf(account.ventureId) > -1) {
+                                    chatRoomsRef.child(chatRoom._id).set(null);
+                                }
+                            });
+                        });
+
                         // @hmm: at restart reset all timer vals & chats
 
                         currentUserRef.child('match_requests').once('value', snapshot => {
@@ -150,10 +158,17 @@ var Home = React.createClass({
                             currentUserRef.child('chatCount').set(0);
                         });
 
-                        chatRoomsRef.once('value', snapshot => {
-                            snapshot.val() && _.each(snapshot.val(), (chatRoom) => {
-                                if (chatRoom._id && chatRoom._id.indexOf(account.ventureId) > -1) {
-                                    chatRoomsRef.child(chatRoom._id).set(null);
+                        // @hmm: at restart reset all event invite matches & chats
+
+                        currentUserRef.child('event_invite_match_requests').once('value', snapshot => {
+                            snapshot.val() && _.each(snapshot.val(), (match) => {
+                                if (match && match.timerVal) {
+                                    currentUserRef.child(`event_invite_match_requests/${match._id}/timerVal`).set(null);
+                                    usersListRef.child(`${match._id}/event_invite_match_requests/${account.ventureId}/timerVal`).set(null);
+                                    usersListRef.child(`${match._id}/chatCount`).once('value', snapshot => {
+                                        usersListRef.child(`${match._id}/chatCount`).set(snapshot.val() - 1);
+                                    });
+
                                 }
                             });
                         });

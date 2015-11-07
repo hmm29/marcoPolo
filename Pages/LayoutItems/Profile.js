@@ -115,6 +115,10 @@ var Profile = React.createClass({
                     if (user.match_requests && user.match_requests[ventureId]) {
                         usersListRef.child(`${user.ventureId}/match_requests/${ventureId}`).set(null);
                     }
+
+                    if (user.event_invite_match_requests && user.event_invite_match_requests[ventureId]) {
+                        usersListRef.child(`${user.ventureId}/event_invite_match_requests/${ventureId}`).set(null);
+                    }
                 });
             });
 
@@ -126,7 +130,7 @@ var Profile = React.createClass({
         currentUserRef.once('value', snapshot => {
             let asyncObj = _.pick(snapshot.val(), 'ventureId', 'name', 'firstName', 'lastName', 'activityPreference', 'age', 'picture', 'bio', 'gender', 'matchingPreferences');
 
-            // @hmm: slight defer to allow for snapshot.val()
+            // @hmm: slight defer to allow time for snapshot.val()
             this.setTimeout(() => {
                 AsyncStorage.setItem('@AsyncStorage:Venture:account', JSON.stringify(asyncObj))
                     .then(() => this._navigateToNextPage())
