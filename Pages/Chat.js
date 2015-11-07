@@ -87,6 +87,11 @@ var Chat = React.createClass({
         this.refs[MESSAGE_TEXT_INPUT_REF].blur();
     },
 
+    closeKeyboard() {
+        this.setState({hasKeyboardSpace: false, closeDropdownProfile: false});
+        this.refs[MESSAGE_TEXT_INPUT_REF].blur();
+    },
+
     containerTouched(event) {
         this.refs[MESSAGE_TEXT_INPUT_REF].blur();
         return false;
@@ -242,6 +247,7 @@ var Chat = React.createClass({
                 <View onStartShouldSetResponder={this.containerTouched} style={styles.container}>
                     <RecipientInfoBar chatRoomRef={this.props.passProps.chatRoomRef}
                                       closeDropdownProfile={this.state.closeDropdownProfile}
+                                      closeKeyboard={this.closeKeyboard}
                                       _id={this.props.passProps._id}
                                       navigator={this.props.navigator}
                                       recipientData={this.props.passProps}
@@ -283,6 +289,7 @@ var RecipientInfoBar = React.createClass({
     propTypes: {
         chatRoomRef: React.PropTypes.string.isRequired,
         closeDropdownProfile: React.PropTypes.bool.isRequired,
+        closeKeyboard: React.PropTypes.func.isRequired,
         _id: React.PropTypes.string.isRequired,
         navigator: React.PropTypes.object,
         recipientData: React.PropTypes.object.isRequired,
@@ -391,6 +398,7 @@ var RecipientInfoBar = React.createClass({
                 }} navigator={this.props.navigator} currentUserData={currentUserData} style={{marginRight: 20}}/>
                 </View>
                 <TimerBar chatRoomRef={this.props.chatRoomRef}
+                          closeKeyboard={this.props.closeKeyboard}
                           currentUserData={currentUserData}
                           _id={this.props._id}
                           navigator={this.props.navigator}
@@ -441,6 +449,7 @@ var RecipientAvatar = React.createClass({
 var TimerBar = React.createClass({
     propTypes: {
         chatRoomRef: React.PropTypes.string.isRequired,
+        closeKeyboard: React.PropTypes.func.isRequired,
         currentUserData: React.PropTypes.object.isRequired,
         _id: React.PropTypes.string.isRequired,
         navigator: React.PropTypes.object.isRequired,
@@ -542,6 +551,8 @@ var TimerBar = React.createClass({
             currentUserMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/event_invite_match_requests'),
             targetUserMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/event_invite_match_requests');
         }
+
+        this.props.closeKeyboard();
 
         // only navigate if still on chat page! :D
 
