@@ -16,8 +16,10 @@ var Platform = require('Platform');
 var React = require('react-native');
 
 var {
+    AppStateIOS,
     AsyncStorage,
     InteractionManager,
+    PushNotificationIOS,
     View
     } = React;
 
@@ -55,6 +57,7 @@ var MainLayout = React.createClass({
 var IOSLayout = React.createClass({
     getInitialState() {
         return {
+            currentAppState: AppStateIOS.currentState,
             currentUserFriends: [],
             firebaseRef: this.props.firebaseRef,
             selectedTab: this.props.selected
@@ -72,6 +75,18 @@ var IOSLayout = React.createClass({
 
             chatCountRef.on('value', snapshot => {
                 this.setState({chatCount: snapshot.val(), chatCountRef});
+                // PushNotificationIOS.setApplicationIconBadgeNumber(snapshot.val());
+
+                //@hmm: if on callback fires when app in background, means that another chat has started
+                // so alert current user with a local notification
+
+                if(this.state.currentAppState === 'background') {
+                    PushNotificationIOS.presentLocalNotification({
+                        alertBody: 'You have a new chat in Venture!',
+                        sound: 'default',
+                        category: 'REACT_NATIVE'
+                    });
+                }
 
                 if(snapshot.val() <= 0 && _.findWhere(currentRouteStack, {title: 'Chat'})) {
                     _.remove(currentRouteStack, (route) => {
@@ -83,8 +98,17 @@ var IOSLayout = React.createClass({
         });
     },
 
+    componentDidMount: function() {
+        AppStateIOS.addEventListener('change', this._handleAppStateChange);
+    },
+
+    _handleAppStateChange(currentAppState) {
+        this.setState({ currentAppState, });
+    },
+
     componentWillUnmount() {
         this.state.chatCountRef && this.state.chatCountRef.off();
+        AppStateIOS.removeEventListener('change', this._handleAppStateChange);
 
         AsyncStorage.setItem('@AsyncStorage:Venture:currentUserFriends', 'null')
             .catch(error => console.log(error.message))
@@ -167,33 +191,33 @@ var IOSLayout = React.createClass({
                 {this.state.chatCount > 0 ?
 
                     <TabBarItemIOS
-                    iconName={'ion|ios-chatboxes-outline'}
-                    title={'Chats'}
-                    iconSize={TAB_BAR_ICON_SIZE}
-                    badgeValue={JSON.stringify(this.state.chatCount)}
-                    selected={this.state.selectedTab === 'chats'}
-                    onPress={() => {
+                        iconName={'ion|ios-chatboxes-outline'}
+                        title={'Chats'}
+                        iconSize={TAB_BAR_ICON_SIZE}
+                        badgeValue={JSON.stringify(this.state.chatCount)}
+                        selected={this.state.selectedTab === 'chats'}
+                        onPress={() => {
                     this.setState({
                       selectedTab: 'chats'
                     });
                  }}>
-                    {this._renderComponent('chats')}
-                </TabBarItemIOS>
+                        {this._renderComponent('chats')}
+                    </TabBarItemIOS>
 
                     :
 
                     <TabBarItemIOS
-                    iconName={'ion|ios-chatboxes-outline'}
-                    title={'Chats'}
-                    iconSize={TAB_BAR_ICON_SIZE}
-                    selected={this.state.selectedTab === 'chats'}
-                    onPress={() => {
+                        iconName={'ion|ios-chatboxes-outline'}
+                        title={'Chats'}
+                        iconSize={TAB_BAR_ICON_SIZE}
+                        selected={this.state.selectedTab === 'chats'}
+                        onPress={() => {
                     this.setState({
                       selectedTab: 'chats'
                     });
                  }}>
-                    {this._renderComponent('chats')}
-                </TabBarItemIOS>
+                        {this._renderComponent('chats')}
+                    </TabBarItemIOS>
 
                 }
                 <TabBarItemIOS

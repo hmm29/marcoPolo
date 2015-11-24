@@ -16,7 +16,6 @@ var React = require('react-native');
 var {
     Animated,
     Image,
-    LayoutAnimation,
     PixelRatio,
     ScrollView,
     StyleSheet,
@@ -47,7 +46,7 @@ class Title extends React.Component {
 
 var Hot = React.createClass({
     propTypes: {
-      handleSelectedTabChange: React.PropTypes.func.isRequired
+        handleSelectedTabChange: React.PropTypes.func.isRequired
     },
 
     mixins: [TimerMixin, ReactFireMixin],
@@ -131,8 +130,6 @@ var Hot = React.createClass({
     },
 
     _createTrendingItem(type, uri, i) {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-
         if(type === 'user') return (
             <TouchableOpacity key={i} style={styles.trendingItem}>
                 <Image style={styles.trendingUserImg} source={{uri}}/>
@@ -175,10 +172,10 @@ var Hot = React.createClass({
                         </ScrollView>
                         <View style={[styles.scrollbarArrow, {top: SCREEN_HEIGHT / 10.6, left: SCREEN_WIDTH / 1.20, backgroundColor: 'transparent'}]}>
                             <Animated.View style={{opacity: this.state.fadeAnim}}>
-                            <ChevronIcon
-                                color='rgba(255,255,255,0.8)'
-                                size={20}
-                                direction={'right'}/>
+                                <ChevronIcon
+                                    color='rgba(255,255,255,0.8)'
+                                    size={20}
+                                    direction={'right'}/>
                             </Animated.View>
                         </View>
                     </View>

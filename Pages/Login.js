@@ -252,7 +252,7 @@ var Login = React.createClass({
                             loop={false}>
                         <View style={styles.slide}>
                             <Image
-                                source={require('image!OnboardingFacebookSignUp')}
+                                source={require('./../img/OnboardingFacebookSignUp.png')}
                                 style={styles.backdrop}>
 
                                 <Image
@@ -282,25 +282,25 @@ var Login = React.createClass({
                         </View>
                         <View style={styles.slide}>
                             <Image
-                                source={require('image!OnboardingWhatDoYouWantToDo')}
+                                source={require('./../img/OnboardingWhatDoYouWantToDo.png')}
                                 style={styles.backdrop}>
                             </Image>
                         </View>
                         <View style={styles.slide}>
                             <Image
-                                source={require('image!OnboardingFindActivityPartners')}
+                                source={require('./../img/OnboardingFindActivityPartners.png')}
                                 style={styles.backdrop}>
                             </Image>
                         </View>
                         <View style={styles.slide}>
                             <Image
-                                source={require('image!OnboardingShareActivities')}
+                                source={require('./../img/OnboardingShareActivities.png')}
                                 style={styles.backdrop}>
                             </Image>
                         </View>
                         <View style={styles.slide}>
                             <Image
-                                source={require('image!OnboardingMakeNewConnections')}
+                                source={require('./../img/OnboardingMakeNewConnections.png')}
                                 style={styles.backdrop}>
                             </Image>
                         </View>

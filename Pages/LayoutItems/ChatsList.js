@@ -15,6 +15,7 @@
 var React = require('react-native');
 var {
     ActivityIndicatorIOS,
+    Animated,
     AsyncStorage,
     Image,
     InteractionManager,
@@ -52,6 +53,35 @@ String.prototype.capitalize = function () {
         return a.toUpperCase();
     });
 };
+
+var Modal = React.createClass({
+   getInitialState() {
+       return {offset: new Animated.Value(SCREEN_HEIGHT)}
+   },
+
+    componentDidMount() {
+        if(this.state.isVisible) {
+            Animated.timing(this.state.offset, {
+                duration: 100,
+                toValue: 0
+            }).start();
+        } else {
+            Animated.timing(this.state.offset, {
+                duration: 100,
+                toValue: SCREEN_HEIGHT
+            }).start();
+        }
+    },
+
+    render() {
+        return (
+            //<Animated.View style={[this.props.modalStyle,{height: SCREEN_HEIGHT},{transform: [{translateY: this.state.offset}]}]}>
+            //    {this.props.children}
+            //</Animated.View>
+            <View/>
+        )
+    }
+});
 
 var User = React.createClass({
     propTypes: {
@@ -663,7 +693,6 @@ var ChatsList = React.createClass({
 
     render() {
         var Logo = require('../../Partials/Logo');
-        var Modal = require('react-native-swipeable-modal');
 
         let funFact = (
             <View style={{alignSelf: 'center', bottom: SCREEN_HEIGHT/2.5}}>
@@ -692,17 +721,8 @@ var ChatsList = React.createClass({
                 {this.state.showFunFact ? funFact : <View />}
                 <View style={{height: 48}}></View>
                 <Modal
-                    height={SCREEN_HEIGHT}
                     modalStyle={styles.loadingModalStyle}
-                    isVisible={this.state.showLoadingModal}
-                    swipeableAreaStyle={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0
-                        }}
-                    swipeHideLength={1.0}>
+                    isVisible={this.state.showLoadingModal}>
                     <View style={styles.modalView}>
                         <Logo
                             logoContainerStyle={styles.logoContainerStyle}

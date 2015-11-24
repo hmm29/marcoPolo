@@ -296,7 +296,7 @@ var EditProfile = React.createClass({
                     {this._renderHeader()}
                 </View>
                 <View style={{bottom: this.state.hasKeyboardSpace ? SCREEN_HEIGHT/ 3 : 0, backgroundCOlor: ''}}>
-                    <Image source={require('image!about')} style={styles.backdrop}>
+                    <Image source={require('./../img/about.png')} style={styles.backdrop}>
 
                         {editPhoto}
 
@@ -304,7 +304,7 @@ var EditProfile = React.createClass({
                             style={[styles.label, {fontSize: 27}]}>{this.state.currentFirstName} {this.state.currentFirstName ? ',' : ''} {this.state.currentAge}</Text>
 
                         <View style={styles.editableTextFields}>
-                            {this.state.isEditingGenderField && this.state.showAutocomplete ? genderAutocomplete : genderField}
+                            {/* this.state.isEditingGenderField && this.state.showAutocomplete ? genderAutocomplete : genderField */}
 
                             {this.state.showBioField ? editBio : <View />}
 

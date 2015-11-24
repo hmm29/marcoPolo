@@ -150,7 +150,7 @@ var Profile = React.createClass({
                 <View>
                     {this.renderHeader()}
                 </View>
-                <Image source={require('image!about')}
+                <Image source={require('../../img/about.png')}
                        style={styles.backdrop}>
                     <View style={styles.loginContainer}>
                         <View>

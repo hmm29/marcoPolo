@@ -21,6 +21,7 @@ var {
     LayoutAnimation,
     ListView,
     Navigator,
+    PushNotificationIOS,
     StyleSheet,
     Text,
     TextInput,
@@ -40,7 +41,6 @@ var ReactFireMixin = require('reactfire');
 var SGListView = require('react-native-sglistview');
 var TimerMixin = require('react-timer-mixin');
 
-var INITIAL_TIMER_VAL_IN_MS = 300000;
 var SCREEN_HEIGHT = Dimensions.get('window').height;
 var SCREEN_WIDTH = Dimensions.get('window').width;
 var MESSAGE_TEXT_INPUT_REF = 'messageTextInput';
@@ -58,6 +58,7 @@ var Chat = React.createClass({
                 rowHasChanged: (row1, row2) => !_.isEqual(row1, row2)
             }),
             hasKeyboardSpace: false,
+            hasTimerExpired: false,
             loaded: false,
             message: '',
             messageList: Object
@@ -97,6 +98,10 @@ var Chat = React.createClass({
         return false;
     },
 
+    handleSetHasTimerExpiredState(hasTimerExpired: boolean){
+        this.setState({hasTimerExpired});
+    },
+
     updateMessages(messages:Array<Object>) {
         this.setState({
             dataSource: new ListView.DataSource({
@@ -116,8 +121,7 @@ var Chat = React.createClass({
                         color="#fff"
                         name="ion|ios-arrow-thin-left"
                         size={36}
-                        style={{width: 38, height: 38}}
-                        />
+                        style={{width: 38, height: 38}} />
                 </TouchableOpacity>
                 <Text
                     style={styles.activityPreferenceTitle}>
@@ -186,20 +190,22 @@ var Chat = React.createClass({
         //}
 
         // @hmm: else when user navigates away from chat while it exists, just jump to main layout
-            let mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
-                    return route && route.passProps && !!route.passProps.selected;
-                });
+        let mainLayoutRoute = _.findLast(currentRouteStack, (route) => {
+            return route && route.passProps && !!route.passProps.selected;
+        });
 
-            if (mainLayoutRoute) {
-                this.props.navigator.jumpTo(mainLayoutRoute)
-            }
-            else {
-                this.props.navigator.jumpBack();
-            }
+        if (mainLayoutRoute) {
+            this.props.navigator.jumpTo(mainLayoutRoute)
+        }
+        else {
+            this.props.navigator.jumpBack();
+        }
 
     },
 
     _sendMessage() {
+        if(this.state.hasTimerExpired) return;
+
         let messageObj = {
             senderIDHashed: this.props.passProps.currentUserData.ventureId,
             body: this.state.message
@@ -248,6 +254,7 @@ var Chat = React.createClass({
                     <RecipientInfoBar chatRoomRef={this.props.passProps.chatRoomRef}
                                       closeDropdownProfile={this.state.closeDropdownProfile}
                                       closeKeyboard={this.closeKeyboard}
+                                      handleSetHasTimerExpiredState={this.handleSetHasTimerExpiredState}
                                       _id={this.props.passProps._id}
                                       navigator={this.props.navigator}
                                       recipientData={this.props.passProps}
@@ -290,6 +297,7 @@ var RecipientInfoBar = React.createClass({
         chatRoomRef: React.PropTypes.string.isRequired,
         closeDropdownProfile: React.PropTypes.bool.isRequired,
         closeKeyboard: React.PropTypes.func.isRequired,
+        handleSetHasTimerExpiredState: React.PropTypes.func.isRequired,
         _id: React.PropTypes.string.isRequired,
         navigator: React.PropTypes.object,
         recipientData: React.PropTypes.object.isRequired,
@@ -400,6 +408,7 @@ var RecipientInfoBar = React.createClass({
                 <TimerBar chatRoomRef={this.props.chatRoomRef}
                           closeKeyboard={this.props.closeKeyboard}
                           currentUserData={currentUserData}
+                          handleSetHasTimerExpiredState={this.props.handleSetHasTimerExpiredState}
                           _id={this.props._id}
                           navigator={this.props.navigator}
                           recipient={recipient}
@@ -451,6 +460,7 @@ var TimerBar = React.createClass({
         chatRoomRef: React.PropTypes.string.isRequired,
         closeKeyboard: React.PropTypes.func.isRequired,
         currentUserData: React.PropTypes.object.isRequired,
+        handleSetHasTimerExpiredState: React.PropTypes.func.isRequired,
         _id: React.PropTypes.string.isRequired,
         navigator: React.PropTypes.object.isRequired,
         recipient: React.PropTypes.object.isRequired,
@@ -465,7 +475,6 @@ var TimerBar = React.createClass({
             _id: React.PropTypes.string.isRequired,
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             previousAppState: null,
-            timerValInMs: INITIAL_TIMER_VAL_IN_MS
         }
     },
 
@@ -483,24 +492,21 @@ var TimerBar = React.createClass({
                 recipient = this.props.recipient,
                 _this = this;
 
-                chatRoomRef.child('createdAt').once('value', snapshot => {
+            chatRoomRef.child('createdAt').once('value', snapshot => {
+
+                // @hmm: for creator of chatroom
 
                 if (snapshot.val() === null) {
-                    chatRoomRef.child('createdAt').set((new Date()) + '');
+                    let currentTime = new Date();
+
+                    this.setState({
+                        expireTimeInMs: currentTime.setMilliseconds(currentTime.getMilliseconds() + 300000),
+                        timerValInMs: currentTime.setMilliseconds(currentTime.getMilliseconds() + 300000)-(new Date()).getTime()
+                    });
 
                     _this.handle = _this.setInterval(() => {
-                        _this.setState({timerValInMs: this.state.timerValInMs - 1000});
-                        chatRoomRef.child('timer').set({value: this.state.timerValInMs});
-
-                        // @hmm: update in match_request objects so it can be referenced in users list for timer overlays
-
-                        if(this.props.recipientData.chatRoomEventTitle) {
-                            firebaseRef.child(`users/${currentUserData.ventureId}/event_invite_match_requests/${recipient.ventureId}`).update({timerVal: this.state.timerValInMs});
-                            firebaseRef.child(`users/${recipient.ventureId}/event_invite_match_requests/${currentUserData.ventureId}`).update({timerVal: this.state.timerValInMs});
-                        } else {
-                            firebaseRef.child(`users/${currentUserData.ventureId}/match_requests/${recipient.ventureId}`).update({timerVal: this.state.timerValInMs});
-                            firebaseRef.child(`users/${recipient.ventureId}/match_requests/${currentUserData.ventureId}`).update({timerVal: this.state.timerValInMs});
-                        }
+                        _this.setState({timerValInMs: this.state.expireTimeInMs - (new Date()).getTime()});
+                        chatRoomRef.child('timer').set({expireTimeInMs: this.state.expireTimeInMs});
 
                         if (this.state.timerValInMs <= 1000) {
                             _this.clearInterval(_this.handle);
@@ -517,14 +523,24 @@ var TimerBar = React.createClass({
 
                     firebaseRef.child(`users/${currentUserData.ventureId}/chatCount`).once('value', snapshot => {
                         firebaseRef.child(`users/${currentUserData.ventureId}/chatCount`).set(snapshot.val() + 1);
+                        PushNotificationIOS.setApplicationIconBadgeNumber(snapshot.val() + 1);
                     })
 
                 } else {
-                    chatRoomRef.child('timer/value').on('value', snapshot => {
-                        this.setState({timerValInMs: snapshot.val() - 1});
 
-                        if (this.state.timerValInMs < 1000) this._destroyChatroom(chatRoomRef);
+                    //@hmm: for second user
+                    chatRoomRef.child('timer/expireTimeInMs').once('value', snapshot => {
+                        this.setState({expireTimeInMs: snapshot.val()});
 
+                        _this.handle = _this.setInterval(() => {
+                            _this.setState({timerValInMs: this.state.expireTimeInMs - (new Date()).getTime()});
+
+                            if (this.state.timerValInMs <= 1000) {
+                                _this.clearInterval(_this.handle);
+
+                                this._destroyChatroom(chatRoomRef);
+                            }
+                        }, 1000);
                     })
                 }
             });
@@ -537,6 +553,8 @@ var TimerBar = React.createClass({
     },
 
     _destroyChatroom(chatRoomRef:string) {
+        this.props.handleSetHasTimerExpiredState(true);
+
         let currentRouteStack = this.props.navigator.getCurrentRoutes(),
             currentRoute = _.last(currentRouteStack),
             currentUserData = this.props.currentUserData,
@@ -549,14 +567,14 @@ var TimerBar = React.createClass({
 
         if(this.props.recipientData.chatRoomEventTitle) {
             currentUserMatchRequestsRef = firebaseRef.child('users/' + currentUserIDHashed + '/event_invite_match_requests'),
-            targetUserMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/event_invite_match_requests');
+                targetUserMatchRequestsRef = firebaseRef.child('users/' + targetUserIDHashed + '/event_invite_match_requests');
         }
 
         this.props.closeKeyboard();
 
         // only navigate if still on chat page! :D
 
-        if((currentRoute.title === 'Chat' && currentRoute.passProps._id === this.props._id) || this.state.timerValInMs <= 1000 || this.state.timerValInMs > INITIAL_TIMER_VAL_IN_MS || this.state.timerValInMs < 0) this.props.safelyNavigateToMainLayout(true);
+        if((currentRoute.title === 'Chat' && currentRoute.passProps._id === this.props._id) || this.state.timerValInMs <= 1000 || (new Date()).getTime() > this.state.expireTimeInMs || this.state.timerValInMs < 0) this.props.safelyNavigateToMainLayout(true);
 
         this.props.navigator.replaceAtIndex({title: 'Chat', component: BackIcon, passProps: {_id: null}}, _.findLastIndex(currentRouteStack, (route) => route.passProps._id === this.props._id));
 
@@ -566,9 +584,9 @@ var TimerBar = React.createClass({
 
         firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).once('value', snapshot => {
             firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).set(snapshot.val() - 1);
+            PushNotificationIOS.setApplicationIconBadgeNumber(snapshot.val() - 1);
         });
 
-        chatRoomRef.child('timer/value').off();
         chatRoomRef.off();
         chatRoomRef.set({null});
 
@@ -582,28 +600,7 @@ var TimerBar = React.createClass({
     },
 
     _handleAppStateChange(currentAppState) {
-        let previousAppState = this.state.currentAppState;
 
-        this.setState({currentAppState, previousAppState});
-
-        // @hmm: Hack for maintaining timer when app goes in background
-        // Background tasks are currently not supported in React Native
-
-        if(currentAppState === 'background') {
-            this.setState({
-                activeToBackgroundTimeRecordInMs: (new Date()).getTime()
-            });
-            this.props.closeKeyboard();
-        }
-
-        if(previousAppState === 'background' && currentAppState === 'active') {
-            let currentTimeInMs = (new Date()).getTime(),
-                approxTimeSpentInBackgroundStateInMs = 1000 * Math.floor((currentTimeInMs-this.state.activeToBackgroundTimeRecordInMs) / 1000),
-                updatedTimerValInMs = this.state.timerValInMs-approxTimeSpentInBackgroundStateInMs;
-
-            if(updatedTimerValInMs < 1000) this._destroyChatroom(this.props.chatRoomRef);
-            else this.setState({timerValInMs: updatedTimerValInMs });
-        }
     },
 
     componentWillUnmount() {
@@ -616,8 +613,7 @@ var TimerBar = React.createClass({
         return (
             <View
                 style={styles.timerBar}>
-                <Text
-                    style={[styles.timer, (timerVal && timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{timerVal}</Text>
+                <Text style={[styles.timer, (timerVal && timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{timerVal}</Text>
             </View>
         )
     }

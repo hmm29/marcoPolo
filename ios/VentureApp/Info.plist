@@ -28,11 +28,18 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>3.1.0</string>
+	<string>5.2.0</string>
 	<key>FacebookAppID</key>
 	<string>530090857150320</string>
 	<key>FacebookDisplayName</key>
-	<string>Venture App 1.0.0</string>
+	<string>Venture</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

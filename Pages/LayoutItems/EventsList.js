@@ -15,6 +15,7 @@
 var React = require('react-native');
 var {
     ActivityIndicatorIOS,
+    Animated,
     AsyncStorage,
     Image,
     InteractionManager,
@@ -43,7 +44,6 @@ var HomeIcon = require('../../Partials/Icons/HomeIcon');
 var LinearGradient = require('react-native-linear-gradient');
 var Logo = require('../../Partials/Logo');
 var MatchedIcon = require('../../Partials/Icons/MatchedIcon');
-var Modal = require('react-native-swipeable-modal');
 var ReactFireMixin = require('reactfire');
 var ReceivedResponseIcon = require('../../Partials/Icons/ReceivedResponseIcon');
 var sha256 = require('sha256');
@@ -70,6 +70,35 @@ String.prototype.capitalize = function () {
 };
 
 var hash = (msg:string) => sha256(msg);
+
+var Modal = React.createClass({
+    getInitialState() {
+        return {offset: new Animated.Value(SCREEN_HEIGHT)}
+    },
+
+    componentDidMount() {
+        if(this.state.isVisible) {
+            Animated.timing(this.state.offset, {
+                duration: 100,
+                toValue: 0
+            }).start();
+        } else {
+            Animated.timing(this.state.offset, {
+                duration: 100,
+                toValue: SCREEN_HEIGHT
+            }).start();
+        }
+    },
+
+    render() {
+        return (
+            //<Animated.View style={[this.props.modalStyle,{height: SCREEN_HEIGHT},{transform: [{translateY: this.state.offset}]}]}>
+            //    {this.props.children}
+            //</Animated.View>
+            <View />
+        )
+    }
+});
 
 var User = React.createClass({
 
@@ -581,9 +610,10 @@ var Event = React.createClass({
                     </Text>
                     <Text style={styles.profileModalSectionTitle}>EVENT DESCRIPTION:</Text>
                     <Text style={[styles.profileModalBio, {width: SCREEN_WIDTH / 1.4}]}>{this.props.data && this.props.data.description} {'\n'}</Text>
+                    {/*
                     <TouchableOpacity onPress={() => {
                         this.props.openGuestListModal();
-                    }} style={{backgroundColor: 'rgba(0,0,0,0.001)'}}><Text style={{color: '#3F7CFF', fontFamily: 'AvenirNextCondensed-Medium', fontSize: 20, paddingHorizontal: 40, paddingBottoml: 10}}>WHO'S GOING?</Text></TouchableOpacity>
+                    }} style={{backgroundColor: 'rgba(0,0,0,0.001)'}}><Text style={{color: '#3F7CFF', fontFamily: 'AvenirNextCondensed-Medium', fontSize: 20, paddingHorizontal: 40, paddingBottoml: 10}}>WHO'S GOING?</Text></TouchableOpacity> */}
 
                 </View>
             </View>
@@ -748,17 +778,8 @@ var EventsList = React.createClass({
                     scrollRenderAheadDistance={200}/>
                 <View style={{height: 48}}></View>
                 <Modal
-                    height={SCREEN_HEIGHT}
                     modalStyle={styles.modalStyle}
-                    isVisible={this.state.showLoadingModal}
-                    swipeableAreaStyle={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0
-                        }}
-                    swipeHideLength={1.0}>
+                    isVisible={this.state.showLoadingModal}>
                     <View style={styles.modalView}>
                         <Logo
                             logoContainerStyle={styles.logoContainerStyle}
@@ -777,17 +798,8 @@ var EventsList = React.createClass({
                     </View>
                 </Modal>
                 <Modal
-                    height={SCREEN_HEIGHT}
                     modalStyle={styles.modalStyle}
-                    isVisible={this.state.showGuestListModal}
-                    swipeableAreaStyle={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0
-                        }}
-                    swipeHideLength={1.0}>
+                    isVisible={this.state.showGuestListModal}>
                     <View>
                         {this.state.selectedEvent ?
                        <GuestList

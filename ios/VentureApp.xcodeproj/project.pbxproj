@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		008F07F31AC5B25A0029DE68 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 008F07F21AC5B25A0029DE68 /* main.jsbundle */; };
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
 		00C302E81ABCBA2D00DB3ED1 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302C01ABCB91800DB3ED1 /* libRCTImage.a */; };
@@ -24,7 +23,6 @@
 		42328EF11BE5747700E05B15 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42328EF01BE5747700E05B15 /* LaunchScreen.xib */; };
 		426094621BC0E63E00623EA5 /* libReactNativeIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 426094611BC0E62000623EA5 /* libReactNativeIcons.a */; };
 		426094651BC0E64B00623EA5 /* ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4260938F1BC0D6C200623EA5 /* ionicons.ttf */; };
-		4260946C1BC10CDA00623EA5 /* libRCTAutoComplete.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4260946B1BC10CD000623EA5 /* libRCTAutoComplete.a */; };
 		427790B51BC302B600ED919D /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 427790A81BC302A000ED919D /* libBVLinearGradient.a */; };
 		427790BC1BC54AEB00ED919D /* libRCTFBLogin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 427790BB1BC54AD700ED919D /* libRCTFBLogin.a */; };
 		427FB1021BE4217900C47F50 /* AppHub.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427FB1011BE4217900C47F50 /* AppHub.framework */; };
@@ -109,13 +107,6 @@
 			remoteGlobalIDString = 2F5A3EB81ACDBF8000439386;
 			remoteInfo = ReactNativeIcons;
 		};
-		4260946A1BC10CD000623EA5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 426094661BC10CCF00623EA5 /* RCTAutoComplete.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 134814201AA4EA6300B7C361;
-			remoteInfo = RCTAutoComplete;
-		};
 		427790A71BC302A000ED919D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 427790A31BC302A000ED919D /* BVLinearGradient.xcodeproj */;
@@ -147,7 +138,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTActionSheet.xcodeproj; path = "../node_modules/react-native/Libraries/ActionSheetIOS/RCTActionSheet.xcodeproj"; sourceTree = "<group>"; };
 		00C302B51ABCB90400DB3ED1 /* RCTGeolocation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTGeolocation.xcodeproj; path = "../node_modules/react-native/Libraries/Geolocation/RCTGeolocation.xcodeproj"; sourceTree = "<group>"; };
 		00C302BB1ABCB91800DB3ED1 /* RCTImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTImage.xcodeproj; path = "../node_modules/react-native/Libraries/Image/RCTImage.xcodeproj"; sourceTree = "<group>"; };
@@ -168,7 +158,6 @@
 		42328EF01BE5747700E05B15 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		4260938F1BC0D6C200623EA5 /* ionicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ionicons.ttf; sourceTree = "<group>"; };
 		4260945C1BC0E62000623EA5 /* ReactNativeIcons.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeIcons.xcodeproj; path = "../node_modules/react-native-icons/ios/ReactNativeIcons.xcodeproj"; sourceTree = "<group>"; };
-		426094661BC10CCF00623EA5 /* RCTAutoComplete.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAutoComplete.xcodeproj; path = "../node_modules/react-native-autocomplete/RCTAutoComplete.xcodeproj"; sourceTree = "<group>"; };
 		427790A31BC302A000ED919D /* BVLinearGradient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BVLinearGradient.xcodeproj; path = "../node_modules/react-native-linear-gradient/BVLinearGradient.xcodeproj"; sourceTree = "<group>"; };
 		427790B61BC54AD600ED919D /* RCTFBLogin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTFBLogin.xcodeproj; path = "../node_modules/react-native-facebook-login/RCTFBLogin.xcodeproj"; sourceTree = "<group>"; };
 		427FB1011BE4217900C47F50 /* AppHub.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AppHub.framework; sourceTree = "<group>"; };
@@ -204,7 +193,6 @@
 				42EC20951BE9CFDB007E15B3 /* FBSDKShareKit.framework in Frameworks */,
 				427790BC1BC54AEB00ED919D /* libRCTFBLogin.a in Frameworks */,
 				427790B51BC302B600ED919D /* libBVLinearGradient.a in Frameworks */,
-				4260946C1BC10CDA00623EA5 /* libRCTAutoComplete.a in Frameworks */,
 				426094621BC0E63E00623EA5 /* libReactNativeIcons.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				42EC20941BE9CFDB007E15B3 /* FBSDKLoginKit.framework in Frameworks */,
@@ -299,7 +287,6 @@
 		13B07FAE1A68108700A75B9A /* VentureApp */ = {
 			isa = PBXGroup;
 			children = (
-				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -322,14 +309,6 @@
 			isa = PBXGroup;
 			children = (
 				426094611BC0E62000623EA5 /* libReactNativeIcons.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		426094671BC10CCF00623EA5 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				4260946B1BC10CD000623EA5 /* libRCTAutoComplete.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -384,7 +363,6 @@
 			children = (
 				427790B61BC54AD600ED919D /* RCTFBLogin.xcodeproj */,
 				427790A31BC302A000ED919D /* BVLinearGradient.xcodeproj */,
-				426094661BC10CCF00623EA5 /* RCTAutoComplete.xcodeproj */,
 				4260945C1BC0E62000623EA5 /* ReactNativeIcons.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
@@ -463,6 +441,7 @@
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
+				42E072771BFEEBE40082D087 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -507,10 +486,6 @@
 				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
 					ProjectRef = 00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */;
-				},
-				{
-					ProductGroup = 426094671BC10CCF00623EA5 /* Products */;
-					ProjectRef = 426094661BC10CCF00623EA5 /* RCTAutoComplete.xcodeproj */;
 				},
 				{
 					ProductGroup = 427790B71BC54AD600ED919D /* Products */;
@@ -629,13 +604,6 @@
 			remoteRef = 426094601BC0E62000623EA5 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		4260946B1BC10CD000623EA5 /* libRCTAutoComplete.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libRCTAutoComplete.a;
-			remoteRef = 4260946A1BC10CD000623EA5 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		427790A81BC302A000ED919D /* libBVLinearGradient.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -680,12 +648,27 @@
 			files = (
 				42328EF11BE5747700E05B15 /* LaunchScreen.xib in Resources */,
 				426094651BC0E64B00623EA5 /* ionicons.ttf in Resources */,
-				008F07F31AC5B25A0029DE68 /* main.jsbundle in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		42E072771BFEEBE40082D087 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "../node_modules/react-native/packager/react-native-xcode.sh";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		00E356EA1AD99517003FC87E /* Sources */ = {
@@ -765,6 +748,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(SRCROOT)/../node_modules/react-native-facebook-login/FacebookSDK/**",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -789,6 +773,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(SRCROOT)/../node_modules/react-native-facebook-login/FacebookSDK/**",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

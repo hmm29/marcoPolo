@@ -587,7 +587,7 @@ var Home = React.createClass({
         return (
             <View style={styles.container}>
                 <Image
-                    source={require('image!HomeBackground')}
+                    source={require('./../img/HomeBackground.png')}
                     style={styles.backdrop}>
                     <Header>
                         <ProfilePageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/34, right: 20}}
