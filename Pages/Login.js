@@ -248,7 +248,7 @@ var Login = React.createClass({
                     <Swiper style={styles.wrapper}
                             dot={<View style={{backgroundColor:'rgba(255,255,255,.3)', width: 13, height: 13,borderRadius: 7, top: SCREEN_HEIGHT / 30, marginLeft: 7, marginRight: 7,}} />}
                             activeDot={<View style={{backgroundColor: '#fff', width: 13, height: 13, borderRadius: 7, top: SCREEN_HEIGHT / 30, marginLeft: 7, marginRight: 7}} />}
-                            paginationStyle={{bottom: 30}}
+                            paginationStyle={{bottom: 70}}
                             loop={false}>
                         <View style={styles.slide}>
                             <Image
@@ -311,14 +311,22 @@ var Login = React.createClass({
 });
 
 var styles = StyleSheet.create({
-    backdrop: {
-        paddingTop: 30,
+    wrapper: {
+        // backgroundColor: '#f00',
+    },
+    slide: {
         flex: 1,
+        backgroundColor: 'transparent'
+    },
+    image: {
+        flex: 1
+    },
+    backdrop: {
+        paddingBottom: 30,
+        flex: 1,
+        justifyContent: 'center',
         flexDirection: 'column',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        width: SCREEN_WIDTH,
-        height: SCREEN_HEIGHT
+        alignItems: 'center'
     },
     tabText: {
         color: 'white',
@@ -332,17 +340,6 @@ var styles = StyleSheet.create({
         height: 122.62,
         backgroundColor: 'transparent'
     },
-    wrapper: {
-        // backgroundColor: '#f00',
-    },
-    slide: {
-        flex: 1,
-        alignItems: 'center',
-        backgroundColor: 'transparent',
-    },
-    image: {
-        flex: 1,
-    }
 });
 
 module.exports = Login;
