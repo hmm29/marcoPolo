@@ -116,7 +116,9 @@ var Chat = React.createClass({
 
         return (
             <Header containerStyle={{backgroundColor: '#040A19'}}>
-                <TouchableOpacity onPress={() => this._safelyNavigateToMainLayout()} style={{right: 10, bottom: 5}}>
+                <TouchableOpacity onPress={() => {
+                this._safelyNavigateToMainLayout();
+                }} style={{right: 10, bottom: 5}}>
                     <Icon
                         color="#fff"
                         name="ion|ios-arrow-thin-left"
@@ -125,7 +127,7 @@ var Chat = React.createClass({
                 </TouchableOpacity>
                 <Text
                     style={styles.activityPreferenceTitle}>
-                    {chatRoomTitle && chatRoomTitle.toUpperCase() + '?'} </Text>
+                    {chatRoomTitle && chatRoomTitle.toUpperCase()} </Text>
                 <Text />
             </Header>
         );
@@ -347,8 +349,12 @@ var RecipientInfoBar = React.createClass({
         let infoContent = (
             <View
                 style={{paddingVertical: (user === recipient ? SCREEN_HEIGHT/30 : SCREEN_HEIGHT/97), bottom: (this.state.hasKeyboardSpace ? SCREEN_HEIGHT/3.5 : 0), backgroundColor: '#eee', flexDirection: 'column', justifyContent: 'center'}}>
-                <Image source={{uri: user.picture}}
-                       style={{width: SCREEN_WIDTH/2, height: SCREEN_WIDTH/2, borderRadius: SCREEN_WIDTH/4, alignSelf: 'center', marginVertical: SCREEN_WIDTH/18}}/>
+                {this.state.infoContent === 'recipient' ?
+                <Image source={{uri: recipient.picture}}
+                       style={{width: SCREEN_WIDTH/2, height: SCREEN_WIDTH/2, borderRadius: SCREEN_WIDTH/4, alignSelf: 'center', marginVertical: SCREEN_WIDTH/18}}/> :
+                    <Image source={{uri: currentUserData.picture}}
+                           style={{width: SCREEN_WIDTH/2, height: SCREEN_WIDTH/2, borderRadius: SCREEN_WIDTH/4, alignSelf: 'center', marginVertical: SCREEN_WIDTH/18}}/>
+                }
                 <Text
                     style={{color: '#222', fontSize: 20, fontFamily: 'AvenirNextCondensed-Medium', textAlign: 'center'}}>
                     {user.firstName}, {user.age && user.age.value} {'\t'} |{'\t'}
@@ -405,6 +411,7 @@ var RecipientInfoBar = React.createClass({
                    this.setState({infoContent: 'currentUser', dir: (this.state.dir === 'column' && this.state.infoContent === 'currentUser' ? 'row' : 'column')})
                 }} navigator={this.props.navigator} currentUserData={currentUserData} style={{marginRight: 20}}/>
                 </View>
+                {/*
                 <TimerBar chatRoomRef={this.props.chatRoomRef}
                           closeKeyboard={this.props.closeKeyboard}
                           currentUserData={currentUserData}
@@ -415,6 +422,7 @@ var RecipientInfoBar = React.createClass({
                           recipientData={this.props.recipientData}
                           safelyNavigateToMainLayout={this.props.safelyNavigateToMainLayout}
                     />
+                    */}
                 {this.state.dir === 'column' ?
                     <View style={{backgroundColor: '#fff'}}>
                         {infoContent}
@@ -482,9 +490,14 @@ var TimerBar = React.createClass({
 
     _handle: null,
 
-    //@hmm: must be componentWillMount
-
     componentWillMount() {
+        this.setState({
+            expireTimeInMs: 10000,
+            timerValInMs: 10000
+        });
+    },
+
+    componentDidMount() {
         InteractionManager.runAfterInteractions(() => {
             let chatRoomRef = this.props.chatRoomRef,
                 currentUserData = this.props.currentUserData,
@@ -492,16 +505,17 @@ var TimerBar = React.createClass({
                 recipient = this.props.recipient,
                 _this = this;
 
-            chatRoomRef.child('createdAt').once('value', snapshot => {
+            alert('chatroomref:' + JSON.stringify(chatRoomRef) + '\n currentUserData' + JSON.stringify(currentUserData) + '\nfirebaseRef' + JSON.stringify(firebaseRef) + '\nrecipient' + JSON.stringify(recipient))
 
+            chatRoomRef.child('createdAt').once('value', snapshot => {
                 // @hmm: for creator of chatroom
 
                 if (snapshot.val() === null) {
                     let currentTime = new Date();
 
                     this.setState({
-                        expireTimeInMs: currentTime.setMilliseconds(currentTime.getMilliseconds() + 300000),
-                        timerValInMs: currentTime.setMilliseconds(currentTime.getMilliseconds() + 300000)-(new Date()).getTime()
+                        expireTimeInMs: currentTime.setMilliseconds(currentTime.getMilliseconds() + 10000),
+                        timerValInMs: currentTime.setMilliseconds(currentTime.getMilliseconds() + 10000)-(new Date()).getTime()
                     });
 
                     _this.handle = _this.setInterval(() => {
@@ -523,7 +537,6 @@ var TimerBar = React.createClass({
 
                     firebaseRef.child(`users/${currentUserData.ventureId}/chatCount`).once('value', snapshot => {
                         firebaseRef.child(`users/${currentUserData.ventureId}/chatCount`).set(snapshot.val() + 1);
-                        PushNotificationIOS.setApplicationIconBadgeNumber(snapshot.val() + 1);
                     })
 
                 } else {
@@ -584,7 +597,7 @@ var TimerBar = React.createClass({
 
         firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).once('value', snapshot => {
             firebaseRef.child(`users/${currentUserIDHashed}/chatCount`).set(snapshot.val() - 1);
-            PushNotificationIOS.setApplicationIconBadgeNumber(snapshot.val() - 1);
+            // PushNotificationIOS.setApplicationIconBadgeNumber(snapshot.val() - 1);
         });
 
         chatRoomRef.off();
@@ -681,8 +694,7 @@ var styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#fff',
-        width: 375,
-        height: 78,
+        height: 78
     },
     recipientAvatar: {
         flexDirection: 'column',

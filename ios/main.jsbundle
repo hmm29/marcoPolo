@@ -13676,9 +13676,9 @@ var ZERO=valuePromise(0);
 var EMPTYSTRING=valuePromise('');
 
 function valuePromise(value){
-var p=new Promise(Promise._99);
-p._37=1;
-p._12=value;
+var p=new Promise(Promise._61);
+p._81=1;
+p._65=value;
 return p;}
 
 Promise.resolve=function(value){
@@ -13715,11 +13715,11 @@ var remaining=args.length;
 function res(i,val){
 if(val&&(typeof val==='object'||typeof val==='function')){
 if(val instanceof Promise&&val.then===Promise.prototype.then){
-while(val._37===3){
-val=val._12;}
+while(val._81===3){
+val=val._65;}
 
-if(val._37===1)return res(i,val._12);
-if(val._37===2)reject(val._12);
+if(val._81===1)return res(i,val._65);
+if(val._81===2)reject(val._65);
 val.then(function(val){
 res(i,val);},
 reject);
@@ -13825,13 +13825,16 @@ throw new TypeError('Promises must be constructed via new');}
 if(typeof fn!=='function'){
 throw new TypeError('not a function');}
 
-this._37=0;
-this._12=null;
-this._59=[];
+this._45=0;
+this._81=0;
+this._65=null;
+this._54=null;
 if(fn===noop)return;
 doResolve(fn,this);}
 
-Promise._99=noop;
+Promise._10=null;
+Promise._97=null;
+Promise._61=noop;
 
 Promise.prototype.then=function(onFulfilled,onRejected){
 if(this.constructor!==Promise){
@@ -13850,24 +13853,41 @@ handle(self,new Handler(onFulfilled,onRejected,res));});}
 
 ;
 function handle(self,deferred){
-while(self._37===3){
-self=self._12;}
+while(self._81===3){
+self=self._65;}
 
-if(self._37===0){
-self._59.push(deferred);
+if(Promise._10){
+Promise._10(self);}
+
+if(self._81===0){
+if(self._45===0){
+self._45=1;
+self._54=deferred;
 return;}
 
+if(self._45===1){
+self._45=2;
+self._54=[self._54,deferred];
+return;}
+
+self._54.push(deferred);
+return;}
+
+handleResolved(self,deferred);}
+
+
+function handleResolved(self,deferred){
 setImmediate(function(){
-var cb=self._37===1?deferred.onFulfilled:deferred.onRejected;
+var cb=self._81===1?deferred.onFulfilled:deferred.onRejected;
 if(cb===null){
-if(self._37===1){
-resolve(deferred.promise,self._12);}else 
+if(self._81===1){
+resolve(deferred.promise,self._65);}else 
 {
-reject(deferred.promise,self._12);}
+reject(deferred.promise,self._65);}
 
 return;}
 
-var ret=tryCallOne(cb,self._12);
+var ret=tryCallOne(cb,self._65);
 if(ret===IS_ERROR){
 reject(deferred.promise,LAST_ERROR);}else 
 {
@@ -13895,8 +13915,8 @@ if(
 then===self.then&&
 newValue instanceof Promise)
 {
-self._37=3;
-self._12=newValue;
+self._81=3;
+self._65=newValue;
 finale(self);
 return;}else 
 if(typeof then==='function'){
@@ -13904,21 +13924,30 @@ doResolve(then.bind(newValue),self);
 return;}}
 
 
-self._37=1;
-self._12=newValue;
+self._81=1;
+self._65=newValue;
 finale(self);}
 
 
 function reject(self,newValue){
-self._37=2;
-self._12=newValue;
+self._81=2;
+self._65=newValue;
+if(Promise._97){
+Promise._97(self,newValue);}
+
 finale(self);}
 
 function finale(self){
-for(var i=0;i<self._59.length;i++){
-handle(self,self._59[i]);}
+if(self._45===1){
+handle(self,self._54);
+self._54=null;}
 
-self._59=null;}
+if(self._45===2){
+for(var i=0;i<self._54.length;i++){
+handle(self,self._54[i]);}
+
+self._54=null;}}
+
 
 
 function Handler(onFulfilled,onRejected,promise){
@@ -57443,6 +57472,7 @@ var MAX_TEXT_INPUT_VAL_LENGTH=15;
 var NEXT_BUTTON_SIZE=28;
 var SCREEN_HEIGHT=Dimensions.get('window').height;
 var SCREEN_WIDTH=Dimensions.get('window').width;
+var TAG_SELECTION_INPUT_REF='tagSelectionInput';
 var TAG_TEXT_INPUT_PADDING=3;
 
 var Home=React.createClass({displayName:'Home',
@@ -57461,16 +57491,19 @@ activeTimeOption:'now',
 activityTitleInput:'',
 contentOffsetXVal:0,
 currentAppState:AppStateIOS.currentState,
+currentUserLocationCoords:null,
 date:new Date(),
 events:[],
 firebaseRef:new Firebase('https://ventureappinitial.firebaseio.com/'),
 hasIshSelected:false,
 hasKeyboardSpace:false,
 hasSpecifiedTime:false,
+isLoggedIn:false,
+ready:false,
 showAddInfoBox:false,
 showAddInfoButton:true,
 showNextButton:false,
-showTextInput:true,
+showTextInput:false,
 showTimeSpecificationOptions:false,
 showTrendingItems:false,
 tagsArr:[],
@@ -57499,6 +57532,8 @@ if(account===null){
 _this2.setTimeout(_this2._safelyNavigateToLogin,200);
 return;}
 
+
+_this2.setState({isLoggedIn:true,showTextInput:true});
 
 var currentUserRef=_this2.state.firebaseRef&&_this2.state.firebaseRef.child('users/'+account.ventureId),
 trendingItemsRef=_this2.state.firebaseRef&&_this2.state.firebaseRef.child('trending'),
@@ -57582,6 +57617,18 @@ done();},
 
 
 componentDidMount:function(){var _this3=this;
+if(this.state.currentUserLocationCoords===null){
+navigator.geolocation.getCurrentPosition(
+function(currentPosition){
+_this3.setState({currentUserLocationCoords:[currentPosition.coords.latitude,currentPosition.coords.longitude]});},
+
+function(error){
+console.error(error);},
+
+{enableHighAccuracy:true,timeout:20000,maximumAge:1000});}
+
+
+
 AsyncStorage.getItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL').
 then(function(friendsAPICallURL){return friendsAPICallURL;}).
 then(function(friendsAPICallURL){
@@ -57636,7 +57683,10 @@ borderRadius:text.length?10:0}});},
 _createTrendingItem:function(type,uri,i){var _this4=this;
 if(type==='user')return (
 React.createElement(TouchableOpacity,{key:i,style:styles.trendingItem},
-React.createElement(Image,{style:styles.trendingUserImg,source:{uri:uri}})));
+React.createElement(Image,{
+defaultSource:require('VentureApp/img/HomeBackground.png'),
+style:styles.trendingUserImg,
+source:{uri:uri}})));
 
 
 
@@ -57735,7 +57785,9 @@ var MainLayout=require('MainLayout');
 firebaseRef.child('users/'+this.state.ventureId+'/activityPreference').set(activityPreferenceChange);
 this._safelyNavigateForward({title:'Users',component:MainLayout,passProps:{currentUserFriends:this.state.currentUserFriends,currentUserLocationCoords:this.state.currentUserLocationCoords,firebaseRef:this.state.firebaseRef,selected:'users',ventureId:this.state.ventureId}});
 
-this.refs[ACTIVITY_TITLE_INPUT_REF].blur();},
+this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
+
+this.refs[TAG_SELECTION_INPUT_REF].blur();},
 
 
 _roundDateDownToNearestXMinutes:function(date,num){
@@ -57800,6 +57852,7 @@ React.createElement(TouchableOpacity,{
 activeOpacity:0.4,
 onPress:function(){
 _this8.refs[ACTIVITY_TITLE_INPUT_REF].blur();
+_this8.refs[TAG_SELECTION_INPUT_REF].blur();
 LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
 _this8.setState({activeTimeOption:'now',date:new Date(),showAddInfoBox:!_this8.state.showAddInfoBox,tagInput:'',tags:[]});}},
 
@@ -57842,7 +57895,7 @@ style:[styles.scrollView,styles.horizontalScrollView,{marginTop:10}]},
 this.state.yalies&&this.state.yalies.map(this._createTrendingItem.bind(null,'user')),
 this.state.events&&this.state.events.map(this._createTrendingItem.bind(null,'event'))),
 
-React.createElement(View,{style:[styles.scrollbarArrow,{bottom:SCREEN_HEIGHT/22},isAtTrendingScrollViewStart?{right:2}:{left:2}]},
+React.createElement(View,{style:[styles.scrollbarArrow,{bottom:SCREEN_HEIGHT/22},isAtTrendingScrollViewStart?{right:5}:{left:5}]},
 React.createElement(ChevronIcon,{
 color:'rgba(255,255,255,0.8)',
 size:20,
@@ -57930,6 +57983,7 @@ _this8.setState({contentOffsetXVal:isAtScrollViewStart?SCREEN_WIDTH/2.65:0});}})
 tagSelection=
 React.createElement(View,{style:styles.tagSelection},
 React.createElement(TextInput,{
+ref:TAG_SELECTION_INPUT_REF,
 onFocus:this._onFocus,
 onBlur:this._onBlur,
 autoCapitalize:'none',
@@ -57938,16 +57992,16 @@ maxLength:MAX_TEXT_INPUT_VAL_LENGTH,
 onChangeText:function(text){
 
 if(!text.match(/^[a-zA-Z]+$/)&&text.length>=MAX_TEXT_INPUT_VAL_LENGTH-1)return;
-_this8.setState({tagInput:text});
 
-if(text[text.length-1]===','){
+if(text.charAt(text.length-1)===','){
 var tagsArr=_this8.state.tagsArr;
 
-if(tagsArr.indexOf(text.slice(0,-1))<0&&tagsArr.length<5)
+if(tagsArr.indexOf(text.slice(0,-1))<0&&tagsArr.length<5){
 tagsArr.push(text.substr(0,text.length-1));
+_this8.setState({tagInput:''});}
 
-_this8.setState({tagsArr:tagsArr,tagInput:''});}},
-
+_this8.setState({tagsArr:tagsArr});}else 
+_this8.setState({tagInput:text});},
 
 placeholder:'Type a tag. Separate by comma. Tap to delete.',
 placeholderTextColor:'rgba(0,0,0,0.8)',
@@ -57962,6 +58016,7 @@ directionalLockEnabled:true,
 showsHorizontalScrollIndicator:true,
 style:[styles.scrollView,{height:20}]},
 this.state.tagsArr.map(this._createTag)));
+
 
 
 
@@ -57984,17 +58039,25 @@ var ProfilePageIcon=require('ProfilePageIcon');
 return (
 React.createElement(View,{style:styles.container},
 React.createElement(Image,{
+onLoad:function(){
+LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+_this8.setState({ready:true});},
+
 source:require('VentureApp/img/HomeBackground.png'),
 style:styles.backdrop},
+this.state.isLoggedIn&&this.state.ready?
+React.createElement(View,null,
 React.createElement(Header,null,
 React.createElement(ProfilePageIcon,{style:{opacity:0.4,bottom:SCREEN_HEIGHT/34,right:20},
 onPress:function(){
 _this8.refs[ACTIVITY_TITLE_INPUT_REF].blur();
+_this8.refs[TAG_SELECTION_INPUT_REF].blur();
 _this8._safelyNavigateForward({title:'Profile',component:MainLayout,passProps:{currentUserFriends:_this8.state.currentUserFriends,currentUserLocationCoords:_this8.state.currentUserLocationCoords,firebaseRef:_this8.state.firebaseRef,selected:'profile',ventureId:_this8.state.ventureId}});}}),
 
 React.createElement(ChatsListPageIcon,{style:{opacity:0.4,bottom:SCREEN_HEIGHT/34,left:20},
 onPress:function(){
 _this8.refs[ACTIVITY_TITLE_INPUT_REF].blur();
+_this8.refs[TAG_SELECTION_INPUT_REF].blur();
 
 _this8._safelyNavigateForward({title:'Chats',component:MainLayout,passProps:{currentUserFriends:_this8.state.currentUserFriends,currentUserLocationCoords:_this8.state.currentUserLocationCoords,firebaseRef:_this8.state.firebaseRef,selected:'chats',ventureId:_this8.state.ventureId}});}})),
 
@@ -58004,9 +58067,11 @@ logoContainerStyle:styles.logoContainerStyle,
 logoStyle:styles.logoStyle}),
 this.state.showTextInput?activityTitleInput:React.createElement(View,null),
 this.state.showNextButton?nextButton:React.createElement(View,null),
-this.state.showAddInfoButton&&!this.state.showTimeSpecificationOptions&&this.state.activityTitleInput?addInfoButton:React.createElement(View,null),
-this.state.showAddInfoBox&&this.state.activityTitleInput?addInfoBox:React.createElement(View,null),
-this.state.showTrendingItems&&!this.state.showAddInfoBox?trendingItemsCarousel:React.createElement(View,null))));}});var 
+this.state.showAddInfoButton&&!this.state.showTimeSpecificationOptions&&this.state.activityTitleInput?addInfoButton:React.createElement(View,null)):
+
+React.createElement(View,null),
+this.state.showAddInfoBox&&this.state.activityTitleInput&&this.state.isLoggedIn&&this.state.ready?addInfoBox:React.createElement(View,null),
+this.state.showTrendingItems&&!this.state.showAddInfoBox&&this.state.isLoggedIn&&this.state.ready?trendingItemsCarousel:React.createElement(View,null))));}});var 
 
 
 
@@ -58029,7 +58094,7 @@ height:SCREEN_HEIGHT/15},
 activityTitleInput:{
 height:52,
 textAlign:'center',
-fontSize:SCREEN_HEIGHT/22,
+fontSize:SCREEN_HEIGHT/23,
 color:'white',
 backgroundColor:'rgba(0,0,0,0.7)',
 fontFamily:'AvenirNextCondensed-UltraLight'},
@@ -58043,7 +58108,9 @@ marginHorizontal:(SCREEN_WIDTH-SCREEN_WIDTH/1.2)/2,
 padding:2},
 
 addInfoButton:{},
+
 addInfoButtonContainer:{
+backgroundColor:'transparent',
 flexDirection:'row',
 justifyContent:'center',
 width:SCREEN_WIDTH,
@@ -58070,6 +58137,7 @@ horizontalScrollView:{
 height:85},
 
 logoContainerStyle:{
+backgroundColor:'transparent',
 position:'absolute',
 top:SCREEN_HEIGHT/6,
 marginHorizontal:(SCREEN_WIDTH-LOGO_WIDTH)/2},
@@ -58080,7 +58148,7 @@ height:LOGO_HEIGHT},
 
 nextButtonContainer:{
 bottom:40,
-right:40,
+right:60,
 alignSelf:'flex-end'},
 
 scrollbarArrow:{
@@ -58108,13 +58176,16 @@ paddingTop:5},
 
 tag:{
 backgroundColor:'rgba(0,0,0,0.7)',
-borderRadius:12,
+borderRadius:SCREEN_WIDTH/10,
 paddingHorizontal:SCREEN_WIDTH/80,
 marginHorizontal:SCREEN_WIDTH/70,
 paddingVertical:SCREEN_WIDTH/300,
 borderWidth:0.5,
 borderColor:'rgba(255,255,255,0.4)',
-top:6,
+flexDirection:'column',
+justifyContent:'center',
+alignItems:'center',
+top:SCREEN_WIDTH/90,
 height:SCREEN_WIDTH/15},
 
 tagsInputText:{
@@ -71402,6 +71473,8 @@ U.prototype.Ve=function(a,b){x("Firebase.resetPassword",2,2,arguments.length);ng
 
 module.exports=Firebase;
 });
+__d('VentureApp/img/HomeBackground.png',function(global, require, module, exports) {  module.exports = require("AssetRegistry").registerAsset({"__packager_asset":true,"fileSystemLocation":"/Users/harrisonmiller/VentureApp/VentureApp/img","httpServerLocation":"/assets/img","width":750,"height":1134,"scales":[1],"files":["/Users/harrisonmiller/VentureApp/VentureApp/img/HomeBackground.png"],"hash":"2506696f9189680afbdccaf25440cb29","name":"HomeBackground","type":"png"});
+});
 __d('MainLayout',function(global, require, module, exports) {  'use strict';
 
 
@@ -72142,6 +72215,14 @@ style:styles.profileModalBio},this.props.data&&this.props.data.bio)));
 
 userRowContent=
 React.createElement(View,{style:styles.rightContainer},
+React.createElement(Image,{
+onPress:this._onPressItem,
+source:{uri:this.props.data&&this.props.data.picture},
+style:[styles.thumbnail]},
+React.createElement(View,{style:this.state.timerVal?styles.timerValOverlay:{}},
+React.createElement(Text,{style:[styles.timerValText,this.state.timerVal&&this.state.timerVal[0]==='0'?{color:'#F12A00'}:{}]},this.state.timerVal))),
+
+
 React.createElement(Text,{
 style:styles.distance},this.state.distance?this.state.distance+' mi':''),
 React.createElement(Text,{style:styles.eventTitle},
@@ -72183,6 +72264,14 @@ style:styles.profileModalBio},this.props.data&&this.props.data.bio)));
 
 userRowContent=
 React.createElement(View,{style:styles.rightContainer},
+React.createElement(Image,{
+onPress:this._onPressItem,
+source:{uri:this.props.data&&this.props.data.picture},
+style:[styles.thumbnail]},
+React.createElement(View,{style:this.state.timerVal?styles.timerValOverlay:{}},
+React.createElement(Text,{style:[styles.timerValText,this.state.timerVal&&this.state.timerVal[0]==='0'?{color:'#F12A00'}:{}]},this.state.timerVal))),
+
+
 React.createElement(Text,{style:styles.distance},this.state.distance?this.state.distance+' mi':''),
 React.createElement(Text,{style:styles.activityPreference},
 this.props.data&&this.props.data.activityPreference&&this.props.data.activityPreference.title),
@@ -72206,14 +72295,6 @@ start:[0,1],
 end:[1,1],
 locations:[0.3,0.99,1.0],
 style:styles.container},
-React.createElement(Image,{
-onPress:this._onPressItem,
-source:{uri:this.props.data&&this.props.data.picture},
-style:[styles.thumbnail]},
-React.createElement(View,{style:this.state.timerVal?styles.timerValOverlay:{}},
-React.createElement(Text,{style:[styles.timerValText,this.state.timerVal&&this.state.timerVal[0]==='0'?{color:'#F12A00'}:{}]},this.state.timerVal))),
-
-
 userRowContent),
 
 this.state.dir==='column'?profileModal:React.createElement(View,null))));}});
@@ -72403,6 +72484,34 @@ React.createElement(Text,{style:styles.loadingModalFunFactTextTitle},'Did You Kn
 
 
 var styles=StyleSheet.create({
+activityPreference:{
+width:SCREEN_WIDTH/3.2,
+fontSize:18,
+fontFamily:'AvenirNextCondensed-UltraLight',
+fontWeight:'400',
+textAlign:'left'},
+
+backdrop:{
+paddingTop:30,
+flex:1,
+flexDirection:'column',
+justifyContent:'space-around',
+alignItems:'center',
+width:Dimensions.get('window').width,
+height:Dimensions.get('window').height},
+
+chatsListBaseContainer:{
+flex:1,
+backgroundColor:'#040A19'},
+
+container:{
+flex:1,
+flexDirection:'row',
+justifyContent:'space-around',
+alignItems:'center',
+borderColor:'rgba(100,100,105,0.2)',
+borderWidth:1},
+
 customRefreshingActivityIndicatorIOS:{
 height:20,
 top:5},
@@ -72416,6 +72525,26 @@ paddingVertical:10},
 customRefreshingIndicatorText:{
 color:'#fff',
 fontFamily:'AvenirNextCondensed-Regular'},
+
+distance:{
+width:SCREEN_WIDTH/4,
+textAlign:'center',
+fontSize:16,
+marginHorizontal:25,
+fontFamily:'AvenirNext-UltraLight',
+fontWeight:'300'},
+
+eventTitle:{
+width:154,
+right:20,
+fontSize:17,
+top:2,
+fontFamily:'AvenirNextCondensed-Regular',
+fontWeight:'400'},
+
+filterPageButton:{
+width:30,
+height:30},
 
 loadingModalActivityIndicatorIOS:{
 height:80},
@@ -72491,7 +72620,8 @@ marginBottom:SCREEN_WIDTH/22},
 rightContainer:{
 flexDirection:'row',
 alignItems:'center',
-justifyContent:'flex-start'},
+justifyContent:'space-around',
+width:SCREEN_WIDTH/1.4},
 
 tag:{
 backgroundColor:'rgba(4,22,43,0.5)',
@@ -72518,63 +72648,6 @@ borderRadius:THUMBNAIL_SIZE/2,
 marginVertical:7,
 marginLeft:10},
 
-userContentWrapper:{
-top:0,
-bottom:0,
-left:0,
-right:0,
-backgroundColor:'transparent'},
-
-userRow:{
-flex:1,
-backgroundColor:'#fefefb'},
-
-chatsListBaseContainer:{
-flex:1,
-backgroundColor:'#040A19'},
-
-activityPreference:{
-width:140,
-fontSize:18,
-fontFamily:'AvenirNextCondensed-UltraLight',
-fontWeight:'400'},
-
-backdrop:{
-paddingTop:30,
-flex:1,
-flexDirection:'column',
-justifyContent:'space-around',
-alignItems:'center',
-width:Dimensions.get('window').width,
-height:Dimensions.get('window').height},
-
-container:{
-flex:1,
-flexDirection:'row',
-alignItems:'center',
-borderColor:'rgba(100,100,105,0.2)',
-borderWidth:1},
-
-distance:{
-width:75,
-textAlign:'center',
-fontSize:16,
-marginHorizontal:25,
-fontFamily:'AvenirNext-UltraLight',
-fontWeight:'300'},
-
-eventTitle:{
-width:154,
-right:20,
-fontSize:17,
-top:2,
-fontFamily:'AvenirNextCondensed-Regular',
-fontWeight:'400'},
-
-filterPageButton:{
-width:30,
-height:30},
-
 timerValText:{
 opacity:1.0,
 color:'#fff',
@@ -72586,7 +72659,19 @@ width:THUMBNAIL_SIZE,
 height:THUMBNAIL_SIZE,
 borderRadius:THUMBNAIL_SIZE/2,
 justifyContent:'center',
-alignItems:'center'}});
+alignItems:'center'},
+
+userContentWrapper:{
+top:0,
+bottom:0,
+left:0,
+right:0,
+backgroundColor:'transparent'},
+
+userRow:{
+flex:1,
+backgroundColor:'#fefefb',
+overflow:'hidden'}});
 
 
 
@@ -72719,7 +72804,7 @@ style:{width:38,height:38}})),
 
 React.createElement(Text,{
 style:styles.activityPreferenceTitle},
-chatRoomTitle&&chatRoomTitle.toUpperCase()+'?',' '),
+chatRoomTitle&&chatRoomTitle.toUpperCase(),' '),
 React.createElement(Text,null)));},
 
 
@@ -72941,8 +73026,12 @@ style:styles.tagText},tag)));}));
 var infoContent=
 React.createElement(View,{
 style:{paddingVertical:user===recipient?SCREEN_HEIGHT/30:SCREEN_HEIGHT/97,bottom:this.state.hasKeyboardSpace?SCREEN_HEIGHT/3.5:0,backgroundColor:'#eee',flexDirection:'column',justifyContent:'center'}},
-React.createElement(Image,{source:{uri:user.picture},
+this.state.infoContent==='recipient'?
+React.createElement(Image,{source:{uri:recipient.picture},
+style:{width:SCREEN_WIDTH/2,height:SCREEN_WIDTH/2,borderRadius:SCREEN_WIDTH/4,alignSelf:'center',marginVertical:SCREEN_WIDTH/18}}):
+React.createElement(Image,{source:{uri:currentUserData.picture},
 style:{width:SCREEN_WIDTH/2,height:SCREEN_WIDTH/2,borderRadius:SCREEN_WIDTH/4,alignSelf:'center',marginVertical:SCREEN_WIDTH/18}}),
+
 React.createElement(Text,{
 style:{color:'#222',fontSize:20,fontFamily:'AvenirNextCondensed-Medium',textAlign:'center'}},
 user.firstName,', ',user.age&&user.age.value,' ','\t',' |','\t',
@@ -72999,15 +73088,17 @@ LayoutAnimation.configureNext(config);
 _this6.setState({infoContent:'currentUser',dir:_this6.state.dir==='column'&&_this6.state.infoContent==='currentUser'?'row':'column'});},
 navigator:this.props.navigator,currentUserData:currentUserData,style:{marginRight:20}})),
 
-React.createElement(TimerBar,{chatRoomRef:this.props.chatRoomRef,
-closeKeyboard:this.props.closeKeyboard,
-currentUserData:currentUserData,
-handleSetHasTimerExpiredState:this.props.handleSetHasTimerExpiredState,
-_id:this.props._id,
-navigator:this.props.navigator,
-recipient:recipient,
-recipientData:this.props.recipientData,
-safelyNavigateToMainLayout:this.props.safelyNavigateToMainLayout}),
+
+
+
+
+
+
+
+
+
+
+
 
 this.state.dir==='column'?
 React.createElement(View,{style:{backgroundColor:'#fff'}},
@@ -73076,9 +73167,14 @@ mixins:[TimerMixin],
 
 _handle:null,
 
+componentWillMount:function(){
+this.setState({
+expireTimeInMs:10000,
+timerValInMs:10000});},
 
 
-componentWillMount:function(){var _this7=this;
+
+componentDidMount:function(){var _this7=this;
 InteractionManager.runAfterInteractions(function(){
 var chatRoomRef=_this7.props.chatRoomRef,
 currentUserData=_this7.props.currentUserData,
@@ -73086,16 +73182,17 @@ firebaseRef=_this7.state.firebaseRef,
 recipient=_this7.props.recipient,
 _this=_this7;
 
-chatRoomRef.child('createdAt').once('value',function(snapshot){
+alert('chatroomref:'+JSON.stringify(chatRoomRef)+'\n currentUserData'+JSON.stringify(currentUserData)+'\nfirebaseRef'+JSON.stringify(firebaseRef)+'\nrecipient'+JSON.stringify(recipient));
 
+chatRoomRef.child('createdAt').once('value',function(snapshot){
 
 
 if(snapshot.val()===null){
 var currentTime=new Date();
 
 _this7.setState({
-expireTimeInMs:currentTime.setMilliseconds(currentTime.getMilliseconds()+300000),
-timerValInMs:currentTime.setMilliseconds(currentTime.getMilliseconds()+300000)-new Date().getTime()});
+expireTimeInMs:currentTime.setMilliseconds(currentTime.getMilliseconds()+10000),
+timerValInMs:currentTime.setMilliseconds(currentTime.getMilliseconds()+10000)-new Date().getTime()});
 
 
 _this.handle=_this.setInterval(function(){
@@ -73116,8 +73213,7 @@ firebaseRef.child('users/'+recipient.ventureId+'/chatCount').set(snapshot.val()+
 
 
 firebaseRef.child('users/'+currentUserData.ventureId+'/chatCount').once('value',function(snapshot){
-firebaseRef.child('users/'+currentUserData.ventureId+'/chatCount').set(snapshot.val()+1);
-PushNotificationIOS.setApplicationIconBadgeNumber(snapshot.val()+1);});}else 
+firebaseRef.child('users/'+currentUserData.ventureId+'/chatCount').set(snapshot.val()+1);});}else 
 
 
 {
@@ -73177,8 +73273,8 @@ firebaseRef.child('users/'+targetUserIDHashed+'/chatCount').set(snapshot.val()-1
 
 
 firebaseRef.child('users/'+currentUserIDHashed+'/chatCount').once('value',function(snapshot){
-firebaseRef.child('users/'+currentUserIDHashed+'/chatCount').set(snapshot.val()-1);
-PushNotificationIOS.setApplicationIconBadgeNumber(snapshot.val()-1);});
+firebaseRef.child('users/'+currentUserIDHashed+'/chatCount').set(snapshot.val()-1);});
+
 
 
 chatRoomRef.off();
@@ -73275,7 +73371,6 @@ recipientBar:{
 flexDirection:'row',
 alignItems:'center',
 backgroundColor:'#fff',
-width:375,
 height:78},
 
 recipientAvatar:{
@@ -77774,7 +77869,6 @@ maximumValue:10,
 value:JSON.parse(this.state.distance)}))),
 
 
-React.createElement(View,{style:styles.space}),
 React.createElement(View,{style:styles.section},
 React.createElement(View,{style:styles.titleContainer},
 React.createElement(Text,{style:styles.titleText},'Gender:')),
@@ -77799,7 +77893,6 @@ React.createElement(Text,{style:styles.tabButtonText},' Other ')))),
 
 
 
-React.createElement(View,{style:styles.space}),
 React.createElement(View,{style:styles.section},
 React.createElement(View,{style:styles.titleContainer},
 React.createElement(Text,{style:styles.titleText},'Privacy:')),
@@ -77853,7 +77946,7 @@ _this3._safelyNavigateToMainLayout();}})));}});
 var styles=StyleSheet.create({
 container:{
 flexDirection:'column',
-justifyContent:'center',
+justifyContent:'space-around',
 padding:20,
 backgroundColor:'#FFF5EA',
 height:SCREEN_HEIGHT-80},
@@ -77866,7 +77959,6 @@ fontFamily:'AvenirNextCondensed-Regular'},
 saveButton:{
 backgroundColor:'#040A19',
 alignSelf:'center',
-top:16,
 borderRadius:4,
 paddingHorizontal:30,
 paddingVertical:5,
@@ -77882,8 +77974,7 @@ fontFamily:'AvenirNextCondensed-Medium'},
 section:{
 borderRadius:3,
 borderWidth:0.5,
-borderColor:'#040A19',
-bottom:18},
+borderColor:'#040A19'},
 
 slider:{
 height:30,
@@ -78813,7 +78904,7 @@ locations:[0.3,0.99,1.0],
 style:styles.container},
 React.createElement(Image,{
 source:{uri:this.props.data&&this.props.data.event_img},
-style:{resizeMode:'cover',height:THUMBNAIL_SIZE*2,flex:1,flexDirection:'row',justifyContent:'space-between',alignItems:'center'}},
+style:{resizeMode:'cover',height:THUMBNAIL_SIZE*2,flex:1,flexDirection:'row',backgroundColor:'rgba(0,0,0,0.4)',justifyContent:'space-between',alignItems:'center'}},
 React.createElement(View,{
 onPress:this._onPressItem,
 style:[styles.eventThumbnail,{backgroundColor:'rgba(0,0,0,0.9)',justifyContent:'center',alignItems:'center'}]},
@@ -78821,7 +78912,7 @@ React.createElement(Text,{style:{fontFamily:'AvenirNextCondensed-Regular',color:
 
 React.createElement(View,{style:[styles.rightContainer,{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}]},
 React.createElement(Text,{style:styles.eventTitleBanner},this.props.data&&this.props.data.title&&this.props.data.title.toUpperCase()),
-React.createElement(View,{style:{position:'absolute',right:16}},this._renderEventAttendanceStatusIcon())))),
+React.createElement(View,{style:{position:'absolute',right:SCREEN_WIDTH/10}},this._renderEventAttendanceStatusIcon())))),
 
 
 
@@ -79015,7 +79106,7 @@ eventTitleBanner:{
 fontFamily:'AvenirNextCondensed-Medium',
 color:'#fff',
 backgroundColor:'rgba(0,0,0,0.6)',
-width:SCREEN_WIDTH/1.2,
+width:SCREEN_WIDTH/1.1,
 fontSize:SCREEN_HEIGHT/35,
 paddingVertical:SCREEN_HEIGHT/130,
 paddingLeft:SCREEN_WIDTH/15,
@@ -79580,12 +79671,14 @@ showsHorizontalScrollIndicator:true,
 style:[styles.scrollView,styles.horizontalScrollView,{marginTop:10}]},
 this.state.yalies&&this.state.yalies.map(this._createTrendingItem.bind(null,'user'))),
 
-React.createElement(View,{style:[styles.scrollbarArrow,{top:SCREEN_HEIGHT/10.6,left:SCREEN_WIDTH/1.20,backgroundColor:'transparent'}]},
-React.createElement(Animated.View,{style:{opacity:this.state.fadeAnim}},
-React.createElement(ChevronIcon,{
-color:'rgba(255,255,255,0.8)',
-size:20,
-direction:'right'})))),
+React.createElement(View,{style:[styles.scrollbarArrow,{top:SCREEN_HEIGHT/10.6,left:SCREEN_WIDTH/1.20,backgroundColor:'transparent'}]})),
+
+
+
+
+
+
+
 
 
 
@@ -79807,7 +79900,10 @@ usersListRef=this.state.firebaseRef&&this.state.firebaseRef.child('users'),
 currentUserRef=usersListRef&&usersListRef.child(ventureId),
 loginStatusRef=currentUserRef&&currentUserRef.child('status/isOnline');
 
+if(!(loginStatusRef&&currentUserRef&&usersListRef))return;
+
 if(!isOnline){
+
 loginStatusRef.set(false);
 currentUserRef.child('match_requests').set(null);
 
@@ -79826,7 +79922,7 @@ usersListRef.child(user.ventureId+'/event_invite_match_requests/'+ventureId).set
 return;}
 
 
-if(isOnline)loginStatusRef.set(isOnline);
+if(isOnline&&loginStatusRef)loginStatusRef.set(isOnline);
 
 currentUserRef.once('value',function(snapshot){
 var asyncObj=_.pick(snapshot.val(),'ventureId','name','firstName','lastName','activityPreference','age','picture','bio','gender','matchingPreferences');
@@ -80886,7 +80982,7 @@ __d('VentureApp/data/genders.json',function(global, require, module, exports) { 
         "Two-Spirit"]
 };
 });
-__d('VentureApp/img/about.png',function(global, require, module, exports) {  module.exports = require("AssetRegistry").registerAsset({"__packager_asset":true,"fileSystemLocation":"/Users/harrisonmiller/VentureApp/VentureApp/img","httpServerLocation":"/assets/img","width":1130,"height":1090,"scales":[1],"files":["/Users/harrisonmiller/VentureApp/VentureApp/img/about.png"],"hash":"16040892f4f1f5d8d7c8a2b9c2ef3d2a","name":"about","type":"png"});
+__d('VentureApp/img/about.png',function(global, require, module, exports) {  module.exports = require("AssetRegistry").registerAsset({"__packager_asset":true,"fileSystemLocation":"/Users/harrisonmiller/VentureApp/VentureApp/img","httpServerLocation":"/assets/img","width":750,"height":1334,"scales":[1],"files":["/Users/harrisonmiller/VentureApp/VentureApp/img/about.png"],"hash":"037ad7969f7b499798ed3d82d84a5f0e","name":"about","type":"png"});
 });
 __d('react-native-facebook-login/index.ios.js',function(global, require, module, exports) {  var React=require('react-native/Libraries/react-native/react-native.js');var 
 
@@ -81237,21 +81333,22 @@ var _this=this;
 
 return (
 React.createElement(View,null,
+React.createElement(Image,null,
 React.createElement(Swiper,{style:styles.wrapper,
 dot:React.createElement(View,{style:{backgroundColor:'rgba(255,255,255,.3)',width:13,height:13,borderRadius:7,top:SCREEN_HEIGHT/30,marginLeft:7,marginRight:7}}),
 activeDot:React.createElement(View,{style:{backgroundColor:'#fff',width:13,height:13,borderRadius:7,top:SCREEN_HEIGHT/30,marginLeft:7,marginRight:7}}),
-paginationStyle:{bottom:SCREEN_HEIGHT/30},
+paginationStyle:{bottom:SCREEN_HEIGHT/22},
 loop:false},
 React.createElement(View,{style:styles.slide},
 React.createElement(Image,{
-resizeMode:Image.resizeMode.cover,
+resizeMode:Image.resizeMode.stretch,
 source:require('VentureApp/img/OnboardingFacebookSignUp.png'),
 style:styles.backdrop},
 
 React.createElement(Image,{
 style:styles.ventureLogo}),
 
-React.createElement(FBLogin,{style:{top:68},
+React.createElement(FBLogin,{style:{top:SCREEN_HEIGHT/3},
 permissions:['email','user_friends'],
 onLogin:function(data){
 
@@ -81275,30 +81372,31 @@ done();}}))),
 
 React.createElement(View,{style:styles.slide},
 React.createElement(Image,{
-resizeMode:Image.resizeMode.cover,
+resizeMode:Image.resizeMode.stretch,
 source:require('VentureApp/img/OnboardingWhatDoYouWantToDo.png'),
 style:styles.backdrop})),
 
 
 React.createElement(View,{style:styles.slide},
 React.createElement(Image,{
-resizeMode:Image.resizeMode.cover,
+resizeMode:Image.resizeMode.stretch,
 source:require('VentureApp/img/OnboardingFindActivityPartners.png'),
 style:styles.backdrop})),
 
 
 React.createElement(View,{style:styles.slide},
 React.createElement(Image,{
-resizeMode:Image.resizeMode.cover,
+resizeMode:Image.resizeMode.stretch,
 source:require('VentureApp/img/OnboardingShareActivities.png'),
 style:styles.backdrop})),
 
 
 React.createElement(View,{style:styles.slide},
 React.createElement(Image,{
-resizeMode:Image.resizeMode.cover,
+resizeMode:Image.resizeMode.stretch,
 source:require('VentureApp/img/OnboardingMakeNewConnections.png'),
-style:styles.backdrop})))));}});
+style:styles.backdrop}))))));}});
+
 
 
 
@@ -81308,11 +81406,20 @@ style:styles.backdrop})))));}});
 
 
 var styles=StyleSheet.create({
-backdrop:{
-paddingBottom:30,
+wrapper:{},
+
+
+slide:{
 flex:1,
+backgroundColor:'transparent'},
+
+backdrop:{
+flex:1,
+justifyContent:'center',
 flexDirection:'column',
-alignItems:'center'},
+alignItems:'center',
+width:null,
+height:null},
 
 tabText:{
 color:'white',
@@ -81324,18 +81431,7 @@ ventureLogo:{
 bottom:54,
 width:120,
 height:122.62,
-backgroundColor:'transparent'},
-
-wrapper:{},
-
-
-slide:{
-flex:1,
-alignItems:'center',
-backgroundColor:'transparent'},
-
-image:{
-flex:1}});
+backgroundColor:'transparent'}});
 
 
 
@@ -81869,7 +81965,7 @@ props.showsPagination&&(props.renderPagination?this.props.renderPagination(state
 this.renderTitle(),
 this.props.showsButtons&&this.renderButtons());}});
 });
-__d('VentureApp/img/OnboardingFacebookSignUp.png',function(global, require, module, exports) {  module.exports = require("AssetRegistry").registerAsset({"__packager_asset":true,"fileSystemLocation":"/Users/harrisonmiller/VentureApp/VentureApp/img","httpServerLocation":"/assets/img","width":750,"height":1334,"scales":[1],"files":["/Users/harrisonmiller/VentureApp/VentureApp/img/OnboardingFacebookSignUp.png"],"hash":"a1edf19c0f646c9f678f1230722793c5","name":"OnboardingFacebookSignUp","type":"png"});
+__d('VentureApp/img/OnboardingFacebookSignUp.png',function(global, require, module, exports) {  module.exports = require("AssetRegistry").registerAsset({"__packager_asset":true,"fileSystemLocation":"/Users/harrisonmiller/VentureApp/VentureApp/img","httpServerLocation":"/assets/img","width":750,"height":1334,"scales":[1],"files":["/Users/harrisonmiller/VentureApp/VentureApp/img/OnboardingFacebookSignUp.png"],"hash":"609d29010dc5a0455f3375204a7edc19","name":"OnboardingFacebookSignUp","type":"png"});
 });
 __d('VentureApp/img/OnboardingWhatDoYouWantToDo.png',function(global, require, module, exports) {  module.exports = require("AssetRegistry").registerAsset({"__packager_asset":true,"fileSystemLocation":"/Users/harrisonmiller/VentureApp/VentureApp/img","httpServerLocation":"/assets/img","width":750,"height":1334,"scales":[1],"files":["/Users/harrisonmiller/VentureApp/VentureApp/img/OnboardingWhatDoYouWantToDo.png"],"hash":"b870a7301fed0e8d564a7144ff98d09b","name":"OnboardingWhatDoYouWantToDo","type":"png"});
 });
@@ -81985,7 +82081,7 @@ timerVal:''};},
 
 
 componentWillMount:function(){var _this2=this;
-var distance=this.props.currentUserLocationCoords&&this.props.data.location.coordinates&&this.calculateDistance(this.props.currentUserLocationCoords,[this.props.data.location.coordinates.latitude,this.props.data.location.coordinates.longitude]),
+var distance=this.props.currentUserLocationCoords&&this.props.data&&this.props.data.location&&this.props.data.location.coordinates&&this.calculateDistance(this.props.currentUserLocationCoords,[this.props.data.location.coordinates.latitude,this.props.data.location.coordinates.longitude]),
 _this=this;
 
 this.props.firebaseRef&&this.props.data&&this.props.data.ventureId&&this.props.currentUserIDHashed&&this.props.firebaseRef.child('users/'+this.props.currentUserIDHashed+'/match_requests').child(this.props.data.ventureId)&&
@@ -82002,7 +82098,7 @@ timerVal:snapshot.val()&&snapshot.val().timerVal&&_this2._getTimerValue(snapshot
 
 
 componentWillReceiveProps:function(nextProps){var _this3=this;
-var distance=this.calculateDistance(nextProps.currentUserLocationCoords,[nextProps.data.location.coordinates.latitude,nextProps.data.location.coordinates.longitude]),
+var distance=nextProps.currentUserLocationCoords&&nextProps.data&&nextProps.data.location&&nextProps.data.location.coordinates&&this.calculateDistance(nextProps.currentUserLocationCoords,[nextProps.data.location.coordinates.latitude,nextProps.data.location.coordinates.longitude]),
 _this=this;
 
 nextProps.firebaseRef&&nextProps.data&&nextProps.data.ventureId&&nextProps.currentUserIDHashed&&nextProps.firebaseRef.child('users/'+nextProps.currentUserIDHashed+'/match_requests').child(nextProps.data.ventureId)&&
@@ -82126,7 +82222,7 @@ chatRoomRoute=_.findWhere(currentRouteStack,{title:'Chat',passProps:{_id:_id}});
 
 if(snapshot.val()===null){
 chatRoomRef.child('_id').set(_id);
-chatRoomRef.child('timer').set({value:300000});
+chatRoomRef.child('timer').set({value:10000});
 chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set(_this4.props.currentUserData.activityPreference.title);
 chatRoomRef.child('user_activity_preference_titles').child(targetUserIDHashed).set(_this4.props.data.activityPreference.title);}
 
@@ -82172,7 +82268,7 @@ targetUserMatchRequestsRef.child(currentUserIDHashed).setWithPriority({
 status:'received'},
 200);
 currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
-status:'sent'},
+status:'received'},
 300);}},
 
 
@@ -82213,6 +82309,11 @@ style:{left:8}});}},
 
 render:function(){
 var LinearGradient=require('LinearGradient');
+
+var dummyIcon=
+React.createElement(TouchableOpacity,{
+style:{width:18*1.6,height:18*1.6}});
+
 
 var profileModal=
 React.createElement(View,{style:styles.profileModalContainer},
@@ -82259,6 +82360,7 @@ start:[0,1],
 end:[1,1],
 locations:[0.3,0.99,1.0],
 style:styles.container},
+React.createElement(View,{style:styles.rightContainer},
 React.createElement(Image,{
 onPress:this._onPressItem,
 source:{uri:this.props.data&&this.props.data.picture},
@@ -82268,7 +82370,6 @@ React.createElement(Text,{
 style:[styles.timerValText,this.state.timerVal&&this.state.timerVal[0]==='0'?{color:'#F12A00'}:{}]},this.state.timerVal))),
 
 
-React.createElement(View,{style:styles.rightContainer},
 React.createElement(Text,{
 style:styles.distance},this.state.distance?this.state.distance+' mi':''),
 React.createElement(Text,{style:styles.activityPreference},
@@ -82276,7 +82377,7 @@ this.props.data&&this.props.data.activityPreference&&this.props.data.activityPre
 
 React.createElement(View,null,
 !this.props.isCurrentUser?
-React.createElement(View,{style:{top:10}},this._renderStatusIcon()):React.createElement(View,null)))),
+React.createElement(View,{style:{top:10}},this._renderStatusIcon()):React.createElement(View,null,dummyIcon)))),
 
 
 
@@ -82353,21 +82454,21 @@ if(user.status&&!user.status.isOnline)return;
 
 
 if(matchingPreferences&&matchingPreferences.privacy&&matchingPreferences.privacy.indexOf('friends+')>-1){
-if(_this6.props.currentUserLocationCoords&&user.location&&user.location.coordinates&&user.location.coordinates.latitude&&user.location.coordinates.longitude&&GeoFire.distance(_this6.props.currentUserLocationCoords,[user.location.coordinates.latitude,user.location.coordinates.longitude])<=maxSearchDistance*1.609){
+
 if(matchingPreferences&&matchingPreferences.gender&&matchingPreferences.gender.indexOf(user.gender)>-1)filteredUsersArray.push(user);
-if(matchingPreferences&&matchingPreferences.gender&&matchingPreferences.gender.indexOf(user.gender)===-1&&matchingPreferences.gender.indexOf('other')>-1&&user.gender!=='male'&&user.gender!=='female')filteredUsersArray.push(user);}}else 
+if(matchingPreferences&&matchingPreferences.gender&&matchingPreferences.gender.indexOf(user.gender)===-1&&matchingPreferences.gender.indexOf('other')>-1&&user.gender!=='male'&&user.gender!=='female')filteredUsersArray.push(user);}else 
 
 if(matchingPreferences&&matchingPreferences.privacy&&matchingPreferences.privacy.indexOf('friends')>-1&&matchingPreferences.privacy.length===1){
 if(_this6.props.currentUserFriends&&!!_.findWhere(_this6.props.currentUserFriends,{name:user.name})){
-if(_this6.props.currentUserLocationCoords&&user.location&&user.location.coordinates&&user.location.coordinates.latitude&&user.location.coordinates.longitude&&GeoFire.distance(_this6.props.currentUserLocationCoords,[user.location.coordinates.latitude,user.location.coordinates.longitude])<=maxSearchDistance*1.609){
+
 if(matchingPreferences&&matchingPreferences.gender&&matchingPreferences.gender.indexOf(user.gender)>-1)filteredUsersArray.push(user);
-if(matchingPreferences&&matchingPreferences.gender&&matchingPreferences.gender.indexOf(user.gender)===-1&&matchingPreferences.gender.indexOf('other')>-1&&user.gender!=='male'&&user.gender!=='female')filteredUsersArray.push(user);}}}else 
+if(matchingPreferences&&matchingPreferences.gender&&matchingPreferences.gender.indexOf(user.gender)===-1&&matchingPreferences.gender.indexOf('other')>-1&&user.gender!=='male'&&user.gender!=='female')filteredUsersArray.push(user);}}else 
 
 
 {
-if(_this6.props.currentUserLocationCoords&&user.location&&user.location.coordinates&&user.location.coordinates.latitude&&user.location.coordinates.longitude&&GeoFire.distance(_this6.props.currentUserLocationCoords,[user.location.coordinates.latitude,user.location.coordinates.longitude])<=maxSearchDistance*1.609){
+
 if(matchingPreferences&&matchingPreferences.gender&&matchingPreferences.gender.indexOf(user.gender)>-1)filteredUsersArray.push(user);
-if(matchingPreferences&&matchingPreferences.gender&&matchingPreferences.gender.indexOf(user.gender)===-1&&matchingPreferences.gender.indexOf('other')>-1&&user.gender!=='male'&&user.gender!=='female')filteredUsersArray.push(user);}}});
+if(matchingPreferences&&matchingPreferences.gender&&matchingPreferences.gender.indexOf(user.gender)===-1&&matchingPreferences.gender.indexOf('other')>-1&&user.gender!=='male'&&user.gender!=='female')filteredUsersArray.push(user);}});
 
 
 
@@ -82548,6 +82649,30 @@ React.createElement(Text,{style:styles.loadingModalFunFactTextTitle},'Did You Kn
 
 
 var styles=StyleSheet.create({
+activityPreference:{
+width:SCREEN_WIDTH/3.2,
+fontSize:18,
+fontFamily:'AvenirNextCondensed-UltraLight',
+fontWeight:'400',
+textAlign:'left'},
+
+backdrop:{
+paddingTop:30,
+flex:1,
+flexDirection:'column',
+justifyContent:'space-around',
+alignItems:'center',
+width:Dimensions.get('window').width,
+height:Dimensions.get('window').height},
+
+container:{
+flex:1,
+flexDirection:'row',
+justifyContent:'space-around',
+alignItems:'center',
+borderColor:'rgba(100,100,105,0.2)',
+borderWidth:1},
+
 customRefreshingActivityIndicatorIOS:{
 height:20,
 top:5},
@@ -82561,6 +82686,18 @@ paddingVertical:10},
 customRefreshingIndicatorText:{
 color:'#fff',
 fontFamily:'AvenirNextCondensed-Regular'},
+
+distance:{
+width:SCREEN_WIDTH/4,
+textAlign:'center',
+fontSize:16,
+marginHorizontal:25,
+fontFamily:'AvenirNext-UltraLight',
+fontWeight:'300'},
+
+filterPageButton:{
+width:30,
+height:30},
 
 loadingModalActivityIndicatorIOS:{
 height:80},
@@ -82636,7 +82773,8 @@ marginBottom:SCREEN_WIDTH/22},
 rightContainer:{
 flexDirection:'row',
 alignItems:'center',
-justifyContent:'flex-start'},
+justifyContent:'space-around',
+width:SCREEN_WIDTH/1.4},
 
 searchTextInput:{
 color:'#222',
@@ -82675,6 +82813,11 @@ borderRadius:THUMBNAIL_SIZE/2,
 marginVertical:7,
 marginLeft:10},
 
+timerValText:{
+opacity:1.0,
+color:'#fff',
+fontFamily:'AvenirNextCondensed-Medium'},
+
 timerValOverlay:{
 backgroundColor:'rgba(0,0,0,0.6)',
 width:THUMBNAIL_SIZE,
@@ -82697,46 +82840,7 @@ overflow:'hidden'},
 
 usersListBaseContainer:{
 flex:1,
-backgroundColor:'#040A19'},
-
-activityPreference:{
-width:140,
-fontSize:18,
-fontFamily:'AvenirNextCondensed-UltraLight',
-fontWeight:'400'},
-
-backdrop:{
-paddingTop:30,
-flex:1,
-flexDirection:'column',
-justifyContent:'space-around',
-alignItems:'center',
-width:Dimensions.get('window').width,
-height:Dimensions.get('window').height},
-
-container:{
-flex:1,
-flexDirection:'row',
-alignItems:'center',
-borderColor:'rgba(100,100,105,0.2)',
-borderWidth:1},
-
-distance:{
-width:75,
-textAlign:'center',
-fontSize:16,
-marginHorizontal:25,
-fontFamily:'AvenirNext-UltraLight',
-fontWeight:'300'},
-
-filterPageButton:{
-width:30,
-height:30},
-
-timerValText:{
-opacity:1.0,
-color:'#fff',
-fontFamily:'AvenirNextCondensed-Medium'}});
+backgroundColor:'#040A19'}});
 
 
 
@@ -83182,8 +83286,6 @@ height:SIZE*1.5}});
 
 module.exports=ProfilePageIcon;
 });
-__d('VentureApp/img/HomeBackground.png',function(global, require, module, exports) {  module.exports = require("AssetRegistry").registerAsset({"__packager_asset":true,"fileSystemLocation":"/Users/harrisonmiller/VentureApp/VentureApp/img","httpServerLocation":"/assets/img","width":750,"height":1134,"scales":[1],"files":["/Users/harrisonmiller/VentureApp/VentureApp/img/HomeBackground.png"],"hash":"2506696f9189680afbdccaf25440cb29","name":"HomeBackground","type":"png"});
-});
 ;require("InitializeJavaScriptAppEngine");
 ;require("VentureApp/index.ios.js");
-__SSTOKENSTRING = "@generated SignedSource<<a0097efb89b568b9ff6f1ac85caeae86>>";
+__SSTOKENSTRING = "@generated SignedSource<<a173a850d982775b5844f2652d67c0e1>>";

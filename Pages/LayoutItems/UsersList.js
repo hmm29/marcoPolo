@@ -104,7 +104,7 @@ var User = React.createClass({
     },
 
     componentWillMount() {
-        let distance = this.props.currentUserLocationCoords && this.props.data.location.coordinates && this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
+        let distance = this.props.currentUserLocationCoords && this.props.data && this.props.data.location && this.props.data.location.coordinates && this.calculateDistance(this.props.currentUserLocationCoords, [this.props.data.location.coordinates.latitude, this.props.data.location.coordinates.longitude]),
             _this = this;
 
         this.props.firebaseRef && this.props.data && this.props.data.ventureId && this.props.currentUserIDHashed && this.props.firebaseRef.child(`users/${this.props.currentUserIDHashed}/match_requests`).child(this.props.data.ventureId)
@@ -121,7 +121,7 @@ var User = React.createClass({
     },
 
     componentWillReceiveProps(nextProps) {
-        let distance = this.calculateDistance(nextProps.currentUserLocationCoords, [nextProps.data.location.coordinates.latitude, nextProps.data.location.coordinates.longitude]),
+        let distance = nextProps.currentUserLocationCoords && nextProps.data && nextProps.data.location && nextProps.data.location.coordinates && this.calculateDistance(nextProps.currentUserLocationCoords, [nextProps.data.location.coordinates.latitude, nextProps.data.location.coordinates.longitude]),
             _this = this;
 
         nextProps.firebaseRef && nextProps.data && nextProps.data.ventureId && nextProps.currentUserIDHashed && nextProps.firebaseRef.child(`users/${nextProps.currentUserIDHashed}/match_requests`).child(nextProps.data.ventureId)
@@ -245,7 +245,7 @@ var User = React.createClass({
 
                     if (snapshot.val() === null) {
                         chatRoomRef.child('_id').set(_id); // @hmm: set unique chat Id
-                        chatRoomRef.child('timer').set({value: 300000}); // @hmm: set timer
+                        chatRoomRef.child('timer').set({value: 10000}); // @hmm: set timer
                         chatRoomRef.child('user_activity_preference_titles').child(currentUserIDHashed).set(this.props.currentUserData.activityPreference.title);
                         chatRoomRef.child('user_activity_preference_titles').child(targetUserIDHashed).set(this.props.data.activityPreference.title);
                     }
@@ -291,7 +291,7 @@ var User = React.createClass({
                 status: 'received'
             }, 200);
             currentUserMatchRequestsRef.child(targetUserIDHashed).setWithPriority({
-                status: 'sent'
+                status: 'received'
             }, 300);
         }
     },
@@ -325,13 +325,18 @@ var User = React.createClass({
                     color='rgba(0,0,0,0.2)'
                     direction='right'
                     onPress={() => this.handleMatchInteraction()}
-                    size={18}
-                    style={{left: 8}}/>
+                    size={25}
+                    style={{top: 4, width: 25 * 1.6, height: 25 * 1.6}}/>
         }
     },
 
     render() {
         var LinearGradient = require('react-native-linear-gradient');
+
+        let dummyIcon = (
+                <TouchableOpacity
+                    style={{width: 18 * 1.6, height: 18 * 1.6}} />
+        );
 
         let profileModal = (
             <View style={styles.profileModalContainer}>
@@ -378,6 +383,7 @@ var User = React.createClass({
                         end={[1,1]}
                         locations={[0.3,0.99,1.0]}
                         style={styles.container}>
+                        <View style={styles.rightContainer}>
                         <Image
                             onPress={this._onPressItem}
                             source={{uri: this.props.data && this.props.data.picture}}
@@ -387,7 +393,6 @@ var User = React.createClass({
                                     style={[styles.timerValText, (this.state.timerVal && this.state.timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{this.state.timerVal}</Text>
                             </View>
                         </Image>
-                        <View style={styles.rightContainer}>
                             <Text
                                 style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
                             <Text style={styles.activityPreference}>
@@ -395,7 +400,7 @@ var User = React.createClass({
                             </Text>
                             <View>
                                 {!this.props.isCurrentUser ?
-                                    <View style={{top: 10}}>{this._renderStatusIcon()}</View> : <View />}
+                                    <View style={{top: 10}}>{this._renderStatusIcon()}</View> : <View>{dummyIcon}</View>}
                             </View>
                         </View>
                     </LinearGradient>
@@ -472,22 +477,22 @@ var UsersList = React.createClass({
 
                             // @hmm: because of cumulative privacy selection, only have to check for friends+ for both 'friends+' and 'all'
                             if (matchingPreferences && matchingPreferences.privacy && matchingPreferences.privacy.indexOf('friends+') > -1) {
-                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= maxSearchDistance * 1.609) {
+                                // if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= maxSearchDistance * 1.609) {
                                     if (matchingPreferences && matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
                                     if (matchingPreferences && matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1 && user.gender !== 'male' && user.gender !== 'female') filteredUsersArray.push(user);
-                                }
+                                //}
                             } else if (matchingPreferences && matchingPreferences.privacy && matchingPreferences.privacy.indexOf('friends') > -1 && matchingPreferences.privacy.length === 1) {
                                 if (this.props.currentUserFriends && !!_.findWhere(this.props.currentUserFriends, {name: user.name})) {
-                                    if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= maxSearchDistance * 1.609) {
+                                    // if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= maxSearchDistance * 1.609) {
                                         if (matchingPreferences && matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
                                         if (matchingPreferences && matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1 && user.gender !== 'male' && user.gender !== 'female') filteredUsersArray.push(user);
-                                    }
+                                    //}
                                 }
                             } else {
-                                if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= maxSearchDistance * 1.609) {
+                                // if (this.props.currentUserLocationCoords && user.location && user.location.coordinates && user.location.coordinates.latitude && user.location.coordinates.longitude && GeoFire.distance(this.props.currentUserLocationCoords, [user.location.coordinates.latitude, user.location.coordinates.longitude]) <= maxSearchDistance * 1.609) {
                                     if (matchingPreferences && matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) > -1) filteredUsersArray.push(user);
                                     if (matchingPreferences && matchingPreferences.gender && matchingPreferences.gender.indexOf(user.gender) === -1 && matchingPreferences.gender.indexOf('other') > -1 && user.gender !== 'male' && user.gender !== 'female') filteredUsersArray.push(user);
-                                }
+                                //}
                             }
 
                         });
@@ -667,6 +672,30 @@ var UsersList = React.createClass({
 });
 
 var styles = StyleSheet.create({
+    activityPreference: {
+        width: SCREEN_WIDTH/3.2,
+        fontSize: 18,
+        fontFamily: 'AvenirNextCondensed-UltraLight',
+        fontWeight: '400',
+        textAlign: 'left'
+    },
+    backdrop: {
+        paddingTop: 30,
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height
+    },
+    container: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        borderColor: 'rgba(100,100,105,0.2)',
+        borderWidth: 1
+    },
     customRefreshingActivityIndicatorIOS: {
         height: 20,
         top: 5
@@ -680,6 +709,18 @@ var styles = StyleSheet.create({
     customRefreshingIndicatorText: {
         color: '#fff',
         fontFamily: 'AvenirNextCondensed-Regular'
+    },
+    distance: {
+        width: SCREEN_WIDTH/4,
+        textAlign: 'center',
+        fontSize: 16,
+        marginHorizontal: 25,
+        fontFamily: 'AvenirNext-UltraLight',
+        fontWeight: '300',
+    },
+    filterPageButton: {
+        width: 30,
+        height: 30
     },
     loadingModalActivityIndicatorIOS: {
         height: 80
@@ -755,7 +796,8 @@ var styles = StyleSheet.create({
     rightContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start'
+        justifyContent: 'space-around',
+        width: SCREEN_WIDTH/1.4
     },
     searchTextInput: {
         color: '#222',
@@ -794,6 +836,11 @@ var styles = StyleSheet.create({
         marginVertical: 7,
         marginLeft: 10
     },
+    timerValText: {
+        opacity: 1.0,
+        color: '#fff',
+        fontFamily: 'AvenirNextCondensed-Medium'
+    },
     timerValOverlay: {
         backgroundColor: 'rgba(0,0,0,0.6)',
         width: THUMBNAIL_SIZE,
@@ -817,45 +864,6 @@ var styles = StyleSheet.create({
     usersListBaseContainer: {
         flex: 1,
         backgroundColor: '#040A19'
-    },
-    activityPreference: {
-        width: 140,
-        fontSize: 18,
-        fontFamily: 'AvenirNextCondensed-UltraLight',
-        fontWeight: '400'
-    },
-    backdrop: {
-        paddingTop: 30,
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height
-    },
-    container: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderColor: 'rgba(100,100,105,0.2)',
-        borderWidth: 1
-    },
-    distance: {
-        width: 75,
-        textAlign: 'center',
-        fontSize: 16,
-        marginHorizontal: 25,
-        fontFamily: 'AvenirNext-UltraLight',
-        fontWeight: '300'
-    },
-    filterPageButton: {
-        width: 30,
-        height: 30
-    },
-    timerValText: {
-        opacity: 1.0,
-        color: '#fff',
-        fontFamily: 'AvenirNextCondensed-Medium'
     }
 });
 

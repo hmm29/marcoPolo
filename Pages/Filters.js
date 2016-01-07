@@ -192,7 +192,6 @@ var Filters = React.createClass({
                                 value={JSON.parse(this.state.distance)}/>
                         </View>
                     </View>
-                    <View style={styles.space}></View>
                     <View style={styles.section}>
                         <View style={styles.titleContainer}>
                             <Text style={styles.titleText}>
@@ -217,7 +216,6 @@ var Filters = React.createClass({
                             </TouchableHighlight>
                         </View>
                     </View>
-                    <View style={styles.space}></View>
                     <View style={styles.section}>
                         <View style={styles.titleContainer}>
                             <Text style={styles.titleText}>
@@ -271,10 +269,10 @@ var Filters = React.createClass({
 var styles = StyleSheet.create({
     container: {
         flexDirection: 'column',
-        justifyContent: 'center',
+        justifyContent: 'space-around',
         padding: 20,
         backgroundColor: '#FFF5EA',
-        height: SCREEN_HEIGHT - 80
+        height: SCREEN_HEIGHT-80
     },
     pageTitle: {
         color: '#fff',
@@ -284,7 +282,6 @@ var styles = StyleSheet.create({
     saveButton: {
         backgroundColor: '#040A19',
         alignSelf: 'center',
-        top: 16,
         borderRadius: 4,
         paddingHorizontal: 30,
         paddingVertical: 5,
@@ -301,7 +298,6 @@ var styles = StyleSheet.create({
         borderRadius: 3,
         borderWidth: 0.5,
         borderColor: '#040A19',
-        bottom: 18
     },
     slider: {
         height: 30,

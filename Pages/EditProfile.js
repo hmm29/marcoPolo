@@ -301,7 +301,7 @@ var EditProfile = React.createClass({
                         {editPhoto}
 
                         <Text
-                            style={[styles.label, {fontSize: 27}]}>{this.state.currentFirstName} {this.state.currentFirstName ? ',' : ''} {this.state.currentAge}</Text>
+                            style={[styles.label, {fontSize: 27, marginBottom: SCREEN_WIDTH/10}]}>{this.state.currentFirstName} {this.state.currentFirstName ? ',' : ''} {this.state.currentAge}</Text>
 
                         <View style={styles.editableTextFields}>
                             {/* this.state.isEditingGenderField && this.state.showAutocomplete ? genderAutocomplete : genderField */}
@@ -367,7 +367,7 @@ var styles = StyleSheet.create({
         left: SCREEN_WIDTH / 18,
         marginVertical: SCREEN_HEIGHT / 90,
         fontFamily: 'AvenirNextCondensed-Regular',
-        color: 'white'
+        color: 'white',
     },
     cameraContainer: {
         height: SCREEN_HEIGHT,

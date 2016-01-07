@@ -20,12 +20,12 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
+		420F9A5C1C3E45AF00F8F32E /* AppHub.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 420F9A5B1C3E45AF00F8F32E /* AppHub.framework */; };
 		42328EF11BE5747700E05B15 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42328EF01BE5747700E05B15 /* LaunchScreen.xib */; };
 		426094621BC0E63E00623EA5 /* libReactNativeIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 426094611BC0E62000623EA5 /* libReactNativeIcons.a */; };
 		426094651BC0E64B00623EA5 /* ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4260938F1BC0D6C200623EA5 /* ionicons.ttf */; };
 		427790B51BC302B600ED919D /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 427790A81BC302A000ED919D /* libBVLinearGradient.a */; };
 		427790BC1BC54AEB00ED919D /* libRCTFBLogin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 427790BB1BC54AD700ED919D /* libRCTFBLogin.a */; };
-		427FB1021BE4217900C47F50 /* AppHub.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427FB1011BE4217900C47F50 /* AppHub.framework */; };
 		427FB1131BE421A800C47F50 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427FB1121BE421A800C47F50 /* SystemConfiguration.framework */; };
 		427FB1151BE421B200C47F50 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 427FB1141BE421B200C47F50 /* libz.tbd */; };
 		4290F0F31BB746C80052C1E4 /* Orientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4290F0F21BB746C80052C1E4 /* Orientation.m */; };
@@ -100,6 +100,20 @@
 			remoteGlobalIDString = 83CBBA2E1A601D0E00E9B192;
 			remoteInfo = React;
 		};
+		420F9A571C3E448400F8F32E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 420F9A501C3E448300F8F32E /* AppHub.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 555FF3AF1B37AC8D0064F175;
+			remoteInfo = AppHub;
+		};
+		420F9A591C3E448400F8F32E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 420F9A501C3E448300F8F32E /* AppHub.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 555FF3BA1B37AC8D0064F175;
+			remoteInfo = AppHubTests;
+		};
 		426094601BC0E62000623EA5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4260945C1BC0E62000623EA5 /* ReactNativeIcons.xcodeproj */;
@@ -155,12 +169,13 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = VentureApp/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = VentureApp/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
+		420F9A501C3E448300F8F32E /* AppHub.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AppHub.xcodeproj; path = ../node_modules/apphub/AppHub/AppHub.xcodeproj; sourceTree = "<group>"; };
+		420F9A5B1C3E45AF00F8F32E /* AppHub.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AppHub.framework; sourceTree = "<group>"; };
 		42328EF01BE5747700E05B15 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		4260938F1BC0D6C200623EA5 /* ionicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ionicons.ttf; sourceTree = "<group>"; };
 		4260945C1BC0E62000623EA5 /* ReactNativeIcons.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeIcons.xcodeproj; path = "../node_modules/react-native-icons/ios/ReactNativeIcons.xcodeproj"; sourceTree = "<group>"; };
 		427790A31BC302A000ED919D /* BVLinearGradient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BVLinearGradient.xcodeproj; path = "../node_modules/react-native-linear-gradient/BVLinearGradient.xcodeproj"; sourceTree = "<group>"; };
 		427790B61BC54AD600ED919D /* RCTFBLogin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTFBLogin.xcodeproj; path = "../node_modules/react-native-facebook-login/RCTFBLogin.xcodeproj"; sourceTree = "<group>"; };
-		427FB1011BE4217900C47F50 /* AppHub.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AppHub.framework; sourceTree = "<group>"; };
 		427FB1121BE421A800C47F50 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		427FB1141BE421B200C47F50 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		4290F0F11BB746C80052C1E4 /* Orientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Orientation.h; sourceTree = "<group>"; };
@@ -185,10 +200,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				420F9A5C1C3E45AF00F8F32E /* AppHub.framework in Frameworks */,
 				427FB1151BE421B200C47F50 /* libz.tbd in Frameworks */,
 				42EC20921BE9CFDB007E15B3 /* Bolts.framework in Frameworks */,
 				427FB1131BE421A800C47F50 /* SystemConfiguration.framework in Frameworks */,
-				427FB1021BE4217900C47F50 /* AppHub.framework in Frameworks */,
 				42EC20931BE9CFDB007E15B3 /* FBSDKCoreKit.framework in Frameworks */,
 				42EC20951BE9CFDB007E15B3 /* FBSDKShareKit.framework in Frameworks */,
 				427790BC1BC54AEB00ED919D /* libRCTFBLogin.a in Frameworks */,
@@ -305,6 +320,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		420F9A511C3E448300F8F32E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				420F9A581C3E448400F8F32E /* libAppHub.a */,
+				420F9A5A1C3E448400F8F32E /* AppHub.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		4260945D1BC0E62000623EA5 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -361,6 +385,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				420F9A501C3E448300F8F32E /* AppHub.xcodeproj */,
 				427790B61BC54AD600ED919D /* RCTFBLogin.xcodeproj */,
 				427790A31BC302A000ED919D /* BVLinearGradient.xcodeproj */,
 				4260945C1BC0E62000623EA5 /* ReactNativeIcons.xcodeproj */,
@@ -390,8 +415,8 @@
 			isa = PBXGroup;
 			children = (
 				427FB1141BE421B200C47F50 /* libz.tbd */,
+				420F9A5B1C3E45AF00F8F32E /* AppHub.framework */,
 				427FB1121BE421A800C47F50 /* SystemConfiguration.framework */,
-				427FB1011BE4217900C47F50 /* AppHub.framework */,
 				427790BD1BC54C2A00ED919D /* FacebookSDK */,
 				4260938F1BC0D6C200623EA5 /* ionicons.ttf */,
 				4290F0F01BB746C80052C1E4 /* RCTOrientation */,
@@ -482,6 +507,10 @@
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = 420F9A511C3E448300F8F32E /* Products */;
+					ProjectRef = 420F9A501C3E448300F8F32E /* AppHub.xcodeproj */;
+				},
 				{
 					ProductGroup = 427790A41BC302A000ED919D /* Products */;
 					ProjectRef = 427790A31BC302A000ED919D /* BVLinearGradient.xcodeproj */;
@@ -598,6 +627,20 @@
 			fileType = archive.ar;
 			path = libReact.a;
 			remoteRef = 146834031AC3E56700842450 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		420F9A581C3E448400F8F32E /* libAppHub.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libAppHub.a;
+			remoteRef = 420F9A571C3E448400F8F32E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		420F9A5A1C3E448400F8F32E /* AppHub.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = AppHub.xctest;
+			remoteRef = 420F9A591C3E448400F8F32E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		426094611BC0E62000623EA5 /* libReactNativeIcons.a */ = {
@@ -758,6 +801,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../node_modules/apphub/AppHub/**",
 				);
 				INFOPLIST_FILE = VentureApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -784,6 +828,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../node_modules/apphub/AppHub/**",
 				);
 				INFOPLIST_FILE = VentureApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

@@ -245,20 +245,22 @@ var Login = React.createClass({
 
         return (
             <View>
+                <Image>
                     <Swiper style={styles.wrapper}
                             dot={<View style={{backgroundColor:'rgba(255,255,255,.3)', width: 13, height: 13,borderRadius: 7, top: SCREEN_HEIGHT / 30, marginLeft: 7, marginRight: 7,}} />}
                             activeDot={<View style={{backgroundColor: '#fff', width: 13, height: 13, borderRadius: 7, top: SCREEN_HEIGHT / 30, marginLeft: 7, marginRight: 7}} />}
-                            paginationStyle={{bottom: 70}}
+                            paginationStyle={{bottom: SCREEN_HEIGHT/22}}
                             loop={false}>
                         <View style={styles.slide}>
                             <Image
+                                resizeMode={Image.resizeMode.stretch}
                                 source={require('./../img/OnboardingFacebookSignUp.png')}
                                 style={styles.backdrop}>
 
                                 <Image
                                        style={styles.ventureLogo}/>
 
-                                <FBLogin style={{ top: 68 }}
+                                <FBLogin style={{ top: SCREEN_HEIGHT/3 }}
                                          permissions={['email','user_friends']}
                                          onLogin={function(data){
 
@@ -282,29 +284,34 @@ var Login = React.createClass({
                         </View>
                         <View style={styles.slide}>
                             <Image
+                                resizeMode={Image.resizeMode.stretch}
                                 source={require('./../img/OnboardingWhatDoYouWantToDo.png')}
                                 style={styles.backdrop}>
                             </Image>
                         </View>
                         <View style={styles.slide}>
                             <Image
+                                resizeMode={Image.resizeMode.stretch}
                                 source={require('./../img/OnboardingFindActivityPartners.png')}
                                 style={styles.backdrop}>
                             </Image>
                         </View>
                         <View style={styles.slide}>
                             <Image
+                                resizeMode={Image.resizeMode.stretch}
                                 source={require('./../img/OnboardingShareActivities.png')}
                                 style={styles.backdrop}>
                             </Image>
                         </View>
                         <View style={styles.slide}>
                             <Image
+                                resizeMode={Image.resizeMode.stretch}
                                 source={require('./../img/OnboardingMakeNewConnections.png')}
                                 style={styles.backdrop}>
                             </Image>
                         </View>
                     </Swiper>
+                    </Image>
             </View>
         )
     }
@@ -318,15 +325,13 @@ var styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'transparent'
     },
-    image: {
-        flex: 1
-    },
     backdrop: {
-        paddingBottom: 30,
         flex: 1,
         justifyContent: 'center',
         flexDirection: 'column',
-        alignItems: 'center'
+        alignItems: 'center',
+        width: null,
+        height: null
     },
     tabText: {
         color: 'white',

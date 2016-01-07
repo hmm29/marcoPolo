@@ -171,12 +171,14 @@ var Hot = React.createClass({
                             {this.state.yalies && this.state.yalies.map(this._createTrendingItem.bind(null, 'user'))}
                         </ScrollView>
                         <View style={[styles.scrollbarArrow, {top: SCREEN_HEIGHT / 10.6, left: SCREEN_WIDTH / 1.20, backgroundColor: 'transparent'}]}>
+                            {/*
                             <Animated.View style={{opacity: this.state.fadeAnim}}>
                                 <ChevronIcon
                                     color='rgba(255,255,255,0.8)'
                                     size={20}
                                     direction={'right'}/>
                             </Animated.View>
+                            */}
                         </View>
                     </View>
 

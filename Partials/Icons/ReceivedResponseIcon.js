@@ -24,7 +24,7 @@ var {
 
 var { Icon, } = require('react-native-icons');
 
-var SIZE = 28;
+var SIZE = 25;
 
 var ReceivedResponseIcon = React.createClass({
     propTypes: {
@@ -67,8 +67,8 @@ var styles = StyleSheet.create({
         fontWeight: '500'
     },
     receivedResponseIcon: {
-        width: SIZE,
-        height: SIZE
+        width: SIZE * 1.6,
+        height: SIZE * 1.6
     }
 });
 

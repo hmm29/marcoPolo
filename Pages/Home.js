@@ -46,6 +46,7 @@ var MAX_TEXT_INPUT_VAL_LENGTH = 15;
 var NEXT_BUTTON_SIZE = 28;
 var SCREEN_HEIGHT = Dimensions.get('window').height;
 var SCREEN_WIDTH = Dimensions.get('window').width;
+var TAG_SELECTION_INPUT_REF = 'tagSelectionInput';
 var TAG_TEXT_INPUT_PADDING = 3;
 
 var Home = React.createClass({
@@ -64,16 +65,19 @@ var Home = React.createClass({
             activityTitleInput: '',
             contentOffsetXVal: 0,
             currentAppState: AppStateIOS.currentState,
+            currentUserLocationCoords: null,
             date: new Date(),
             events: [],
             firebaseRef: new Firebase('https://ventureappinitial.firebaseio.com/'),
             hasIshSelected: false,
             hasKeyboardSpace: false,
             hasSpecifiedTime: false,
+            isLoggedIn: false,
+            ready: false,
             showAddInfoBox: false,
             showAddInfoButton: true,
             showNextButton: false,
-            showTextInput: true,
+            showTextInput: false,
             showTimeSpecificationOptions: false,
             showTrendingItems: false,
             tagsArr: [],
@@ -102,6 +106,8 @@ var Home = React.createClass({
                             this.setTimeout(this._safelyNavigateToLogin, 200)
                             return;
                         }
+
+                        this.setState({isLoggedIn: true, showTextInput: true});
 
                         let currentUserRef = this.state.firebaseRef && this.state.firebaseRef.child(`users/${account.ventureId}`),
                             trendingItemsRef = this.state.firebaseRef && this.state.firebaseRef.child('trending'),
@@ -185,6 +191,18 @@ var Home = React.createClass({
     },
 
     componentDidMount(){
+        if(this.state.currentUserLocationCoords === null) {
+            navigator.geolocation.getCurrentPosition(
+                (currentPosition) => {
+                    this.setState({currentUserLocationCoords: [currentPosition.coords.latitude, currentPosition.coords.longitude]});
+                },
+                (error) => {
+                    console.error(error);
+                },
+                {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+            );
+        }
+
         AsyncStorage.getItem('@AsyncStorage:Venture:currentUser:friendsAPICallURL')
             .then((friendsAPICallURL) => friendsAPICallURL)
             .then((friendsAPICallURL) => {
@@ -239,7 +257,10 @@ var Home = React.createClass({
     _createTrendingItem(type, uri, i) {
         if(type === 'user') return (
             <TouchableOpacity key={i} style={styles.trendingItem}>
-                <Image style={styles.trendingUserImg} source={{uri}}/>
+                <Image
+                    defaultSource={require('./../img/HomeBackground.png')}
+                    style={styles.trendingUserImg}
+                    source={{uri}}/>
             </TouchableOpacity>
         )
 
@@ -445,7 +466,7 @@ var Home = React.createClass({
                     {this.state.yalies && this.state.yalies.map(this._createTrendingItem.bind(null, 'user'))}
                     {this.state.events && this.state.events.map(this._createTrendingItem.bind(null, 'event'))}
                 </ScrollView>
-                <View style={[styles.scrollbarArrow, {bottom: SCREEN_HEIGHT / 22}, (isAtTrendingScrollViewStart ? {right: 2} : {left: 2})]}>
+                <View style={[styles.scrollbarArrow, {bottom: SCREEN_HEIGHT / 22}, (isAtTrendingScrollViewStart ? {right: 5} : {left: 5})]}>
                     <ChevronIcon
                         color='rgba(255,255,255,0.8)'
                         size={20}
@@ -533,6 +554,7 @@ var Home = React.createClass({
         tagSelection = (
             <View style={styles.tagSelection}>
                 <TextInput
+                    ref={TAG_SELECTION_INPUT_REF}
                     onFocus={this._onFocus}
                     onBlur={this._onBlur}
                     autoCapitalize='none'
@@ -542,17 +564,18 @@ var Home = React.createClass({
                         // @hmm: make sure emojis don't cause error - each emoji counts for 3 characters
                         if(!text.match(/^[a-zA-Z]+$/) && text.length >= MAX_TEXT_INPUT_VAL_LENGTH - 1) return;
                         this.setState({tagInput: text});
-
-                        if(text[text.length-1] === ',') {
-                        let tagsArr = this.state.tagsArr;
-
-                        if(tagsArr.indexOf(text.slice(0, -1)) < 0 && tagsArr.length < 5)
-                        tagsArr.push(text.substr(0, text.length-1));
-
-                        this.setState({tagsArr, tagInput: ''});
-                    }
                     }}
-                    placeholder={'Type a tag. Separate by comma. Tap to delete.'}
+                    onSubmitEditing={() => {
+                        let tagsArr = this.state.tagsArr,
+                            text = this.state.tagInput;
+
+                        //@hmm: check that tag isn't already present and that max num of tags is 5
+                        if(tagsArr.indexOf(text) < 0 && tagsArr.length <= 5) {
+                        tagsArr.push(text);
+                        }
+                        this.setState({tagsArr, tagInput: ''});
+                    }}
+                    placeholder={'Type a tag and submit. Tap to delete.'}
                     placeholderTextColor={'rgba(0,0,0,0.8)'}
                     returnKeyType='done'
                     style={styles.tagsInputText}
@@ -569,6 +592,7 @@ var Home = React.createClass({
             </View>
         );
 
+        // @hmm keep addInfoBox down here after assigning content and tagSelection
         let addInfoBox = (
             <View
                 style={[styles.addInfoBox, {bottom: (this.state.hasKeyboardSpace ? SCREEN_HEIGHT/3 : SCREEN_HEIGHT / 35)}]}>
@@ -587,19 +611,22 @@ var Home = React.createClass({
         return (
             <View style={styles.container}>
                 <Image
+                    onLoad={() => {
+                        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+                        this.setState({ready: true})
+                    }}
                     source={require('./../img/HomeBackground.png')}
                     style={styles.backdrop}>
+                {this.state.isLoggedIn && this.state.ready ?
+                <View>
                     <Header>
                         <ProfilePageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/34, right: 20}}
                                          onPress={() => {
-                                            this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
-                                                    this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, firebaseRef: this.state.firebaseRef, selected: 'profile', ventureId: this.state.ventureId}});
+                                            if(!this.state.hasKeyboardSpace) this._safelyNavigateForward({title: 'Profile', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, firebaseRef: this.state.firebaseRef, selected: 'profile', ventureId: this.state.ventureId}});
                                          }} />
                         <ChatsListPageIcon style={{opacity: 0.4, bottom: SCREEN_HEIGHT/34, left: 20}}
                                            onPress={() => {
-                                            this.refs[ACTIVITY_TITLE_INPUT_REF].blur();
-                                            // @hmm: pass ventureId to MainLayout
-                                                    this._safelyNavigateForward({title: 'Chats', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, firebaseRef: this.state.firebaseRef, selected: 'chats', ventureId: this.state.ventureId}});
+                                            if(!this.state.hasKeyboardSpace) this._safelyNavigateForward({title: 'Chats', component: MainLayout, passProps: {currentUserFriends: this.state.currentUserFriends, currentUserLocationCoords: this.state.currentUserLocationCoords, firebaseRef: this.state.firebaseRef, selected: 'chats', ventureId: this.state.ventureId}});
                                            }} />
                     </Header>
                     <Logo
@@ -608,8 +635,10 @@ var Home = React.createClass({
                     {this.state.showTextInput ? activityTitleInput : <View />}
                     {this.state.showNextButton ? nextButton : <View />}
                     {this.state.showAddInfoButton && !this.state.showTimeSpecificationOptions && this.state.activityTitleInput ? addInfoButton : <View />}
-                    {this.state.showAddInfoBox && this.state.activityTitleInput ? addInfoBox : <View/>}
-                    {this.state.showTrendingItems && !this.state.showAddInfoBox ? trendingItemsCarousel : <View/>}
+                </View>
+            : <View />}
+                    {this.state.showAddInfoBox && this.state.activityTitleInput && this.state.isLoggedIn && this.state.ready ? addInfoBox : <View/>}
+                    {this.state.showTrendingItems && !this.state.showAddInfoBox && this.state.isLoggedIn && this.state.ready ? trendingItemsCarousel : <View/>}
                 </Image>
             </View>
         );
@@ -632,7 +661,7 @@ var styles = StyleSheet.create({
     activityTitleInput: {
         height: 52,
         textAlign: 'center',
-        fontSize: SCREEN_HEIGHT / 22,
+        fontSize: SCREEN_HEIGHT / 23,
         color: 'white',
         backgroundColor: 'rgba(0,0,0,0.7)',
         fontFamily: 'AvenirNextCondensed-UltraLight'
@@ -645,8 +674,10 @@ var styles = StyleSheet.create({
         marginHorizontal: (SCREEN_WIDTH - (SCREEN_WIDTH / 1.2)) / 2,
         padding: 2
     },
-    addInfoButton: {},
+    addInfoButton: {
+    },
     addInfoButtonContainer: {
+        backgroundColor: 'transparent',
         flexDirection: 'row',
         justifyContent: 'center',
         width: SCREEN_WIDTH,
@@ -667,12 +698,13 @@ var styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     horizontalScrollView: {
         height: 85
     },
     logoContainerStyle: {
+        backgroundColor: 'transparent',
         position: 'absolute',
         top: SCREEN_HEIGHT / 6,
         marginHorizontal: (SCREEN_WIDTH - LOGO_WIDTH) / 2
@@ -683,7 +715,7 @@ var styles = StyleSheet.create({
     },
     nextButtonContainer: {
         bottom: 40,
-        right: 40,
+        right: 60,
         alignSelf: 'flex-end'
     },
     scrollbarArrow: {
@@ -711,13 +743,16 @@ var styles = StyleSheet.create({
     },
     tag: {
         backgroundColor: 'rgba(0,0,0,0.7)',
-        borderRadius: 12,
+        borderRadius: SCREEN_WIDTH / 10,
         paddingHorizontal: SCREEN_WIDTH / 80,
         marginHorizontal: SCREEN_WIDTH / 70,
         paddingVertical: SCREEN_WIDTH / 300,
         borderWidth: 0.5,
         borderColor: 'rgba(255,255,255,0.4)',
-        top: 6,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        top: SCREEN_WIDTH / 90,
         height: SCREEN_WIDTH / 15
     },
     tagsInputText: {
@@ -778,7 +813,7 @@ var styles = StyleSheet.create({
         resizeMode: 'contain'
     },
     trendingEventImg: {
-        width: SCREEN_WIDTH / 1.39,
+        width: SCREEN_WIDTH / 1.34,
         height: 64,
         resizeMode: 'contain'
     }

@@ -107,6 +107,7 @@ var Profile = React.createClass({
             loginStatusRef = currentUserRef && currentUserRef.child(`status/isOnline`);
 
         if (!isOnline) {
+
             loginStatusRef.set(false);
             currentUserRef.child('match_requests').set(null); // @hmm: clear users match interactions
 
@@ -125,7 +126,7 @@ var Profile = React.createClass({
             return;
         }
 
-        if (isOnline) loginStatusRef.set(isOnline);
+        if (isOnline && loginStatusRef) loginStatusRef.set(isOnline);
 
         currentUserRef.once('value', snapshot => {
             let asyncObj = _.pick(snapshot.val(), 'ventureId', 'name', 'firstName', 'lastName', 'activityPreference', 'age', 'picture', 'bio', 'gender', 'matchingPreferences');
@@ -166,7 +167,7 @@ var Profile = React.createClass({
 
                                     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
                                     _this.setState({user : null, ventureId: null});
-                                    _this._updateUserLoginStatus(false);
+                                    if(user && ventureId) _this._updateUserLoginStatus(false);
 
                                      AsyncStorage.multiRemove(['@AsyncStorage:Venture:account', '@AsyncStorage:Venture:currentUser:friendsAPICallURL', '@AsyncStorage:Venture:currentUserFriends', '@AsyncStorage:Venture:isOnline'])
                                         .catch(error => console.log(error.message))

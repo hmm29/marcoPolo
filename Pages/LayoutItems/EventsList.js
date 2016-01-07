@@ -635,7 +635,7 @@ var Event = React.createClass({
                             style={styles.container}>
                             <Image
                                 source={{uri: this.props.data && this.props.data.event_img}}
-                                style={{resizeMode: 'cover', height: THUMBNAIL_SIZE * 2, flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                                style={{resizeMode: 'cover', height: THUMBNAIL_SIZE * 2, flex: 1, flexDirection: 'row', backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'space-between', alignItems: 'center'}}>
                             <View
                                 onPress={this._onPressItem}
                                 style={[styles.eventThumbnail, {backgroundColor: 'rgba(0,0,0,0.9)', justifyContent: 'center', alignItems: 'center'}]}>
@@ -643,7 +643,7 @@ var Event = React.createClass({
                                 </View>
                             <View style={[styles.rightContainer, {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}]}>
                                         <Text style={styles.eventTitleBanner}>{this.props.data && this.props.data.title && this.props.data.title.toUpperCase()}</Text>
-                                        <View style={{position: 'absolute', right: 16}}>{this._renderEventAttendanceStatusIcon()}</View>
+                                        <View style={{position: 'absolute', right: SCREEN_WIDTH/10}}>{/* this._renderEventAttendanceStatusIcon() */}</View>
                             </View>
                                 </Image>
                         </LinearGradient>
@@ -837,7 +837,7 @@ var styles = StyleSheet.create({
         fontFamily: 'AvenirNextCondensed-Medium',
         color: '#fff',
         backgroundColor: 'rgba(0,0,0,0.6)',
-        width: SCREEN_WIDTH / 1.2,
+        width: SCREEN_WIDTH / 1.1,
         fontSize: SCREEN_HEIGHT / 35,
         paddingVertical: SCREEN_HEIGHT / 130,
         paddingLeft: SCREEN_WIDTH / 15,

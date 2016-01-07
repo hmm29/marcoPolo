@@ -447,7 +447,9 @@ var User = React.createClass({
                     color='rgba(0,0,0,0.2)'
                     direction='right'
                     onPress={() => this.handleMatchInteraction()}
-                    size={22} />
+                    size={25}
+                    style={{width: 25 * 1.6, height: 25 * 1.6}}
+                    />
         }
     },
 
@@ -485,6 +487,14 @@ var User = React.createClass({
 
             userRowContent = (
                 <View style={styles.rightContainer}>
+                    <Image
+                        onPress={this._onPressItem}
+                        source={{uri: this.props.data && this.props.data.picture}}
+                        style={[styles.thumbnail]}>
+                        <View style={(this.state.timerVal ? styles.timerValOverlay : {})}>
+                            <Text style={[styles.timerValText, (this.state.timerVal && this.state.timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{this.state.timerVal}</Text>
+                        </View>
+                    </Image>
                     <Text
                         style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
                     <Text style={styles.eventTitle}>
@@ -526,6 +536,14 @@ var User = React.createClass({
 
             userRowContent = (
                 <View style={styles.rightContainer}>
+                    <Image
+                        onPress={this._onPressItem}
+                        source={{uri: this.props.data && this.props.data.picture}}
+                        style={[styles.thumbnail]}>
+                        <View style={(this.state.timerVal ? styles.timerValOverlay : {})}>
+                            <Text style={[styles.timerValText, (this.state.timerVal && this.state.timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{this.state.timerVal}</Text>
+                        </View>
+                    </Image>
                     <Text style={styles.distance}>{this.state.distance ? this.state.distance + ' mi' : ''}</Text>
                     <Text style={styles.activityPreference}>
                         {this.props.data && this.props.data.activityPreference && this.props.data.activityPreference.title}
@@ -549,14 +567,6 @@ var User = React.createClass({
                             end={[1,1]}
                             locations={[0.3,0.99,1.0]}
                             style={styles.container}>
-                            <Image
-                                onPress={this._onPressItem}
-                                source={{uri: this.props.data && this.props.data.picture}}
-                                style={[styles.thumbnail]}>
-                                <View style={(this.state.timerVal ? styles.timerValOverlay : {})}>
-                                    <Text style={[styles.timerValText, (this.state.timerVal && this.state.timerVal[0] === '0' ? {color: '#F12A00'} :{})]}>{this.state.timerVal}</Text>
-                                </View>
-                            </Image>
                             {userRowContent}
                         </LinearGradient>
                         {this.state.dir === 'column' ? profileModal: <View />}
@@ -746,6 +756,34 @@ var ChatsList = React.createClass({
 });
 
 var styles = StyleSheet.create({
+    activityPreference: {
+        width: SCREEN_WIDTH/3.2,
+        fontSize: 18,
+        fontFamily: 'AvenirNextCondensed-UltraLight',
+        fontWeight: '400',
+        textAlign: 'left'
+    },
+    backdrop: {
+        paddingTop: 30,
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height
+    },
+    chatsListBaseContainer: {
+        flex: 1,
+        backgroundColor: '#040A19'
+    },
+    container: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        borderColor: 'rgba(100,100,105,0.2)',
+        borderWidth: 1
+    },
     customRefreshingActivityIndicatorIOS: {
         height: 20,
         top: 5
@@ -759,6 +797,26 @@ var styles = StyleSheet.create({
     customRefreshingIndicatorText: {
         color: '#fff',
         fontFamily: 'AvenirNextCondensed-Regular'
+    },
+    distance: {
+        width: SCREEN_WIDTH/4,
+        textAlign: 'center',
+        fontSize: 16,
+        marginHorizontal: 25,
+        fontFamily: 'AvenirNext-UltraLight',
+        fontWeight: '300',
+    },
+    eventTitle: {
+        width: 154,
+        right: 20,
+        fontSize: 17,
+        top: 2,
+        fontFamily: 'AvenirNextCondensed-Regular',
+        fontWeight: '400'
+    },
+    filterPageButton: {
+        width: 30,
+        height: 30
     },
     loadingModalActivityIndicatorIOS: {
         height: 80
@@ -834,7 +892,8 @@ var styles = StyleSheet.create({
     rightContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'flex-start'
+        justifyContent: 'space-around',
+        width: SCREEN_WIDTH/1.4
     },
     tag: {
         backgroundColor: 'rgba(4,22,43,0.5)',
@@ -861,63 +920,6 @@ var styles = StyleSheet.create({
         marginVertical: 7,
         marginLeft: 10
     },
-    userContentWrapper: {
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: 'transparent'
-    },
-    userRow: {
-        flex: 1,
-        backgroundColor: '#fefefb'
-    },
-    chatsListBaseContainer: {
-        flex: 1,
-        backgroundColor: '#040A19'
-    },
-    activityPreference: {
-        width: 140,
-        fontSize: 18,
-        fontFamily: 'AvenirNextCondensed-UltraLight',
-        fontWeight: '400'
-    },
-    backdrop: {
-        paddingTop: 30,
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height
-    },
-    container: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderColor: 'rgba(100,100,105,0.2)',
-        borderWidth: 1
-    },
-    distance: {
-        width: 75,
-        textAlign: 'center',
-        fontSize: 16,
-        marginHorizontal: 25,
-        fontFamily: 'AvenirNext-UltraLight',
-        fontWeight: '300'
-    },
-    eventTitle: {
-        width: 154,
-        right: 20,
-        fontSize: 17,
-        top: 2,
-        fontFamily: 'AvenirNextCondensed-Regular',
-        fontWeight: '400'
-    },
-    filterPageButton: {
-        width: 30,
-        height: 30
-    },
     timerValText: {
         opacity: 1.0,
         color: '#fff',
@@ -930,6 +932,18 @@ var styles = StyleSheet.create({
         borderRadius: THUMBNAIL_SIZE / 2,
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    userContentWrapper: {
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: 'transparent'
+    },
+    userRow: {
+        flex: 1,
+        backgroundColor: '#fefefb',
+        overflow: 'hidden'
     }
 });
 
